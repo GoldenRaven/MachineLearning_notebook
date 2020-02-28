@@ -4,23 +4,23 @@
 #+DATE: <2020-02-27 Thu>
 #+email: li.gaoyang@live.com
 
-* 目录 :TOC@2:
-- [[#series][Series]]
-- [[#dataframe][DataFrame]]
-- [[#数据集操作的一般过程以kaggle-titanic为例][数据集操作的一般过程（以Kaggle Titanic为例）]]
-  - [[#加载数据][加载数据]]
-  - [[#预览数据][预览数据]]
-  - [[#清理数据][清理数据]]
-  - [[#从训练集中分离出测试集][从训练集中分离出测试集]]
-  - [[#分析数据找到关联性][分析数据，找到关联性]]
-  - [[#模型化数据集][模型化数据集]]
-- [[#注意点摘自机器学习实战][注意点（摘自机器学习实战）]]
+* 0. 目录                                                             :TOC@2:
+- [[#1-series][1. Series]]
+- [[#2-dataframe][2. DataFrame]]
+- [[#3-数据集操作的一般过程以kaggle-titanic为例][3. 数据集操作的一般过程（以Kaggle Titanic为例）]]
+  - [[#31-加载数据][3.1 加载数据]]
+  - [[#32-预览数据][3.2 预览数据]]
+  - [[#33-清理数据][3.3 清理数据]]
+  - [[#34-从训练集中分离出测试集][3.4 从训练集中分离出测试集]]
+  - [[#35-分析数据找到关联性][3.5 分析数据，找到关联性]]
+  - [[#36-模型化数据集][3.6 模型化数据集]]
+- [[#4-注意点摘自机器学习实战][4. 注意点（摘自机器学习实战）]]
 
-* Series
+* 1. Series
 #+begin_src python
 pd.Series
 #+end_src
-* DataFrame
+* 2. DataFrame
 - DataFrame中的方法属性：
 #+NAME: df_methods
 #+BEGIN_src example
@@ -54,12 +54,12 @@ pd.Series
 'where', 'xs'
 #+END_SRC
 
-* 数据集操作的一般过程（以Kaggle Titanic为例）
+* 3. 数据集操作的一般过程（以Kaggle Titanic为例）
 疑问：
 - 分离出测试集应该在预览数据之前还是之后？
 - 清理数据时，是对整个数据集操作还是只对训练集操作？
 - 交叉验证总是需要的吗？只是在出现过拟合时使用？
-** 加载数据
+** 3.1 加载数据
 Kaggle网站上Titanic竞赛中的数据集test.csv指求解时的实例，去掉了标签'Survived'.
 #+NAME: read
 #+BEGIN_src python
@@ -78,7 +78,7 @@ data1 = df.copy(deep=True) #复制df的indices和数据，并在内存中创建�
 #+BEGIN_src python
 data_clearner = [data1, df2] #可以一起清理
 #+END_SRC
-** 预览数据
+** 3.2 预览数据
 #+NAME: preview
 #+BEGIN_src python
 df.info()
@@ -86,14 +86,14 @@ df.head()
 df.tail()
 df.sample(10)
 #+END_SRC
-** 清理数据
+** 3.3 清理数据
 4个'C':
 - *Correcting*: 更正异常值，离群值
 - *Completing*: 补全缺失信息
 - *Creating*: 创建新的特征，用以之后的分析
 - *Converting*: 转换数据的格式，以备后续的计算与呈现
 
-*** Completing
+*** 3.3.1 Completing
 不推荐删除记录，尤其当它占的比例大时。最好impute. 对于定性值，
 一般使用mode，对于定量值一般用中值、平均值或以平均值+随机化的标准差来代替。
 还有针对具体问题更特殊的处理方法，如代之以某个小类别中的中值等。
@@ -107,7 +107,7 @@ df['Embarked'].fillna(df['Embarked'].mode()[0], inplace=True)
 drop_index = ['PassengerId', 'Ticket'] # index to drop
 df.drop(drop_index, axis=1, inplace=True) # drop features/columns
 #+END_SRC
-*** Creating
+*** 3.3.2 Creating
 特征工程：用已经存在的特征来创造新的特征，以检查是否对结果预测提供新的信息。
 #+BEGIN_src python
 df['FamilySize'] = df.['SibSp'] + df.['Parch'] + 1 # 新建特征
@@ -121,7 +121,7 @@ df['AgeBins'] = pd.qcut(df['Age'].astype(int), 5) # 离散化连续值到区间
 title_name = df['Title'].value_counts() < 10
 df['Title'] = df['Title'].apply(lambda x: 'Misc' if title_name[x] else x)
 #+END_SRC
-*** Converting
+*** 3.3.3 Converting
 如对object类型的数据格式化，使算法可以处理。
 #+BEGIN_src python
 from sklearn.preprocessing import LabelEncoder OneHotEncoder
@@ -132,7 +132,7 @@ df['Sex']  = encoder.fit_transform(df['Sex'])
 encoder2 = OneHotEncoder()
 df['Sex']  = encoder2.fit_transform(df['Sex'].reshape(-1,1))
 #+END_SRC
-** 从训练集中分离出测试集
+** 3.4 从训练集中分离出测试集
 两种方法：
 - 固定比例分离
 # #+BEGIN_src example
@@ -145,7 +145,7 @@ train1_x, test1_x, train1_y, test1_y = model_selection.train_test_split(data1[da
 #+BEGIN_src example
 model_selection.cross_val_score()
 #+END_SRC
-** 分析数据，找到关联性
+** 3.5 分析数据，找到关联性
 #+BEGIN_SRC python
 df[['Sex', 'Survived']].groupby('Sex',as_index=False).mean() # 特定特征与标签的关系
 # 图示某一个特征与标签的关系
@@ -184,7 +184,7 @@ def correlation_heatmap(df):
 
 correlation_heatmap(data1)
 #+end_src
-** 模型化数据集
+** 3.6 模型化数据集
 *** 背景知识
 机器学习算法可以分为四个部分：
 - 分类
@@ -209,7 +209,7 @@ correlation_heatmap(data1)
 - Support Vector Machines (SVM)
 - Decision Trees
 - Discriminant Analysis
-* 注意点（摘自机器学习实战）
+* 4. 注意点（摘自机器学习实战）
 - 对收入分层抽样，不能分太多层
 - 分层方法：除以1.5，向上取整；然后合并大于5的分类
 - 地理数据可视化，用其他相关属性作为颜色，和散点大小
