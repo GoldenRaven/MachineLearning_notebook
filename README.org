@@ -59,6 +59,8 @@ pd.Series
 - 分离出测试集应该在预览数据之前还是之后？
 - 清理数据时，是对整个数据集操作还是只对训练集操作？
 - 交叉验证总是需要的吗？只是在出现过拟合时使用？
+Jupyter Notebook:
+[[file:titanic-a_data_science_framework_to_achieve_99_accuracy.ipynb][titanic-a_data_science_framework_to_achieve_99_accuracy.ipynb]]
 ** 3.1 加载数据
 Kaggle网站上Titanic竞赛中的数据集test.csv指求解时的实例，去掉了标签'Survived'.
 #+NAME: read
