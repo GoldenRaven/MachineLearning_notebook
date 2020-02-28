@@ -38,7 +38,11 @@
 'where', 'xs'
 #+END_SRC
 
-* 数据操作一般过程
+* 数据集操作的一般过程（以Kaggle Titanic为例）
+疑问：
+- 分离出测试集应该在预览数据之前还是之后？
+- 清理数据时，是对整个数据集操作还是只对训练集操作？
+- 交叉验证总是需要的吗？只是在出现过拟合时使用？
 ** 加载数据
 Kaggle网站上Titanic竞赛中的数据集test.csv指求解时的实例，去掉了标签'Survived'.
 #+NAME: read
@@ -95,17 +99,90 @@ df['Alone'] = 0
 df['Alone'].loc[df['FamilySize'] > 1] = 1 # 选择性赋值
 df['Title'] = df['Name'].str.split( # 特征中字符串截取
    ', ', expand=True)[1].str.split('.', expand=True)[0]
-df['FareBins'] = pd.cut(df['Fare'], 4) # discretize continious to bins
-df['AgeBins'] = pd.qcut(df['Age'].astype(int), 5) # discretize continious to bins
-df['Title'] = df['Title'].apply(lambda x: 'Misc' if title_name[x] else x) # clean titles with small amount
+df['FareBins'] = pd.cut(df['Fare'], 4) # 离散化连续值到区间
+df['AgeBins'] = pd.qcut(df['Age'].astype(int), 5) # 离散化连续值到区间
+# 清理类别数太少的类别
+title_name = df['Title'].value_counts() < 10
+df['Title'] = df['Title'].apply(lambda x: 'Misc' if title_name[x] else x)
 #+END_SRC
 *** Converting
 如对object类型的数据格式化，使算法可以处理。
-*** 常用函数
-
-
-
-E: clean_by_reference
 #+BEGIN_src python
-data = [data1, df]
+from sklearn.preprocessing import LabelEncoder OneHotEncoder
+# 数字型编码
+encoder = LabelEncoder()
+df['Sex']  = encoder.fit_transform(df['Sex'])
+# 独热向量编码， 接收二维数组
+encoder2 = OneHotEncoder()
+df['Sex']  = encoder2.fit_transform(df['Sex'].reshape(-1,1))
 #+END_SRC
+** 从训练集中分离出测试集
+两种方法：
+- 固定比例分离
+# #+BEGIN_src example
+# model_selection.train_test_split(X, y, test_size=0.4, random_state=42)
+# #+END_SRC
+#+BEGIN_SRC python
+train1_x, test1_x, train1_y, test1_y = model_selection.train_test_split(data1[data1_x_calc], data1[Target], random_state = 0)
+#+END_SRC
+- 交叉验证（用以比较模型）
+#+BEGIN_src example
+model_selection.cross_val_score()
+#+END_SRC
+** 分析数据，找到关联性
+#+BEGIN_SRC python
+df[['Sex', 'Survived']].groupby('Sex',as_index=False).mean() # 特定特征与标签的关系
+# 图示某一个特征与标签的关系
+plt.hist(x = [df[df['Survived']==1]['Fare'], df[df['Survived']==0]['Fare']],
+         stacked=True, color = ['g','r'],label = ['Survived','Dead'])
+plt.title('Fare Histogram by Survival')
+plt.xlabel('Fare ($)')
+plt.ylabel('# of Passengers')
+plt.legend()
+# 图示某两个特征与标签的关系
+sns.violinplot(x = 'Pclass', y = 'Age', hue = 'Survived', data = data1, split = True, ax = axis2)
+axis2.set_title('Pclass vs Age Survival Comparison')
+# Pearson关联
+df.corr()
+#+END_SRC
+
+Pearson关联的绘图函数：
+#+BEGIN_SRC python
+#correlation heatmap of dataset
+def correlation_heatmap(df):
+    _ , ax = plt.subplots(figsize =(14, 12))
+    colormap = sns.diverging_palette(220, 10, as_cmap = True)
+
+    _ = sns.heatmap(
+        df.corr(),
+        cmap = colormap,
+        square=True,
+        cbar_kws={'shrink':.9 },
+        ax=ax,
+        annot=True,
+        linewidths=0.1,vmax=1.0, linecolor='white',
+        annot_kws={'fontsize':12 }
+    )
+
+    plt.title('Pearson Correlation of Features', y=1.05, size=15)
+
+correlation_heatmap(data1)
+#+end_src
+** 注意点（摘自机器学习实战）
+- 对收入分层抽样，不能分太多层
+- 分层方法：除以1.5，向上取整；然后合并大于5的分类
+- 地理数据可视化，用其他相关属性作为颜色，和散点大小
+- 寻找与标签相关性高的属性，用df.corr()['labels']
+- 进一步考察高相关性属性的数据模式，并删除可能的错误数据
+- 尝试不同的属性组合，以找到高相关性特征
+- 将预测器与标签分离，因为可能不一定对它们使用相同的转换方式
+- 特征缩放（归一化、标准化），即同比缩放所有属性
+- 评估训练得的模型，对训练集求RMSE或MAE
+- 误差较大则拟合不足，可以
+- 误差过小？则用验证集来验证得到的模型，以检查是否过拟合
+- 交叉验证，可以sklearn的K-fold功能
+- 如果在验证集上得到的误差大则说明确实有过拟合，需要更换模型
+- 尝试多个模型以找到2-5个有效的模型，别花太多时间去调整超参数
+- 保存每个尝试过的模型，用pickel或sklearn的joblib
+- 训练集分数明显低于验证集分数，则过度拟合
+- 注意：目标值一般不进行绽放，并且只对训练集缩放
