@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-02-28 Fri 17:43 -->
+<!-- 2020-02-28 Fri 22:00 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Python语言扩展库Pandas笔记</title>
@@ -234,38 +234,54 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org52d8c2b">1. Series</a></li>
-<li><a href="#org618845a">2. DataFrame</a></li>
-<li><a href="#org309a802">3. 数据集操作的一般过程（以Kaggle Titanic为例）</a>
+<li><a href="#org1081efb">1. 目录</a></li>
+<li><a href="#orgc9ef725">2. Series</a></li>
+<li><a href="#orgec3a733">3. DataFrame</a></li>
+<li><a href="#org09cb6dd">4. 数据集操作的一般过程（以Kaggle Titanic为例）</a>
 <ul>
-<li><a href="#orgd26651c">3.1. 加载数据</a></li>
-<li><a href="#org7041b5d">3.2. 预览数据</a></li>
-<li><a href="#orgdb025dd">3.3. 清理数据</a>
+<li><a href="#org9ed4e05">4.1. 加载数据</a></li>
+<li><a href="#org23bd95c">4.2. 预览数据</a></li>
+<li><a href="#org7e6f3dc">4.3. 清理数据</a>
 <ul>
-<li><a href="#orgcf8e1ee">3.3.1. Completing</a></li>
-<li><a href="#org446e29b">3.3.2. Creating</a></li>
-<li><a href="#orgdb424c9">3.3.3. Converting</a></li>
+<li><a href="#org7f805c9">4.3.1. Completing</a></li>
+<li><a href="#orgc6170ca">4.3.2. Creating</a></li>
+<li><a href="#org5576c79">4.3.3. Converting</a></li>
 </ul>
 </li>
-<li><a href="#orge2bf112">3.4. 从训练集中分离出测试集</a></li>
-<li><a href="#org6a2c86d">3.5. 分析数据，找到关联性</a></li>
-<li><a href="#org1e538ae">3.6. 注意点（摘自机器学习实战）</a></li>
+<li><a href="#orgaeee76b">4.4. 从训练集中分离出测试集</a></li>
+<li><a href="#org68873a4">4.5. 分析数据，找到关联性</a></li>
+<li><a href="#orgd5680fe">4.6. 模型化数据集</a>
+<ul>
+<li><a href="#org94e7c5f">4.6.1. 背景知识</a></li>
 </ul>
 </li>
 </ul>
+</li>
+<li><a href="#org2203891">5. 注意点（摘自机器学习实战）</a></li>
+</ul>
 </div>
 </div>
-<div id="outline-container-org52d8c2b" class="outline-2">
-<h2 id="org52d8c2b"><span class="section-number-2">1</span> Series</h2>
+
+<div id="outline-container-org1081efb" class="outline-2">
+<h2 id="org1081efb"><span class="section-number-2">1</span> 目录</h2>
 </div>
-<div id="outline-container-org618845a" class="outline-2">
-<h2 id="org618845a"><span class="section-number-2">2</span> DataFrame</h2>
+<div id="outline-container-orgc9ef725" class="outline-2">
+<h2 id="orgc9ef725"><span class="section-number-2">2</span> Series</h2>
 <div class="outline-text-2" id="text-2">
+<div class="org-src-container">
+<pre class="src src-python">pd.Series
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgec3a733" class="outline-2">
+<h2 id="orgec3a733"><span class="section-number-2">3</span> DataFrame</h2>
+<div class="outline-text-2" id="text-3">
 <ul class="org-ul">
 <li>DataFrame中的方法属性：</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-example" id="org4ce5baf">'T', 'abs', 'add', 'add_prefix', 'add_suffix', 'agg', 'aggregate', 'align', 'all',
+<pre class="src src-example" id="org3959c25">'T', 'abs', 'add', 'add_prefix', 'add_suffix', 'agg', 'aggregate', 'align', 'all',
 'any', 'append', 'apply', 'applymap', 'asfreq', 'asof', 'assign', 'astype',
 'at', 'at_time', 'attrs', 'axes', 'between_time', 'bfill', 'bool', 'boxplot',
 'clip', 'columns', 'combine', 'combine_first', 'convert_dtypes', 'copy', 'corr',
@@ -298,9 +314,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org309a802" class="outline-2">
-<h2 id="org309a802"><span class="section-number-2">3</span> 数据集操作的一般过程（以Kaggle Titanic为例）</h2>
-<div class="outline-text-2" id="text-3">
+<div id="outline-container-org09cb6dd" class="outline-2">
+<h2 id="org09cb6dd"><span class="section-number-2">4</span> 数据集操作的一般过程（以Kaggle Titanic为例）</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 疑问：
 </p>
@@ -310,14 +326,14 @@ for the JavaScript code in this tag.
 <li>交叉验证总是需要的吗？只是在出现过拟合时使用？</li>
 </ul>
 </div>
-<div id="outline-container-orgd26651c" class="outline-3">
-<h3 id="orgd26651c"><span class="section-number-3">3.1</span> 加载数据</h3>
-<div class="outline-text-3" id="text-3-1">
+<div id="outline-container-org9ed4e05" class="outline-3">
+<h3 id="org9ed4e05"><span class="section-number-3">4.1</span> 加载数据</h3>
+<div class="outline-text-3" id="text-4-1">
 <p>
 Kaggle网站上Titanic竞赛中的数据集test.csv指求解时的实例，去掉了标签'Survived'.
 </p>
 <div class="org-src-container">
-<pre class="src src-python" id="org48dcd2e"><span style="color: #f92672; font-weight: bold;">import</span> pandas <span style="color: #f92672; font-weight: bold;">as</span> pd
+<pre class="src src-python" id="org6170312"><span style="color: #f92672; font-weight: bold;">import</span> pandas <span style="color: #f92672; font-weight: bold;">as</span> pd
 <span style="color: #fd971f;">df</span> = pd.read_csv(<span style="color: #e6db74;">"train.csv"</span>) <span style="color: #465457;"># </span><span style="color: #465457;">, delimiter=',')</span>
 <span style="color: #fd971f;">df2</span> = pd.read_csv(<span style="color: #e6db74;">"test.csv"</span>) <span style="color: #465457;"># </span><span style="color: #465457;">, delimiter=',')</span>
 </pre>
@@ -326,24 +342,24 @@ Kaggle网站上Titanic竞赛中的数据集test.csv指求解时的实例，去�
 <li>要注意Python中赋值时，引用与复制数据的区别！</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-python" id="org051fb11"><span style="color: #fd971f;">data1</span> = df.copy(deep=<span style="color: #ae81ff;">False</span>) <span style="color: #465457;">#</span><span style="color: #465457;">&#19981;&#22797;&#21046;df&#30340;indices&#21644;&#25968;&#25454;&#65292;&#21482;&#21019;&#24314;&#19968;&#20010;&#25351;&#21521;&#21407;&#25968;&#25454;&#30340;&#24341;&#29992;</span>
+<pre class="src src-python" id="orgd538127"><span style="color: #fd971f;">data1</span> = df.copy(deep=<span style="color: #ae81ff;">False</span>) <span style="color: #465457;">#</span><span style="color: #465457;">&#19981;&#22797;&#21046;df&#30340;indices&#21644;&#25968;&#25454;&#65292;&#21482;&#21019;&#24314;&#19968;&#20010;&#25351;&#21521;&#21407;&#25968;&#25454;&#30340;&#24341;&#29992;</span>
 <span style="color: #fd971f;">data1</span> = df.copy(deep=<span style="color: #ae81ff;">True</span>) <span style="color: #465457;">#</span><span style="color: #465457;">&#22797;&#21046;df&#30340;indices&#21644;&#25968;&#25454;&#65292;&#24182;&#22312;&#20869;&#23384;&#20013;&#21019;&#24314;&#26032;&#30340;&#23545;&#35937;</span>
 </pre>
 </div>
 <ul class="org-ul">
-<li>引用也是很有用的，尤其是在<a href="#orgdb025dd">清理数据</a>时（为什么要清理data-val？）</li>
+<li>引用也是很有用的，尤其是在<a href="#org7e6f3dc">清理数据</a>时（为什么要清理data-val？）</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-python" id="orgfb75273"><span style="color: #fd971f;">data_clearner</span> = [data1, df2] <span style="color: #465457;">#</span><span style="color: #465457;">&#21487;&#20197;&#19968;&#36215;&#28165;&#29702;</span>
+<pre class="src src-python" id="org2ae9ed9"><span style="color: #fd971f;">data_clearner</span> = [data1, df2] <span style="color: #465457;">#</span><span style="color: #465457;">&#21487;&#20197;&#19968;&#36215;&#28165;&#29702;</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org7041b5d" class="outline-3">
-<h3 id="org7041b5d"><span class="section-number-3">3.2</span> 预览数据</h3>
-<div class="outline-text-3" id="text-3-2">
+<div id="outline-container-org23bd95c" class="outline-3">
+<h3 id="org23bd95c"><span class="section-number-3">4.2</span> 预览数据</h3>
+<div class="outline-text-3" id="text-4-2">
 <div class="org-src-container">
-<pre class="src src-python" id="org6bc6c78">df.info()
+<pre class="src src-python" id="org6eccb00">df.info()
 df.head()
 df.tail()
 df.sample(10)
@@ -351,9 +367,9 @@ df.sample(10)
 </div>
 </div>
 </div>
-<div id="outline-container-orgdb025dd" class="outline-3">
-<h3 id="orgdb025dd"><span class="section-number-3">3.3</span> 清理数据</h3>
-<div class="outline-text-3" id="text-3-3">
+<div id="outline-container-org7e6f3dc" class="outline-3">
+<h3 id="org7e6f3dc"><span class="section-number-3">4.3</span> 清理数据</h3>
+<div class="outline-text-3" id="text-4-3">
 <p>
 4个'C':
 </p>
@@ -365,9 +381,9 @@ df.sample(10)
 </ul>
 </div>
 
-<div id="outline-container-orgcf8e1ee" class="outline-4">
-<h4 id="orgcf8e1ee"><span class="section-number-4">3.3.1</span> Completing</h4>
-<div class="outline-text-4" id="text-3-3-1">
+<div id="outline-container-org7f805c9" class="outline-4">
+<h4 id="org7f805c9"><span class="section-number-4">4.3.1</span> Completing</h4>
+<div class="outline-text-4" id="text-4-3-1">
 <p>
 不推荐删除记录，尤其当它占的比例大时。最好impute. 对于定性值，
 一般使用mode，对于定量值一般用中值、平均值或以平均值+随机化的标准差来代替。
@@ -386,9 +402,9 @@ df.drop(drop_index, axis=1, inplace=<span style="color: #ae81ff;">True</span>) <
 </div>
 </div>
 </div>
-<div id="outline-container-org446e29b" class="outline-4">
-<h4 id="org446e29b"><span class="section-number-4">3.3.2</span> Creating</h4>
-<div class="outline-text-4" id="text-3-3-2">
+<div id="outline-container-orgc6170ca" class="outline-4">
+<h4 id="orgc6170ca"><span class="section-number-4">4.3.2</span> Creating</h4>
+<div class="outline-text-4" id="text-4-3-2">
 <p>
 特征工程：用已经存在的特征来创造新的特征，以检查是否对结果预测提供新的信息。
 </p>
@@ -407,9 +423,9 @@ df[<span style="color: #e6db74;">'Alone'</span>].loc[df[<span style="color: #e6d
 </div>
 </div>
 </div>
-<div id="outline-container-orgdb424c9" class="outline-4">
-<h4 id="orgdb424c9"><span class="section-number-4">3.3.3</span> Converting</h4>
-<div class="outline-text-4" id="text-3-3-3">
+<div id="outline-container-org5576c79" class="outline-4">
+<h4 id="org5576c79"><span class="section-number-4">4.3.3</span> Converting</h4>
+<div class="outline-text-4" id="text-4-3-3">
 <p>
 如对object类型的数据格式化，使算法可以处理。
 </p>
@@ -426,9 +442,9 @@ df[<span style="color: #e6db74;">'Alone'</span>].loc[df[<span style="color: #e6d
 </div>
 </div>
 </div>
-<div id="outline-container-orge2bf112" class="outline-3">
-<h3 id="orge2bf112"><span class="section-number-3">3.4</span> 从训练集中分离出测试集</h3>
-<div class="outline-text-3" id="text-3-4">
+<div id="outline-container-orgaeee76b" class="outline-3">
+<h3 id="orgaeee76b"><span class="section-number-3">4.4</span> 从训练集中分离出测试集</h3>
+<div class="outline-text-3" id="text-4-4">
 <p>
 两种方法：
 </p>
@@ -449,9 +465,9 @@ df[<span style="color: #e6db74;">'Alone'</span>].loc[df[<span style="color: #e6d
 </div>
 </div>
 </div>
-<div id="outline-container-org6a2c86d" class="outline-3">
-<h3 id="org6a2c86d"><span class="section-number-3">3.5</span> 分析数据，找到关联性</h3>
-<div class="outline-text-3" id="text-3-5">
+<div id="outline-container-org68873a4" class="outline-3">
+<h3 id="org68873a4"><span class="section-number-3">4.5</span> 分析数据，找到关联性</h3>
+<div class="outline-text-3" id="text-4-5">
 <div class="org-src-container">
 <pre class="src src-python">df[[<span style="color: #e6db74;">'Sex'</span>, <span style="color: #e6db74;">'Survived'</span>]].groupby(<span style="color: #e6db74;">'Sex'</span>,as_index=<span style="color: #ae81ff;">False</span>).mean() <span style="color: #465457;"># </span><span style="color: #465457;">&#29305;&#23450;&#29305;&#24449;&#19982;&#26631;&#31614;&#30340;&#20851;&#31995;</span>
 <span style="color: #465457;"># </span><span style="color: #465457;">&#22270;&#31034;&#26576;&#19968;&#20010;&#29305;&#24449;&#19982;&#26631;&#31614;&#30340;&#20851;&#31995;</span>
@@ -496,9 +512,58 @@ correlation_heatmap(data1)
 </div>
 </div>
 </div>
-<div id="outline-container-org1e538ae" class="outline-3">
-<h3 id="org1e538ae"><span class="section-number-3">3.6</span> 注意点（摘自机器学习实战）</h3>
-<div class="outline-text-3" id="text-3-6">
+<div id="outline-container-orgd5680fe" class="outline-3">
+<h3 id="orgd5680fe"><span class="section-number-3">4.6</span> 模型化数据集</h3>
+<div class="outline-text-3" id="text-4-6">
+</div>
+<div id="outline-container-org94e7c5f" class="outline-4">
+<h4 id="org94e7c5f"><span class="section-number-4">4.6.1</span> 背景知识</h4>
+<div class="outline-text-4" id="text-4-6-1">
+<p>
+机器学习算法可以分为四个部分：
+</p>
+<ul class="org-ul">
+<li>分类</li>
+<li>回归</li>
+<li>聚类</li>
+<li>降维</li>
+</ul>
+<p>
+机器学习知识：
+</p>
+<ul class="org-ul">
+<li><a href="https://scikit-learn.org/stable/user_guide.html">Sklearn Estimator Overview</a></li>
+<li><a href="https://scikit-learn.org/stable/modules/classes.html">Sklearn Estimator Detail</a></li>
+<li><a href="https://scikit-learn.org/stable/tutorial/machine_learning_map/index.html">Choosing Estimator Mind Map</a></li>
+</ul>
+
+<div class="figure">
+<p><img src="sklearn_mindmap.png" alt="sklearn_mindmap.png" width="900px" />
+</p>
+</div>
+<ul class="org-ul">
+<li><a href="https://s3.amazonaws.com/assets.datacamp.com/blog_assets/Scikit_Learn_Cheat_Sheet_Python.pdf">Choosing Estimator Cheat Sheet</a></li>
+</ul>
+
+<p>
+解决有监督的分类问题的算法：
+</p>
+<ul class="org-ul">
+<li>Ensemble Methods</li>
+<li>Generalized Linear Models (GLM)</li>
+<li>Naive Bayes</li>
+<li>Nearest Neighbors</li>
+<li>Support Vector Machines (SVM)</li>
+<li>Decision Trees</li>
+<li>Discriminant Analysis</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org2203891" class="outline-2">
+<h2 id="org2203891"><span class="section-number-2">5</span> 注意点（摘自机器学习实战）</h2>
+<div class="outline-text-2" id="text-5">
 <ul class="org-ul">
 <li>对收入分层抽样，不能分太多层</li>
 <li>分层方法：除以1.5，向上取整；然后合并大于5的分类</li>
@@ -521,11 +586,10 @@ correlation_heatmap(data1)
 </div>
 </div>
 </div>
-</div>
 <div id="postamble" class="status">
 <p class="date">Date: 2020-02-27 Thu 00:00</p>
 <p class="author">Author: GoldenRaven</p>
-<p class="date">Created: 2020-02-28 Fri 17:43</p>
+<p class="date">Created: 2020-02-28 Fri 22:00</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
