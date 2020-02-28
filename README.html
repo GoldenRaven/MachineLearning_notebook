@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-02-28 Fri 17:43 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Python语言扩展库Pandas笔记</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="GoldenRaven" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Python语言扩展库Pandas笔记</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org52d8c2b">1. Series</a></li>
+<li><a href="#org618845a">2. DataFrame</a></li>
+<li><a href="#org309a802">3. 数据集操作的一般过程（以Kaggle Titanic为例）</a>
+<ul>
+<li><a href="#orgd26651c">3.1. 加载数据</a></li>
+<li><a href="#org7041b5d">3.2. 预览数据</a></li>
+<li><a href="#orgdb025dd">3.3. 清理数据</a>
+<ul>
+<li><a href="#orgcf8e1ee">3.3.1. Completing</a></li>
+<li><a href="#org446e29b">3.3.2. Creating</a></li>
+<li><a href="#orgdb424c9">3.3.3. Converting</a></li>
+</ul>
+</li>
+<li><a href="#orge2bf112">3.4. 从训练集中分离出测试集</a></li>
+<li><a href="#org6a2c86d">3.5. 分析数据，找到关联性</a></li>
+<li><a href="#org1e538ae">3.6. 注意点（摘自机器学习实战）</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org52d8c2b" class="outline-2">
+<h2 id="org52d8c2b"><span class="section-number-2">1</span> Series</h2>
+</div>
+<div id="outline-container-org618845a" class="outline-2">
+<h2 id="org618845a"><span class="section-number-2">2</span> DataFrame</h2>
+<div class="outline-text-2" id="text-2">
+<ul class="org-ul">
+<li>DataFrame中的方法属性：</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-example" id="org4ce5baf">'T', 'abs', 'add', 'add_prefix', 'add_suffix', 'agg', 'aggregate', 'align', 'all',
+'any', 'append', 'apply', 'applymap', 'asfreq', 'asof', 'assign', 'astype',
+'at', 'at_time', 'attrs', 'axes', 'between_time', 'bfill', 'bool', 'boxplot',
+'clip', 'columns', 'combine', 'combine_first', 'convert_dtypes', 'copy', 'corr',
+'corrwith', 'count', 'cov', 'cummax', 'cummin', 'cumprod', 'cumsum', 'describe',
+'diff', 'div', 'divide', 'dot', 'drop', 'drop_duplicates', 'droplevel', 'dropna',
+'dtypes', 'duplicated', 'empty', 'eq', 'equals', 'eval', 'ewm', 'expanding',
+'explode', 'ffill', 'fillna', 'filter', 'first', 'first_valid_index', 'floordiv',
+'from_dict', 'from_records', 'ge', 'get', 'groupby', 'gt', 'head', 'hist', 'iat',
+'idxmax', 'idxmin', 'iloc', 'index', 'infer_objects', 'info', 'insert',
+'interpolate', 'isin', 'isna', 'isnull', 'items', 'iteritems', 'iterrows',
+'itertuples', 'join', 'keys', 'kurt', 'kurtosis', 'last', 'last_valid_index',
+'le', 'loc','lookup', 'lt', 'mad', 'mask', 'max', 'mean', 'median', 'melt',
+'memory_usage', 'merge', 'min', 'mod', 'mode', 'mul', 'multiply', 'ndim', 'ne',
+'nlargest', 'notna', 'notnull', 'nsmallest', 'nunique', 'pct_change', 'pipe',
+'pivot', 'pivot_table', 'plot', 'pop', 'pow', 'prod', 'product', 'quantile',
+'query', 'radd', 'rank', 'rdiv', 'reindex', 'reindex_like', 'rename',
+'rename_axis', 'reorder_levels', 'replace', 'resample','reset_index', 'rfloordiv',
+'rmod', 'rmul', 'rolling', 'round', 'rpow', 'rsub', 'rtruediv', 'sample',
+'select_dtypes', 'sem', 'set_axis', 'set_index', 'shape', 'shift', 'size',
+'skew', 'slice_shift', 'sort_index', 'sort_values', 'sparse', 'squeeze', 'stack',
+'std', 'style', 'sub', 'subtract', 'sum', 'swapaxes', 'swaplevel', 'tail', 'take',
+'to_clipboard', 'to_csv', 'to_dict', 'to_excel', 'to_feather', 'to_gbq', 'to_hdf',
+'to_html', 'to_json', 'to_latex', 'to_markdown', 'to_numpy', 'to_parquet',
+'to_period', 'to_pickle', 'to_records', 'to_sql', 'to_stata', 'to_string',
+'to_timestamp', 'to_xarray', 'transform', 'transpose', 'truediv', 'truncate',
+'tshift', 'tz_convert', 'tz_localize', 'unstack', 'update', 'values', 'var',
+'where', 'xs'
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org309a802" class="outline-2">
+<h2 id="org309a802"><span class="section-number-2">3</span> 数据集操作的一般过程（以Kaggle Titanic为例）</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+疑问：
+</p>
+<ul class="org-ul">
+<li>分离出测试集应该在预览数据之前还是之后？</li>
+<li>清理数据时，是对整个数据集操作还是只对训练集操作？</li>
+<li>交叉验证总是需要的吗？只是在出现过拟合时使用？</li>
+</ul>
+</div>
+<div id="outline-container-orgd26651c" class="outline-3">
+<h3 id="orgd26651c"><span class="section-number-3">3.1</span> 加载数据</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Kaggle网站上Titanic竞赛中的数据集test.csv指求解时的实例，去掉了标签'Survived'.
+</p>
+<div class="org-src-container">
+<pre class="src src-python" id="org48dcd2e"><span style="color: #f92672; font-weight: bold;">import</span> pandas <span style="color: #f92672; font-weight: bold;">as</span> pd
+<span style="color: #fd971f;">df</span> = pd.read_csv(<span style="color: #e6db74;">"train.csv"</span>) <span style="color: #465457;"># </span><span style="color: #465457;">, delimiter=',')</span>
+<span style="color: #fd971f;">df2</span> = pd.read_csv(<span style="color: #e6db74;">"test.csv"</span>) <span style="color: #465457;"># </span><span style="color: #465457;">, delimiter=',')</span>
+</pre>
+</div>
+<ul class="org-ul">
+<li>要注意Python中赋值时，引用与复制数据的区别！</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-python" id="org051fb11"><span style="color: #fd971f;">data1</span> = df.copy(deep=<span style="color: #ae81ff;">False</span>) <span style="color: #465457;">#</span><span style="color: #465457;">&#19981;&#22797;&#21046;df&#30340;indices&#21644;&#25968;&#25454;&#65292;&#21482;&#21019;&#24314;&#19968;&#20010;&#25351;&#21521;&#21407;&#25968;&#25454;&#30340;&#24341;&#29992;</span>
+<span style="color: #fd971f;">data1</span> = df.copy(deep=<span style="color: #ae81ff;">True</span>) <span style="color: #465457;">#</span><span style="color: #465457;">&#22797;&#21046;df&#30340;indices&#21644;&#25968;&#25454;&#65292;&#24182;&#22312;&#20869;&#23384;&#20013;&#21019;&#24314;&#26032;&#30340;&#23545;&#35937;</span>
+</pre>
+</div>
+<ul class="org-ul">
+<li>引用也是很有用的，尤其是在<a href="#orgdb025dd">清理数据</a>时（为什么要清理data-val？）</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-python" id="orgfb75273"><span style="color: #fd971f;">data_clearner</span> = [data1, df2] <span style="color: #465457;">#</span><span style="color: #465457;">&#21487;&#20197;&#19968;&#36215;&#28165;&#29702;</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7041b5d" class="outline-3">
+<h3 id="org7041b5d"><span class="section-number-3">3.2</span> 预览数据</h3>
+<div class="outline-text-3" id="text-3-2">
+<div class="org-src-container">
+<pre class="src src-python" id="org6bc6c78">df.info()
+df.head()
+df.tail()
+df.sample(10)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdb025dd" class="outline-3">
+<h3 id="orgdb025dd"><span class="section-number-3">3.3</span> 清理数据</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+4个'C':
+</p>
+<ul class="org-ul">
+<li><b>Correcting</b>: 更正异常值，离群值</li>
+<li><b>Completing</b>: 补全缺失信息</li>
+<li><b>Creating</b>: 创建新的特征，用以之后的分析</li>
+<li><b>Converting</b>: 转换数据的格式，以备后续的计算与呈现</li>
+</ul>
+</div>
+
+<div id="outline-container-orgcf8e1ee" class="outline-4">
+<h4 id="orgcf8e1ee"><span class="section-number-4">3.3.1</span> Completing</h4>
+<div class="outline-text-4" id="text-3-3-1">
+<p>
+不推荐删除记录，尤其当它占的比例大时。最好impute. 对于定性值，
+一般使用mode，对于定量值一般用中值、平均值或以平均值+随机化的标准差来代替。
+还有针对具体问题更特殊的处理方法，如代之以某个小类别中的中值等。
+</p>
+<div class="org-src-container">
+<pre class="src src-python">df.isna().<span style="color: #a6e22e;">sum</span>() <span style="color: #465457;"># </span><span style="color: #465457;">&#26597;&#30475;&#25968;&#25454;&#20013;&#30340;&#31354;&#20540;&#24773;&#20917;</span>
+df.isnull().<span style="color: #a6e22e;">sum</span>() <span style="color: #465457;"># </span><span style="color: #465457;">&#26597;&#30475;&#25968;&#25454;&#20013;&#30340;&#31354;&#20540;&#24773;&#20917;</span>
+df.describe(include=<span style="color: #e6db74;">'all'</span>) <span style="color: #465457;">#</span><span style="color: #465457;">&#25968;&#25454;&#30340;&#31616;&#21333;&#20998;&#26512;</span>
+df[<span style="color: #e6db74;">'Age'</span>].fillna(df[<span style="color: #e6db74;">'Age'</span>].median(), inplace=<span style="color: #ae81ff;">True</span>) <span style="color: #465457;"># </span><span style="color: #465457;">&#29992;&#20013;&#20540;&#26469;&#34917;&#20840;&#31354;&#20540;&#65288;&#23450;&#37327;&#20540;&#65289;</span>
+df[<span style="color: #e6db74;">'Embarked'</span>].fillna(df[<span style="color: #e6db74;">'Embarked'</span>].mode()[0], inplace=<span style="color: #ae81ff;">True</span>)
+<span style="color: #465457;"># </span><span style="color: #465457;">&#29992;&#20986;&#29616;&#26368;&#30340;&#31867;&#21035;&#26469;&#34917;&#20840;&#31354;&#20540;&#65288;&#23450;&#24615;&#20540;&#65289;</span>
+<span style="color: #fd971f;">drop_index</span> = [<span style="color: #e6db74;">'PassengerId'</span>, <span style="color: #e6db74;">'Ticket'</span>] <span style="color: #465457;"># </span><span style="color: #465457;">index to drop</span>
+df.drop(drop_index, axis=1, inplace=<span style="color: #ae81ff;">True</span>) <span style="color: #465457;"># </span><span style="color: #465457;">drop features/columns</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org446e29b" class="outline-4">
+<h4 id="org446e29b"><span class="section-number-4">3.3.2</span> Creating</h4>
+<div class="outline-text-4" id="text-3-3-2">
+<p>
+特征工程：用已经存在的特征来创造新的特征，以检查是否对结果预测提供新的信息。
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'FamilySize'</span>] = df.[<span style="color: #e6db74;">'SibSp'</span>] + df.[<span style="color: #e6db74;">'Parch'</span>] + 1 <span style="color: #465457;"># </span><span style="color: #465457;">&#26032;&#24314;&#29305;&#24449;</span>
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'Alone'</span>] = 0
+df[<span style="color: #e6db74;">'Alone'</span>].loc[df[<span style="color: #e6db74;">'FamilySize'</span>] &gt; 1] = 1 <span style="color: #465457;"># </span><span style="color: #465457;">&#36873;&#25321;&#24615;&#36171;&#20540;</span>
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'Title'</span>] = df[<span style="color: #e6db74;">'Name'</span>].<span style="color: #a6e22e;">str</span>.split( <span style="color: #465457;"># </span><span style="color: #465457;">&#29305;&#24449;&#20013;&#23383;&#31526;&#20018;&#25130;&#21462;</span>
+   <span style="color: #e6db74;">', '</span>, expand=<span style="color: #ae81ff;">True</span>)[1].<span style="color: #a6e22e;">str</span>.split(<span style="color: #e6db74;">'.'</span>, expand=<span style="color: #ae81ff;">True</span>)[0]
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'FareBins'</span>] = pd.cut(df[<span style="color: #e6db74;">'Fare'</span>], 4) <span style="color: #465457;"># </span><span style="color: #465457;">&#31163;&#25955;&#21270;&#36830;&#32493;&#20540;&#21040;&#21306;&#38388;</span>
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'AgeBins'</span>] = pd.qcut(df[<span style="color: #e6db74;">'Age'</span>].astype(<span style="color: #a6e22e;">int</span>), 5) <span style="color: #465457;"># </span><span style="color: #465457;">&#31163;&#25955;&#21270;&#36830;&#32493;&#20540;&#21040;&#21306;&#38388;</span>
+<span style="color: #465457;"># </span><span style="color: #465457;">&#28165;&#29702;&#31867;&#21035;&#25968;&#22826;&#23569;&#30340;&#31867;&#21035;</span>
+<span style="color: #fd971f;">title_name</span> = df[<span style="color: #e6db74;">'Title'</span>].value_counts() &lt; 10
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'Title'</span>] = df[<span style="color: #e6db74;">'Title'</span>].<span style="color: #a6e22e;">apply</span>(<span style="color: #f92672; font-weight: bold;">lambda</span> x: <span style="color: #e6db74;">'Misc'</span> <span style="color: #f92672; font-weight: bold;">if</span> title_name[x] <span style="color: #f92672; font-weight: bold;">else</span> x)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdb424c9" class="outline-4">
+<h4 id="orgdb424c9"><span class="section-number-4">3.3.3</span> Converting</h4>
+<div class="outline-text-4" id="text-3-3-3">
+<p>
+如对object类型的数据格式化，使算法可以处理。
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #f92672; font-weight: bold;">from</span> sklearn.preprocessing <span style="color: #f92672; font-weight: bold;">import</span> LabelEncoder OneHotEncoder
+<span style="color: #465457;"># </span><span style="color: #465457;">&#25968;&#23383;&#22411;&#32534;&#30721;</span>
+<span style="color: #fd971f;">encoder</span> = LabelEncoder()
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'Sex'</span>]  = encoder.fit_transform(df[<span style="color: #e6db74;">'Sex'</span>])
+<span style="color: #465457;"># </span><span style="color: #465457;">&#29420;&#28909;&#21521;&#37327;&#32534;&#30721;&#65292; &#25509;&#25910;&#20108;&#32500;&#25968;&#32452;</span>
+<span style="color: #fd971f;">encoder2</span> = OneHotEncoder()
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'Sex'</span>]  = encoder2.fit_transform(df[<span style="color: #e6db74;">'Sex'</span>].reshape(-1,1))
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orge2bf112" class="outline-3">
+<h3 id="orge2bf112"><span class="section-number-3">3.4</span> 从训练集中分离出测试集</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+两种方法：
+</p>
+<ul class="org-ul">
+<li>固定比例分离</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #fd971f;">train1_x</span>, <span style="color: #fd971f;">test1_x</span>, <span style="color: #fd971f;">train1_y</span>, <span style="color: #fd971f;">test1_y</span> = model_selection.train_test_split(data1[data1_x_calc], data1[Target], random_state = 0)
+</pre>
+</div>
+<ul class="org-ul">
+<li>交叉验证（用以比较模型）</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-example">model_selection.cross_val_score()
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6a2c86d" class="outline-3">
+<h3 id="org6a2c86d"><span class="section-number-3">3.5</span> 分析数据，找到关联性</h3>
+<div class="outline-text-3" id="text-3-5">
+<div class="org-src-container">
+<pre class="src src-python">df[[<span style="color: #e6db74;">'Sex'</span>, <span style="color: #e6db74;">'Survived'</span>]].groupby(<span style="color: #e6db74;">'Sex'</span>,as_index=<span style="color: #ae81ff;">False</span>).mean() <span style="color: #465457;"># </span><span style="color: #465457;">&#29305;&#23450;&#29305;&#24449;&#19982;&#26631;&#31614;&#30340;&#20851;&#31995;</span>
+<span style="color: #465457;"># </span><span style="color: #465457;">&#22270;&#31034;&#26576;&#19968;&#20010;&#29305;&#24449;&#19982;&#26631;&#31614;&#30340;&#20851;&#31995;</span>
+plt.hist(x = [df[df[<span style="color: #e6db74;">'Survived'</span>]==1][<span style="color: #e6db74;">'Fare'</span>], df[df[<span style="color: #e6db74;">'Survived'</span>]==0][<span style="color: #e6db74;">'Fare'</span>]],
+         stacked=<span style="color: #ae81ff;">True</span>, color = [<span style="color: #e6db74;">'g'</span>,<span style="color: #e6db74;">'r'</span>],label = [<span style="color: #e6db74;">'Survived'</span>,<span style="color: #e6db74;">'Dead'</span>])
+plt.title(<span style="color: #e6db74;">'Fare Histogram by Survival'</span>)
+plt.xlabel(<span style="color: #e6db74;">'Fare ($)'</span>)
+plt.ylabel(<span style="color: #e6db74;">'# of Passengers'</span>)
+plt.legend()
+<span style="color: #465457;"># </span><span style="color: #465457;">&#22270;&#31034;&#26576;&#20004;&#20010;&#29305;&#24449;&#19982;&#26631;&#31614;&#30340;&#20851;&#31995;</span>
+sns.violinplot(x = <span style="color: #e6db74;">'Pclass'</span>, y = <span style="color: #e6db74;">'Age'</span>, hue = <span style="color: #e6db74;">'Survived'</span>, data = data1, split = <span style="color: #ae81ff;">True</span>, ax = axis2)
+axis2.set_title(<span style="color: #e6db74;">'Pclass vs Age Survival Comparison'</span>)
+<span style="color: #465457;"># </span><span style="color: #465457;">Pearson&#20851;&#32852;</span>
+df.corr()
+</pre>
+</div>
+
+<p>
+Pearson关联的绘图函数：
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #465457;">#</span><span style="color: #465457;">correlation heatmap of dataset</span>
+<span style="color: #f92672; font-weight: bold;">def</span> <span style="color: #a6e22e;">correlation_heatmap</span>(df):
+    <span style="color: #fd971f;">_</span> , <span style="color: #fd971f;">ax</span> = plt.subplots(figsize =(14, 12))
+    <span style="color: #fd971f;">colormap</span> = sns.diverging_palette(220, 10, as_cmap = <span style="color: #ae81ff;">True</span>)
+
+    <span style="color: #fd971f;">_</span> = sns.heatmap(
+        df.corr(),
+        cmap = colormap,
+        square=<span style="color: #ae81ff;">True</span>,
+        cbar_kws={<span style="color: #e6db74;">'shrink'</span>:.9 },
+        ax=ax,
+        annot=<span style="color: #ae81ff;">True</span>,
+        linewidths=0.1,vmax=1.0, linecolor=<span style="color: #e6db74;">'white'</span>,
+        annot_kws={<span style="color: #e6db74;">'fontsize'</span>:12 }
+    )
+
+    plt.title(<span style="color: #e6db74;">'Pearson Correlation of Features'</span>, y=1.05, size=15)
+
+correlation_heatmap(data1)
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1e538ae" class="outline-3">
+<h3 id="org1e538ae"><span class="section-number-3">3.6</span> 注意点（摘自机器学习实战）</h3>
+<div class="outline-text-3" id="text-3-6">
+<ul class="org-ul">
+<li>对收入分层抽样，不能分太多层</li>
+<li>分层方法：除以1.5，向上取整；然后合并大于5的分类</li>
+<li>地理数据可视化，用其他相关属性作为颜色，和散点大小</li>
+<li>寻找与标签相关性高的属性，用df.corr()['labels']</li>
+<li>进一步考察高相关性属性的数据模式，并删除可能的错误数据</li>
+<li>尝试不同的属性组合，以找到高相关性特征</li>
+<li>将预测器与标签分离，因为可能不一定对它们使用相同的转换方式</li>
+<li>特征缩放（归一化、标准化），即同比缩放所有属性</li>
+<li>评估训练得的模型，对训练集求RMSE或MAE</li>
+<li>误差较大则拟合不足，可以</li>
+<li>误差过小？则用验证集来验证得到的模型，以检查是否过拟合</li>
+<li>交叉验证，可以sklearn的K-fold功能</li>
+<li>如果在验证集上得到的误差大则说明确实有过拟合，需要更换模型</li>
+<li>尝试多个模型以找到2-5个有效的模型，别花太多时间去调整超参数</li>
+<li>保存每个尝试过的模型，用pickel或sklearn的joblib</li>
+<li>训练集分数明显低于验证集分数，则过度拟合</li>
+<li>注意：目标值一般不进行绽放，并且只对训练集缩放</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Date: 2020-02-27 Thu 00:00</p>
+<p class="author">Author: GoldenRaven</p>
+<p class="date">Created: 2020-02-28 Fri 17:43</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
