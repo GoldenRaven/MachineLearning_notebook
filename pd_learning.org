@@ -53,7 +53,7 @@ df2 = pd.read_csv("test.csv") # , delimiter=',')
 data1 = df.copy(deep=False) #不复制df的indices和数据，只创建一个指向原数据的引用
 data1 = df.copy(deep=True) #复制df的indices和数据，并在内存中创建新的对象
 #+END_SRC
-- 引用也是很有用的，尤其是在清理内存时
+- 引用也是很有用的，尤其是在[[清理数据][清理数据]]时（为什么要清理data-val？）
 #+NAME: celan_by_reference
 #+BEGIN_src python
 data_clearner = [data1, df2] #可以一起清理
@@ -90,7 +90,14 @@ df.drop(drop_index, axis=1, inplace=True) # drop features/columns
 *** Creating
 特征工程：用已经存在的特征来创造新的特征，以检查是否对结果预测提供新的信息。
 #+BEGIN_src python
-
+df['FamilySize'] = df.['SibSp'] + df.['Parch'] + 1 # 新建特征
+df['Alone'] = 0
+df['Alone'].loc[df['FamilySize'] > 1] = 1 # 选择性赋值
+df['Title'] = df['Name'].str.split( # 特征中字符串截取
+   ', ', expand=True)[1].str.split('.', expand=True)[0]
+df['FareBins'] = pd.cut(df['Fare'], 4) # discretize continious to bins
+df['AgeBins'] = pd.qcut(df['Age'].astype(int), 5) # discretize continious to bins
+df['Title'] = df['Title'].apply(lambda x: 'Misc' if title_name[x] else x) # clean titles with small amount
 #+END_SRC
 *** Converting
 如对object类型的数据格式化，使算法可以处理。

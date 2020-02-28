@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-02-27 Thu 22:46 -->
+<!-- 2020-02-28 Fri 12:01 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Python语言扩展库Pandas笔记</title>
@@ -234,18 +234,18 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orge7bd7e4">1. Series</a></li>
-<li><a href="#orgc4a51fd">2. DataFrame</a></li>
-<li><a href="#orgf1091c3">3. 数据操作一般过程</a>
+<li><a href="#orgec62270">1. Series</a></li>
+<li><a href="#orgab7de16">2. DataFrame</a></li>
+<li><a href="#org449b87e">3. 数据操作一般过程</a>
 <ul>
-<li><a href="#org1aa0fc8">3.1. 加载数据</a></li>
-<li><a href="#org7c92e14">3.2. 预览数据</a></li>
-<li><a href="#orgd574097">3.3. 清理数据</a>
+<li><a href="#orge2fd1ac">3.1. 加载数据</a></li>
+<li><a href="#orge57f95a">3.2. 预览数据</a></li>
+<li><a href="#orga412672">3.3. 清理数据</a>
 <ul>
-<li><a href="#org44e7fed">3.3.1. Completing</a></li>
-<li><a href="#org19cfe63">3.3.2. Creating</a></li>
-<li><a href="#org5198da8">3.3.3. Converting</a></li>
-<li><a href="#org4cfb203">3.3.4. 常用函数</a></li>
+<li><a href="#orgf5485bb">3.3.1. Completing</a></li>
+<li><a href="#org2efe6d7">3.3.2. Creating</a></li>
+<li><a href="#org4e69db0">3.3.3. Converting</a></li>
+<li><a href="#org5ef5295">3.3.4. 常用函数</a></li>
 </ul>
 </li>
 </ul>
@@ -253,17 +253,17 @@ for the JavaScript code in this tag.
 </ul>
 </div>
 </div>
-<div id="outline-container-orge7bd7e4" class="outline-2">
-<h2 id="orge7bd7e4"><span class="section-number-2">1</span> Series</h2>
+<div id="outline-container-orgec62270" class="outline-2">
+<h2 id="orgec62270"><span class="section-number-2">1</span> Series</h2>
 </div>
-<div id="outline-container-orgc4a51fd" class="outline-2">
-<h2 id="orgc4a51fd"><span class="section-number-2">2</span> DataFrame</h2>
+<div id="outline-container-orgab7de16" class="outline-2">
+<h2 id="orgab7de16"><span class="section-number-2">2</span> DataFrame</h2>
 <div class="outline-text-2" id="text-2">
 <ul class="org-ul">
 <li>DataFrame中的方法属性：</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-example" id="orgc6d2dd5">'T', 'abs', 'add', 'add_prefix', 'add_suffix', 'agg', 'aggregate', 'align', 'all',
+<pre class="src src-example" id="orgdf42ea0">'T', 'abs', 'add', 'add_prefix', 'add_suffix', 'agg', 'aggregate', 'align', 'all',
 'any', 'append', 'apply', 'applymap', 'asfreq', 'asof', 'assign', 'astype',
 'at', 'at_time', 'attrs', 'axes', 'between_time', 'bfill', 'bool', 'boxplot',
 'clip', 'columns', 'combine', 'combine_first', 'convert_dtypes', 'copy', 'corr',
@@ -296,18 +296,18 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-orgf1091c3" class="outline-2">
-<h2 id="orgf1091c3"><span class="section-number-2">3</span> 数据操作一般过程</h2>
+<div id="outline-container-org449b87e" class="outline-2">
+<h2 id="org449b87e"><span class="section-number-2">3</span> 数据操作一般过程</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org1aa0fc8" class="outline-3">
-<h3 id="org1aa0fc8"><span class="section-number-3">3.1</span> 加载数据</h3>
+<div id="outline-container-orge2fd1ac" class="outline-3">
+<h3 id="orge2fd1ac"><span class="section-number-3">3.1</span> 加载数据</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 Kaggle网站上Titanic竞赛中的数据集test.csv指求解时的实例，去掉了标签'Survived'.
 </p>
 <div class="org-src-container">
-<pre class="src src-python" id="org5698f35"><span style="color: #f92672; font-weight: bold;">import</span> pandas <span style="color: #f92672; font-weight: bold;">as</span> pd
+<pre class="src src-python" id="org0e3be89"><span style="color: #f92672; font-weight: bold;">import</span> pandas <span style="color: #f92672; font-weight: bold;">as</span> pd
 <span style="color: #fd971f;">df</span> = pd.read_csv(<span style="color: #e6db74;">"train.csv"</span>) <span style="color: #465457;"># </span><span style="color: #465457;">, delimiter=',')</span>
 <span style="color: #fd971f;">df2</span> = pd.read_csv(<span style="color: #e6db74;">"test.csv"</span>) <span style="color: #465457;"># </span><span style="color: #465457;">, delimiter=',')</span>
 </pre>
@@ -316,24 +316,24 @@ Kaggle网站上Titanic竞赛中的数据集test.csv指求解时的实例，去�
 <li>要注意Python中赋值时，引用与复制数据的区别！</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-python" id="orgbb4d08c"><span style="color: #fd971f;">data1</span> = df.copy(deep=<span style="color: #ae81ff;">False</span>) <span style="color: #465457;">#</span><span style="color: #465457;">&#19981;&#22797;&#21046;df&#30340;indices&#21644;&#25968;&#25454;&#65292;&#21482;&#21019;&#24314;&#19968;&#20010;&#25351;&#21521;&#21407;&#25968;&#25454;&#30340;&#24341;&#29992;</span>
+<pre class="src src-python" id="orgc88a2db"><span style="color: #fd971f;">data1</span> = df.copy(deep=<span style="color: #ae81ff;">False</span>) <span style="color: #465457;">#</span><span style="color: #465457;">&#19981;&#22797;&#21046;df&#30340;indices&#21644;&#25968;&#25454;&#65292;&#21482;&#21019;&#24314;&#19968;&#20010;&#25351;&#21521;&#21407;&#25968;&#25454;&#30340;&#24341;&#29992;</span>
 <span style="color: #fd971f;">data1</span> = df.copy(deep=<span style="color: #ae81ff;">True</span>) <span style="color: #465457;">#</span><span style="color: #465457;">&#22797;&#21046;df&#30340;indices&#21644;&#25968;&#25454;&#65292;&#24182;&#22312;&#20869;&#23384;&#20013;&#21019;&#24314;&#26032;&#30340;&#23545;&#35937;</span>
 </pre>
 </div>
 <ul class="org-ul">
-<li>引用也是很有用的，尤其是在清理内存时</li>
+<li>引用也是很有用的，尤其是在<a href="#orga412672">清理数据</a>时（为什么要清理data-val？）</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-python" id="org9f04135"><span style="color: #fd971f;">data_clearner</span> = [data1, df2] <span style="color: #465457;">#</span><span style="color: #465457;">&#21487;&#20197;&#19968;&#36215;&#28165;&#29702;</span>
+<pre class="src src-python" id="orgcfe286b"><span style="color: #fd971f;">data_clearner</span> = [data1, df2] <span style="color: #465457;">#</span><span style="color: #465457;">&#21487;&#20197;&#19968;&#36215;&#28165;&#29702;</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org7c92e14" class="outline-3">
-<h3 id="org7c92e14"><span class="section-number-3">3.2</span> 预览数据</h3>
+<div id="outline-container-orge57f95a" class="outline-3">
+<h3 id="orge57f95a"><span class="section-number-3">3.2</span> 预览数据</h3>
 <div class="outline-text-3" id="text-3-2">
 <div class="org-src-container">
-<pre class="src src-python" id="org1524844">df.info()
+<pre class="src src-python" id="org7216a67">df.info()
 df.head()
 df.tail()
 df.sample(10)
@@ -341,8 +341,8 @@ df.sample(10)
 </div>
 </div>
 </div>
-<div id="outline-container-orgd574097" class="outline-3">
-<h3 id="orgd574097"><span class="section-number-3">3.3</span> 清理数据</h3>
+<div id="outline-container-orga412672" class="outline-3">
+<h3 id="orga412672"><span class="section-number-3">3.3</span> 清理数据</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 4个'C':
@@ -355,35 +355,14 @@ df.sample(10)
 </ul>
 </div>
 
-<div id="outline-container-org44e7fed" class="outline-4">
-<h4 id="org44e7fed"><span class="section-number-4">3.3.1</span> Completing</h4>
+<div id="outline-container-orgf5485bb" class="outline-4">
+<h4 id="orgf5485bb"><span class="section-number-4">3.3.1</span> Completing</h4>
 <div class="outline-text-4" id="text-3-3-1">
 <p>
 不推荐删除记录，尤其当它占的比例大时。最好impute. 对于定性值，
 一般使用mode，对于定量值一般用中值、平均值或以平均值+随机化的标准差来代替。
 还有针对具体问题更特殊的处理方法，如代之以某个小类别中的中值等。
 </p>
-</div>
-</div>
-<div id="outline-container-org19cfe63" class="outline-4">
-<h4 id="org19cfe63"><span class="section-number-4">3.3.2</span> Creating</h4>
-<div class="outline-text-4" id="text-3-3-2">
-<p>
-特征工程：用已经存在的特征来创造新的特征，以检查是否对结果预测提供新的信息。
-</p>
-</div>
-</div>
-<div id="outline-container-org5198da8" class="outline-4">
-<h4 id="org5198da8"><span class="section-number-4">3.3.3</span> Converting</h4>
-<div class="outline-text-4" id="text-3-3-3">
-<p>
-如对object类型的数据格式化，使算法可以处理。
-</p>
-</div>
-</div>
-<div id="outline-container-org4cfb203" class="outline-4">
-<h4 id="org4cfb203"><span class="section-number-4">3.3.4</span> 常用函数</h4>
-<div class="outline-text-4" id="text-3-3-4">
 <div class="org-src-container">
 <pre class="src src-python">df.isna().<span style="color: #a6e22e;">sum</span>() <span style="color: #465457;"># </span><span style="color: #465457;">&#26597;&#30475;&#25968;&#25454;&#20013;&#30340;&#31354;&#20540;&#24773;&#20917;</span>
 df.isnull().<span style="color: #a6e22e;">sum</span>() <span style="color: #465457;"># </span><span style="color: #465457;">&#26597;&#30475;&#25968;&#25454;&#20013;&#30340;&#31354;&#20540;&#24773;&#20917;</span>
@@ -397,13 +376,43 @@ df.drop(drop_index, axis=1, inplace=<span style="color: #ae81ff;">True</span>) <
 </div>
 </div>
 </div>
+<div id="outline-container-org2efe6d7" class="outline-4">
+<h4 id="org2efe6d7"><span class="section-number-4">3.3.2</span> Creating</h4>
+<div class="outline-text-4" id="text-3-3-2">
+<p>
+特征工程：用已经存在的特征来创造新的特征，以检查是否对结果预测提供新的信息。
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'FamilySize'</span>] = df.[<span style="color: #e6db74;">'SibSp'</span>] + df.[<span style="color: #e6db74;">'Parch'</span>] + 1 <span style="color: #465457;"># </span><span style="color: #465457;">&#26032;&#24314;&#29305;&#24449;</span>
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'Alone'</span>] = 0
+df[<span style="color: #e6db74;">'Alone'</span>].loc[df[<span style="color: #e6db74;">'FamilySize'</span>] &gt; 1] = 1 <span style="color: #465457;"># </span><span style="color: #465457;">&#36873;&#25321;&#24615;&#36171;&#20540;</span>
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'Title'</span>] = df[<span style="color: #e6db74;">'Name'</span>].<span style="color: #a6e22e;">str</span>.split( <span style="color: #465457;"># </span><span style="color: #465457;">&#29305;&#24449;&#20013;&#23383;&#31526;&#20018;&#25130;&#21462;</span>
+   <span style="color: #e6db74;">', '</span>, expand=<span style="color: #ae81ff;">True</span>)[1].<span style="color: #a6e22e;">str</span>.split(<span style="color: #e6db74;">'.'</span>, expand=<span style="color: #ae81ff;">True</span>)[0]
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'FareBins'</span>] = pd.cut(df[<span style="color: #e6db74;">'Fare'</span>], 4) <span style="color: #465457;"># </span><span style="color: #465457;">discretize continious to bins</span>
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'AgeBins'</span>] = pd.qcut(df[<span style="color: #e6db74;">'Age'</span>].astype(<span style="color: #a6e22e;">int</span>), 5) <span style="color: #465457;"># </span><span style="color: #465457;">discretize continious to bins</span>
+<span style="color: #fd971f;">df</span>[<span style="color: #e6db74;">'Title'</span>] = df[<span style="color: #e6db74;">'Title'</span>].<span style="color: #a6e22e;">apply</span>(<span style="color: #f92672; font-weight: bold;">lambda</span> x: <span style="color: #e6db74;">'Misc'</span> <span style="color: #f92672; font-weight: bold;">if</span> title_name[x] <span style="color: #f92672; font-weight: bold;">else</span> x) <span style="color: #465457;"># </span><span style="color: #465457;">clean titles with small amount</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4e69db0" class="outline-4">
+<h4 id="org4e69db0"><span class="section-number-4">3.3.3</span> Converting</h4>
+<div class="outline-text-4" id="text-3-3-3">
+<p>
+如对object类型的数据格式化，使算法可以处理。
+</p>
+</div>
+</div>
+<div id="outline-container-org5ef5295" class="outline-4">
+<h4 id="org5ef5295"><span class="section-number-4">3.3.4</span> 常用函数</h4>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="date">Date: 2020-02-27 Thu 00:00</p>
 <p class="author">Author: GoldenRaven</p>
-<p class="date">Created: 2020-02-27 Thu 22:46</p>
+<p class="date">Created: 2020-02-28 Fri 12:01</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
