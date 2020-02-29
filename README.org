@@ -6,23 +6,23 @@
 
 * 0. 目录                                                             :TOC@2::QUOTE:
 #+BEGIN_QUOTE
-- [[#1-series][1. Series]]
-- [[#2-dataframe][2. DataFrame]]
-- [[#3-数据集操作的一般过程以kaggle-titanic为例][3. 数据集操作的一般过程（以Kaggle Titanic为例）]]
+- [[#series][Series]]
+- [[#dataframe][DataFrame]]
+- [[#数据集操作的一般过程以kaggle-titanic为例][数据集操作的一般过程（以Kaggle Titanic为例）]]
   - [[#31-加载数据][3.1 加载数据]]
   - [[#32-预览数据][3.2 预览数据]]
   - [[#33-清理数据][3.3 清理数据]]
   - [[#34-从训练集中分离出测试集][3.4 从训练集中分离出测试集]]
   - [[#35-分析数据找到关联性][3.5 分析数据，找到关联性]]
   - [[#36-模型化数据集][3.6 模型化数据集]]
-- [[#4-注意点摘自机器学习实战][4. 注意点（摘自机器学习实战）]]
+- [[#注意点摘自机器学习实战][注意点（摘自机器学习实战）]]
 #+END_QUOTE
 
-* 1. Series
+* Series
 #+begin_src python
 pd.Series
 #+end_src
-* 2. DataFrame
+* DataFrame
 - DataFrame中的方法属性：
 #+NAME: df_methods
 #+BEGIN_src example
@@ -56,7 +56,7 @@ pd.Series
 'where', 'xs'
 #+END_SRC
 
-* 3. 数据集操作的一般过程（以Kaggle Titanic为例）
+* 数据集操作的一般过程（以Kaggle Titanic为例）
 疑问：
 - 分离出测试集应该在预览数据之前还是之后？
 - 清理数据时，是对整个数据集操作还是只对训练集操作？
@@ -213,7 +213,7 @@ correlation_heatmap(data1)
 - Support Vector Machines (SVM)
 - Decision Trees
 - Discriminant Analysis
-* 4. 注意点（摘自机器学习实战）
+* 注意点（摘自机器学习实战）
 - 对收入分层抽样，不能分太多层
 - 分层方法：除以1.5，向上取整；然后合并大于5的分类
 - 地理数据可视化，用其他相关属性作为颜色，和散点大小
