@@ -71,12 +71,12 @@ pd.Series
 import numpy as np
 a = np.arange(3)
 b = np.arange(3,6)
-c = np.r_[a, b, 1, [3]]
-d = np.c_[a, b]
-e = np.ones((4, 1))
+c = np.r_[a, b, 1, [3]] # 合并数组
+d = np.c_[a, b] # 合并数组
+e = np.ones((4, 1)) # 接收元组
 d.shape
-d.resize(2, 3) # 无返回值，将原数组形变
-f = d.reshape(2,3) # 返回变形后的数组，原数组不变
+d.resize(2, 3) # 无返回值，将原数组形变，接收元组
+f = d.reshape(（2,3）) # 返回变形后的数组，原数组不变，接收元组
 #+END_SRC
 
 * 数据集操作的一般过程（以Kaggle Titanic为例）
