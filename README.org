@@ -1,10 +1,11 @@
 # -*- org -*-
-#+TITLE: Python语言扩展库Pandas笔记
+#+TITLE: 机器学习笔记
 #+AUTHOR: GoldenRaven
 #+DATE: <2020-02-27 Thu>
 #+email: li.gaoyang@live.com
 
-* 0. 目录                                                             :TOC@2:
+* 0. 目录                                                             :TOC@2::QUOTE:
+#+BEGIN_QUOTE
 - [[#1-series][1. Series]]
 - [[#2-dataframe][2. DataFrame]]
 - [[#3-数据集操作的一般过程以kaggle-titanic为例][3. 数据集操作的一般过程（以Kaggle Titanic为例）]]
@@ -15,6 +16,7 @@
   - [[#35-分析数据找到关联性][3.5 分析数据，找到关联性]]
   - [[#36-模型化数据集][3.6 模型化数据集]]
 - [[#4-注意点摘自机器学习实战][4. 注意点（摘自机器学习实战）]]
+#+END_QUOTE
 
 * 1. Series
 #+begin_src python
