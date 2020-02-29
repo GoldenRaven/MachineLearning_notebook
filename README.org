@@ -3,9 +3,9 @@
 #+AUTHOR: GoldenRaven
 #+DATE: <2020-02-27 Thu>
 #+email: li.gaoyang@live.com
-#+OPTIONS: num:t
+#+OPTIONS: num:nil
 
-* 目录                                                         :TOC@2::QUOTE:
+* 目录                                                         :TOC@2:QUOTE:
 #+BEGIN_QUOTE
 - [[#series][Series]]
 - [[#dataframe][DataFrame]]
