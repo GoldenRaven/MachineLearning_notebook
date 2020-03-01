@@ -24,6 +24,8 @@
   - [[#分析数据找到关联性][分析数据，找到关联性]]
   - [[#模型化数据集][模型化数据集]]
 - [[#注意点摘自机器学习实战][注意点（摘自机器学习实战）]]
+- [[#机器学习实战][机器学习实战]]
+  - [[#第四章-训练模型][第四章 训练模型]]
 #+END_QUOTE
 
 * Python笔记
@@ -36,6 +38,7 @@ map(lambda x:x+1, iter1, iter2) # lambda表达式
 * Pandas库笔记
 ** Series
 #+begin_src python
+import pandas as pd
 pd.Series
 #+end_src
 ** DataFrame
@@ -274,3 +277,11 @@ correlation_heatmap(data1)
 - 保存每个尝试过的模型，用pickel或sklearn的joblib
 - 训练集分数明显低于验证集分数，则过度拟合
 - 注意：目标值一般不进行绽放，并且只对训练集缩放
+* 机器学习实战
+** 第四章 训练模型
+*** 线性回归 Linear Regression
+用以描述线性化数据集，模型或假设（hypothesis）是特征（\theta）的线性函数。
+*** 多项式回归 Plynomial Regression
+也称为多元线性回归，所以也属于线性回归，即使用以拟合非线性数据集，但是在参数\theta的角度看，这个模型依然属于线性模型。
+*** 逻辑回归 Logistic Regression
+*** 多元逻辑回归 Softmax Regression (Multinomial Regression)
