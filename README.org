@@ -311,6 +311,7 @@ theta_best_svd
 # #+BEGIN_EXAMPLE
 - 线性回归模型的MSE是凸函数，没有局部最小，只一个全局最小。
 - 应用梯度下降时要保证所有特征数值大小比例差不多，即要先进行特征缩放！
+- 特征缩放主要有两种方式：standerization和normalization，见第二章，68页。
 - 可以使用sklearn的StandardScaler类。
 - 学习率的选取很关键，可以限制迭代次数进行网格搜索。
 # #+END_EXAMPLE
@@ -329,6 +330,8 @@ sgd_reg.intercept_, sgd_reg.coef_
 #+END_SRC
 ***** 4.1.2.3 小批量梯度下降
 在计算梯度下降的每一步时，只随机地使用一个小的实例集。主要优势在于可以用GPU加速计算。
+**** 4.1.3 标准方程与梯度下降对比
+file:images/normal-GD.png
 *** 多项式回归 Polynomial Regression
 # 也称为多元线性回归，所以也属于线性回归，即使用以拟合非线性数据集，但是从参数\theta的角度看，这个模型依然属于线性模型。
 *** 逻辑回归 Logistic Regression
