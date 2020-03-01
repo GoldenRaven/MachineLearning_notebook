@@ -282,13 +282,13 @@ correlation_heatmap(data1)
 ** 第四章 训练模型
 *** 4.1 线性回归 Linear Regression
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令$x_0 = 1$:
-file:images/linear_hypothsis.png
+[[file:images/linear_hypothsis.png]]
 上面的表达式也称之为回归方程（regression equation），\theta为回归系数。
 成本函数，MSE函数：
-file:images/MSE.png
+[[file:images/MSE.png]]
 **** 4.1.1 闭式解-标准方程（normal equation）
 即直接通过解析表达式计算得到参数向量\theta:
-file:images/normal_equation.png
+[[file:images/normal_equation.png]]
 可以使用Numpy的线性代数模块np.linalg中的inv()函数来求矩阵逆，用dot()方法计算内积。
 特征数量大时标准方程计算极其缓慢，此时可以用迭代优化法。
 #+BEGIN_EXAMPLE
@@ -331,7 +331,7 @@ sgd_reg.intercept_, sgd_reg.coef_
 ***** 4.1.2.3 小批量梯度下降
 在计算梯度下降的每一步时，只随机地使用一个小的实例集。主要优势在于可以用GPU加速计算。
 **** 4.1.3 标准方程与梯度下降对比
-file:images/normal-GD.png
+[[file:images/normal-GD.png]]
 *** 多项式回归 Polynomial Regression
 # 也称为多元线性回归，所以也属于线性回归，即使用以拟合非线性数据集，但是从参数\theta的角度看，这个模型依然属于线性模型。
 *** 逻辑回归 Logistic Regression
