@@ -29,9 +29,9 @@
 * Python笔记
 ** 常用函数
 #+BEGIN_SRC python
-%timeit func()
-map(func_obj, iter1, iter2)
-map(lambda x:x+1, iter1, iter2)
+%timeit func() # 考查操作的运行时间
+map(func_obj, iter1, iter2) # 但是请尽量用生成器
+map(lambda x:x+1, iter1, iter2) # lambda表达式
 #+END_SRC
 * Pandas库笔记
 ** Series
