@@ -281,22 +281,14 @@ correlation_heatmap(data1)
 * 机器学习实战
 ** 第四章 训练模型
 *** 4.1 线性回归 Linear Regression
-用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数：
-\[\hat{y} = \theta_0 + \theta_1 x_1 + \theta_2 x_2 + \cdots + \theta_n x_n\]
-或者写成向量形式，令$x_0 = 1$:
-\begin{equation}
-\hat{y} = h_\theta(\textbf{X}) = \theta^T \cdot \textbf{X}
-\end{equation}
+用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令$x_0 = 1$:
+file:images/linear_hypothsis.png
 上面的表达式也称之为回归方程（regression equation），\theta为回归系数。
 成本函数，MSE函数：
-\begin{equation}
-MSE(\textbf{X}, h_\theta) = \frac{1}{2}\sum_{i=1}^m(\theta^T \cdot \textbf{X}^{(i)})^2
-\end{equation}
+file:images/MSE.png
 **** 4.1.1 闭式解-标准方程（normal equation）
 即直接通过解析表达式计算得到参数向量\theta:
-\begin{equation}
-\hat{\theta} = (\textbf{X}^T \cdot \textbf{X})^{-1} \cdot \textbf{X}^T \cdot \textbf{y}
-\end{equation}
+file:images/normal_equation.png
 可以使用Numpy的线性代数模块np.linalg中的inv()函数来求矩阵逆，用dot()方法计算内积。
 特征数量大时标准方程计算极其缓慢，此时可以用迭代优化法。
 #+BEGIN_EXAMPLE
