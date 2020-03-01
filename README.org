@@ -7,13 +7,15 @@
 
 * 目录                                                         :TOC@2:QUOTE:
 #+BEGIN_QUOTE
-- [[#pandas笔记][Pandas笔记]]
+- [[#python笔记][Python笔记]]
+  - [[#常用函数][常用函数]]
+- [[#pandas库笔记][Pandas库笔记]]
   - [[#series][Series]]
   - [[#dataframe][DataFrame]]
-- [[#numpy笔记][Numpy笔记]]
+- [[#numpy库笔记][Numpy库笔记]]
   - [[#copy-or-view][Copy or View?]]
-  - [[#shallow-copy-vs-deep-copy][Shallow Copy vs. Deep Copy?]]
-  - [[#常用函数][常用函数]]
+  - [[#数组的in-place改变][数组的in place改变]]
+  - [[#常用函数-1][常用函数]]
 - [[#数据集操作的一般过程以kaggle-titanic为例][数据集操作的一般过程（以Kaggle Titanic为例）]]
   - [[#加载数据][加载数据]]
   - [[#预览数据][预览数据]]
@@ -24,7 +26,14 @@
 - [[#注意点摘自机器学习实战][注意点（摘自机器学习实战）]]
 #+END_QUOTE
 
-* Pandas笔记
+* Python笔记
+** 常用函数
+#+BEGIN_SRC python
+%timeit func()
+map(func_obj, iter1, iter2)
+map(lambda x:x+1, iter1, iter2)
+#+END_SRC
+* Pandas库笔记
 ** Series
 #+begin_src python
 pd.Series
@@ -63,9 +72,20 @@ pd.Series
 'where', 'xs'
 #+END_SRC
 
-* Numpy笔记
+* Numpy库笔记
 ** Copy or View?
-** Shallow Copy vs. Deep Copy?
+- vew
+  - Slice view
+  - Dtype view
+- shallow copy
+- deep copy
+** 数组的in place改变
+以下是不同的操作过程：
+#+BEGIN_SRC python
+# y = np.arange(8)
+y += 1 # 更快
+y = y + 1 # 更慢
+#+END_SRC
 ** 常用函数
 #+BEGIN_SRC python :results
 import numpy as np
