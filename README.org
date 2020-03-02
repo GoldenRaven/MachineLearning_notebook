@@ -4,6 +4,36 @@
 #+DATE: <2020-02-27 Thu>
 #+email: li.gaoyang@live.com
 #+OPTIONS: num:nil
+#+options: toc:t
+
+# #+options: tex:imagemagick
+#+property: cache yes
+#+property: exports results
+
+#+LATEX_COMPILER: xelatex
+
+#+LATEX_HEADER: \usepackage{tikz}
+#+latex_header: \usepackage{amsthm}
+#+latex_header: \newtheorem{theorem}{Theorem}
+#+latex_header: \newtheorem{definition}{Definition}
+
+#+latex_header: \usepackage{fontspec}
+#+latex_header: \setromanfont{Purisa}
+#+latex_header: \setsansfont{Verdana}
+#+latex_header: \setmonofont{Ubuntu Mono}
+
+#+LaTeX_HEADER: \hypersetup{colorlinks=true, linkcolor=blue}
+
+#+latex_header: \usepackage{makeidx}
+#+latex_header: \makeindex
+
+#+latex_header: \usepackage{listings}
+
+# see http://www.w3schools.com/css/css_font.asp for more info
+#+HTML_HEAD: <style>.theorem {font-size: 1.5em; color: green; font-family: arial; text-decoration:underline;}
+#+HTML_HEAD: .theorem:before {content: "Theorem: "; font-weight: bold}</style>
+#+HTML_HEAD: <style>.definition {}
+#+HTML_HEAD: .definition:before {content: "Definition: "; font-style: italic; font-weight: bold}</style>
 
 * 目录                                                         :TOC@2:QUOTE:
 #+BEGIN_QUOTE
@@ -282,7 +312,10 @@ correlation_heatmap(data1)
 ** 第四章 训练模型
 *** 4.1 线性回归 Linear Regression
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令$x_0 = 1$:
-#+attr_html: :width 300px
+#+name: linear
+#+caption: linear_hypothsis
+#+attr_latex: :width 5cm
+#+attr_html: :align center
 [[file:images/linear_hypothsis.png]]
 
 上面的表达式也称之为回归方程（regression equation），\theta为回归系数。
