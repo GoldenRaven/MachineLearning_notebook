@@ -260,7 +260,6 @@ correlation_heatmap(data1)
 *** 4.1 线性回归 Linear Regression
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令x_0 = 1:
 #+ATTR_HTML: :width 200px
-#+CAPTION: This is the caption for the next table (or link)
 #+ATTR_HTML: :align center
 [[file:images/linear_hypothsis.png]]
 
@@ -271,7 +270,8 @@ correlation_heatmap(data1)
 
 **** 4.1.1 闭式解-标准方程（normal equation）
 即直接通过解析表达式计算得到参数向量\theta:
-#+attr_html: :width 200px
+#+ATTR_HTML: :width 200px
+#+CAPTION: This is the caption for the next table (or link)
 [[file:images/normal_equation.png]]
 
 可以使用Numpy的线性代数模块np.linalg中的inv()函数来求矩阵逆，用dot()方法计算内积。
