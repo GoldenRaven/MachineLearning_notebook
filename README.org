@@ -4,36 +4,6 @@
 #+DATE: <2020-02-27 Thu>
 #+email: li.gaoyang@live.com
 #+OPTIONS: num:nil
-#+options: toc:t
-
-# #+options: tex:imagemagick
-#+property: cache yes
-#+property: exports results
-
-#+LATEX_COMPILER: xelatex
-
-#+LATEX_HEADER: \usepackage{tikz}
-#+latex_header: \usepackage{amsthm}
-#+latex_header: \newtheorem{theorem}{Theorem}
-#+latex_header: \newtheorem{definition}{Definition}
-
-#+latex_header: \usepackage{fontspec}
-#+latex_header: \setromanfont{Purisa}
-#+latex_header: \setsansfont{Verdana}
-#+latex_header: \setmonofont{Ubuntu Mono}
-
-#+LaTeX_HEADER: \hypersetup{colorlinks=true, linkcolor=blue}
-
-#+latex_header: \usepackage{makeidx}
-#+latex_header: \makeindex
-
-#+latex_header: \usepackage{listings}
-
-# see http://www.w3schools.com/css/css_font.asp for more info
-#+HTML_HEAD: <style>.theorem {font-size: 1.5em; color: green; font-family: arial; text-decoration:underline;}
-#+HTML_HEAD: .theorem:before {content: "Theorem: "; font-weight: bold}</style>
-#+HTML_HEAD: <style>.definition {}
-#+HTML_HEAD: .definition:before {content: "Definition: "; font-style: italic; font-weight: bold}</style>
 
 * 目录                                                         :TOC@2:QUOTE:
 #+BEGIN_QUOTE
@@ -312,9 +282,7 @@ correlation_heatmap(data1)
 ** 第四章 训练模型
 *** 4.1 线性回归 Linear Regression
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令$x_0 = 1$:
-#+name: linear
-#+caption: linear_hypothsis
-#+attr_html: :width 5cm
+#+attr_html: :width 400px
 #+attr_html: :align center
 [[file:images/linear_hypothsis.png]]
 
@@ -329,8 +297,11 @@ correlation_heatmap(data1)
 
 可以使用Numpy的线性代数模块np.linalg中的inv()函数来求矩阵逆，用dot()方法计算内积。
 特征数量大时标准方程计算极其缓慢，此时可以用迭代优化法。
+
+*注意* ：
 #+BEGIN_EXAMPLE
-*注意* ：书中有误，Scikit-Learn的LinearRegression类并不是标准方程的实现，而是基于X的SVD分解。其时间复杂度为O(n^2)，在m<n或特征线性相关时依然可以工作（标准方程不行，因为不满秩）。LinearRegression类不需要对特征进行标度。
+书中有误，Scikit-Learn的LinearRegression类并不是标准方程的实现，而是基于X的SVD分解。其时间复杂度为O(n^2)，在m<n或特征线性相关时依然可以工作（标准方程不行，因为不满秩）。
+LinearRegression类不需要对特征进行标度。
 #+END_EXAMPLE
 #+BEGIN_SRC python
 from sklearn.linear_model import LinearRegression
