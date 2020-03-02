@@ -32,8 +32,9 @@
   - [[#第四章-训练模型][第四章 训练模型]]
     - [[#41-线性回归-linear-regression][4.1 线性回归 Linear Regression]]
     - [[#42-多项式回归-polynomial-regression][4.2 多项式回归 Polynomial Regression]]
-    - [[#43-逻辑回归-logistic-regression][4.3 逻辑回归 Logistic Regression]]
-    - [[#44-多元逻辑回归-softmax-regression-multinomial-regression][4.4 多元逻辑回归 Softmax Regression (Multinomial Regression)]]
+    - [[#43-正则线性模型线性模型的正则化][4.3 正则线性模型（线性模型的正则化）]]
+    - [[#44-逻辑回归-logistic-regression][4.4 逻辑回归 Logistic Regression]]
+    - [[#45-多元逻辑回归-softmax-regression-multinomial-regression][4.5 多元逻辑回归 Softmax Regression (Multinomial Regression)]]
 #+END_QUOTE
 
 * Python笔记
@@ -389,11 +390,10 @@ lin_reg.intercept_, lin_reg.coef_
 - 过度拟合：提供更多数据，或约束模型（正则化）
 **** 4.2.3 偏差/方差权衡
 增加模型复杂度会显著减少模型的偏差，增加拟合的方差;相反，降低模型复杂度会显著提升模型的偏差，降低拟合的方差。
-**** 4.2.4 正则线性模型（线性模型的正则化）
+*** 4.3 正则线性模型（线性模型的正则化）
 对多项式模型来说，正则化的简单方法是降低多项式除数;对线性模型来说，正则化通常通过约束模型的权重来实现，比如有如下三种不同的实现方法：岭回归、套索回归、弹性网络。
-***** 4.2.4.1 岭回归 Ridge Regression
+**** 4.3.1 岭回归 Ridge Regression
 也叫吉洪诺夫正则化，在成本函数中添加一个正则项 \alpha/2 \sum_{i=1}^{n} \theta_{i}^{2}。
-
 #+BEGIN_EXAMPLE
 注意：正则化只能在训练时添加到成本函数，完成训练后要用未经正则化的性能指标来评估模型性能。
 #+END_EXAMPLE
@@ -422,7 +422,62 @@ sgd_reg.fit(X, y.ravel())
 sgd_reg.predict([[1.5]])
 #+END_SRC
 其中的penalty参数为惩罚的类型。
-***** 4.2.4.2 套索回归 Lasso Regression
-***** 4.2.4.3 弹性网络 Elastic Net
-*** 4.3 逻辑回归 Logistic Regression
-*** 4.4 多元逻辑回归 Softmax Regression (Multinomial Regression)
+**** 4.3.2 套索回归 Lasso Regression
+套索回归是另一种正则化方法，也叫最小绝对收缩和选择算子回归（Least Absolute Shrinkage and Selection Operator Regression），简称Lasso。它为成本函数增加的一项是权重向量的l_{1}范数。Lasso回归的成本函数为：
+#+BEGIN_CENTER
+J(\theta) = MSE(\theta) + \alpha\sum_{i=1}^{n} |\theta_{i}|
+#+END_CENTER
+Lasso回归倾向于完全消除最不重要特征的权重，换句话说，它会自动执行特征选择并输出一个稀疏模型（即只有少量特征的权重非零）。sklearn的Lasso类 +实现的是什么算法？+
+#+BEGIN_SRC python
+from sklearn.linear_model import Lasso
+lasso_reg = Lasso(alpha=0.1)
+lasso_reg.fit(X, y)
+lasso_reg.predict([[1.5]])
+#+END_SRC
+与岭回归一样，也可以使用随机梯度下降，代码如下：
+#+BEGIN_SRC python
+sgd_reg = SGDRegressor(max_iter=50, tol=-np.infty, penalty="l1", random_state=42)
+sgd_reg.fit(X, y.ravel())
+sgd_reg.predict([[1.5]])
+#+END_SRC
+**** 4.3.3 弹性网络 Elastic Net
+弹性网络是岭回归和Lasso回归的中间地带，其正则项是它们正则项的混合，比例由r来控制。r=0时相当于岭回归，r=1时相当于Lasso回归。其成本函数为：
+#+BEGIN_CENTER
+J(\theta) = MSE(\theta) + r\alpha\sum_{i=1}^{n} |\theta_{i}| + (1-r)\alpha/2*\sum_{i=1}^{n} \theta_{i}^{2}
+#+END_CENTER
+sklearn的Lasso类代码如下：
+#+BEGIN_SRC python
+from sklearn.linear_model import ElasticNet
+elastic_net = ElasticNet(alpha=0.1, l1_ratio=0.5, random_state=42)
+elastic_net.fit(X, y)
+elastic_net.predict([[1.5]])
+#+END_SRC
+同样可以用随机梯度下降来实现弹性网络正则化，如下：
+#+BEGIN_SRC python
+sgd_reg = SGDRegressor(max_iter=50, tol=-np.infty, penalty="elasticnet", random_state=42)
+elastic_net.fit(X, y)
+elastic_net.predict([[1.5]])
+#+END_SRC
+**** 4.3.4 如何在线性回归和以上三种回归之中选择呢？
+通常而言，有正则化总比没有强，所以大多数时候应该避免使用纯线性回归。岭回归是个不错的默认选择，但如果你觉得实际用到的特征只有少数几个，那就应该更倾向于Lasso或弹性网络，因为它们可以对特征进行自动选择。一般而言，弹性网络优于Lasso回归，因为当特征数大于训练实例数或特征强相关时，Lasso回归可能非常不稳定。
+**** 4.4.4 早期停止法
+对于梯度下降等迭代算法，还有一个正则化方法，就是在验证误差达到最小误差时停止训练。（可以先观察是否真正达到最小误差）
+#+BEGIN_SRC python
+from sklearn.base import clone
+sgd_reg = SGDRegressor(max_iter=1, tol=-np.infty, warm_start=True, penalty=None,
+                       learning_rate="constant", eta0=0.0005, random_state=42)
+
+minimum_val_error = float("inf")
+best_epoch = None
+best_model = None
+for epoch in range(1000):
+    sgd_reg.fit(X_train_poly_scaled, y_train)  # continues where it left off
+    y_val_predict = sgd_reg.predict(X_val_poly_scaled)
+    val_error = mean_squared_error(y_val, y_val_predict)
+    if val_error < minimum_val_error:
+        minimum_val_error = val_error
+        best_epoch = epoch
+        best_model = clone(sgd_reg)
+#+END_SRC
+*** 4.4 逻辑回归 Logistic Regression
+*** 4.5 多元逻辑回归 Softmax Regression (Multinomial Regression)
