@@ -258,8 +258,9 @@ correlation_heatmap(data1)
 * 机器学习实战
 ** 第四章 训练模型
 *** 4.1 线性回归 Linear Regression
-用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令\(x_0 = 1\):
+用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令x_0 = 1:
 #+attr_html: :width 200px
+#+caption: hi
 #+attr_html: :align center
 [[file:images/linear_hypothsis.png]]
 
@@ -267,6 +268,7 @@ correlation_heatmap(data1)
 成本函数，MSE函数：
 #+attr_html: :width 400px
 [[file:images/MSE.png]]
+
 **** 4.1.1 闭式解-标准方程（normal equation）
 即直接通过解析表达式计算得到参数向量\theta:
 #+attr_html: :width 200px
