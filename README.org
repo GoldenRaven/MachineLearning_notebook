@@ -274,10 +274,8 @@ correlation_heatmap(data1)
 
 可以使用Numpy的线性代数模块np.linalg中的inv()函数来求矩阵逆，用dot()方法计算内积。
 特征数量大时标准方程计算极其缓慢，此时可以用迭代优化法。
-
-*注意* ：
 #+BEGIN_EXAMPLE
-书中有误，Scikit-Learn的LinearRegression类并不是标准方程的实现，而是基于X的SVD分解。其时间复杂度为O(n^2)，在m<n或特征线性相关时依然可以工作（标准方程不行，因为不满秩）。
+注意：书中有误，Scikit-Learn的LinearRegression类并不是标准方程的实现，而是基于X的SVD分解。其时间复杂度为O(n^2)，在m<n或特征线性相关时依然可以工作（标准方程不行，因为不满秩）。
 LinearRegression类不需要对特征进行标度。
 #+END_EXAMPLE
 #+BEGIN_SRC python
@@ -292,9 +290,8 @@ theta_best_svd
 #+END_SRC
 **** 4.1.2 梯度下降(迭代优化)
 从随机值开始，每一步降低成本函数，直到成本函数最小值。每一步的步长取决于超参数: /学习率/ /\eta/ ( /learning rate/ ).
-
-*注意* ：
 # #+BEGIN_EXAMPLE
+注意：
 - 线性回归模型的MSE是凸函数，没有局部最小，只一个全局最小。
 - 应用梯度下降时要保证所有特征数值大小比例差不多，即要先进行特征缩放！
 - 特征缩放主要有两种方式：standerization和normalization，见第二章，68页。
@@ -341,9 +338,11 @@ lin_reg.fit(X_poly, y)
 lin_reg.intercept_, lin_reg.coef_
 #+END_SRC
 
-*注意* ：
+#+BEGIN_EXAMPLE
+注意：
 - 高次幂项也包括特征的交叉项
 - 作用PolynomialFeatures类要小心特征数量爆炸！
+#+END_EXAMPLE
 **** 4.2.2 学习曲线
 在使用模型时要经常判断：模型是否过度拟合或者拟合不足？
 - 一种是第二章中学习的，使用交叉验证来评估模型的泛化性能。如果在训练集上表现比交叉验证的泛化表现好很多，则是过度拟合。如果两者表现都不佳，则拟合不足。
@@ -364,14 +363,11 @@ lin_reg.intercept_, lin_reg.coef_
 ***** 4.2.4.1 岭回归 Ridge Regression
 也叫吉洪诺夫正则化，在成本函数中添加一个正则项 \alpha \sum_{i=1}^n \theta_i^2。
 
-*注意* ：
 #+BEGIN_EXAMPLE
-正则化只能在训练时添加到成本函数，完成训练后要用未经正则化的性能指标来评估模型性能。
+注意：正则化只能在训练时添加到成本函数，完成训练后要用未经正则化的性能指标来评估模型性能。
 #+END_EXAMPLE
 岭回归的成本函数：
-\[
 J(\theta) = MSE(\theta) = \alpha \frac{1}{2}\sum_{i=1}^n \theta_i^2
-\]
 ***** 4.2.4.2 套索回归 Lasso Regression
 ***** 4.2.4.3 弹性网络 Elastic Net
 *** 逻辑回归 Logistic Regression
