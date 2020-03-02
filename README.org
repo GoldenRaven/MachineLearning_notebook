@@ -5,6 +5,37 @@
 #+email: li.gaoyang@live.com
 #+OPTIONS: num:nil
 
+* 目录 :TOC@3:QUOTE:
+#+BEGIN_QUOTE
+- [[#python笔记][Python笔记]]
+  - [[#常用函数][常用函数]]
+- [[#pandas库笔记][Pandas库笔记]]
+  - [[#series][Series]]
+  - [[#dataframe][DataFrame]]
+- [[#numpy库笔记][Numpy库笔记]]
+  - [[#copy-or-view][Copy or View?]]
+  - [[#数组的in-place改变][数组的in place改变]]
+  - [[#常用函数-1][常用函数]]
+- [[#数据集操作的一般过程以kaggle-titanic为例][数据集操作的一般过程（以Kaggle Titanic为例）]]
+  - [[#加载数据][加载数据]]
+  - [[#预览数据][预览数据]]
+  - [[#清理数据][清理数据]]
+    - [[#331-completing][3.3.1 Completing]]
+    - [[#332-creating][3.3.2 Creating]]
+    - [[#333-converting][3.3.3 Converting]]
+  - [[#从训练集中分离出测试集][从训练集中分离出测试集]]
+  - [[#分析数据找到关联性][分析数据，找到关联性]]
+  - [[#模型化数据集][模型化数据集]]
+    - [[#背景知识][背景知识]]
+- [[#注意点摘自机器学习实战][注意点（摘自机器学习实战）]]
+- [[#机器学习实战][机器学习实战]]
+  - [[#第四章-训练模型][第四章 训练模型]]
+    - [[#41-线性回归-linear-regression][4.1 线性回归 Linear Regression]]
+    - [[#42-多项式回归-polynomial-regression][4.2 多项式回归 Polynomial Regression]]
+    - [[#43-逻辑回归-logistic-regression][4.3 逻辑回归 Logistic Regression]]
+    - [[#44-多元逻辑回归-softmax-regression-multinomial-regression][4.4 多元逻辑回归 Softmax Regression (Multinomial Regression)]]
+#+END_QUOTE
+
 * Python笔记
 ** 常用函数
 #+BEGIN_SRC python
@@ -367,10 +398,31 @@ lin_reg.intercept_, lin_reg.coef_
 注意：正则化只能在训练时添加到成本函数，完成训练后要用未经正则化的性能指标来评估模型性能。
 #+END_EXAMPLE
 岭回归的成本函数：
-
-J(\theta) = MSE(\theta) + \alpha 1/2\sum_{i=1}^{n} \theta_{i}^{2}
-
+#+BEGIN_CENTER
+J(\theta) = MSE(\theta) + \alpha/2*\sum_{i=1}^{n} \theta_{i}^{2}
+#+END_CENTER
+超参数\alpha 控制正则化程度，\alpha=0时回复到线性模型，\alpha 非常大时所有权重都接近于零，结果是一条穿过数据平均值的水平线。正则项是权重向量\textbf{\theta}的l_{2}范数平方的一半。
+#+BEGIN_EXAMPLE
+注意：
+1. 求和从i=1开始，对偏置项不正则化。
+2. 执行岭回归前，要对数据进行缩放（大多数正则化模型都需要）。
+#+END_EXAMPLE
+与线性回归相同，可以直接闭式解，也可以使用随机梯度下降。sklearn的Ridge执行闭式解法，利用Andre-Louis Cholesdy的矩阵因式分解：
+#+BEGIN_SRC python
+from sklearn.linear_model import Ridge
+# ridge_reg = Ridge(alpha=1, solver="sag", random_state=42)
+ridge_reg = Ridge(alpha=1, solver="cholesky", random_state=42)
+ridge_reg.fit(X, y)
+ridge_reg.predict([[1.5]])
+#+END_SRC
+使用随机梯度下降的代码如下：
+#+BEGIN_SRC python
+sgd_reg = SGDRegressor(max_iter=50, tol=-np.infty, penalty="l2", random_state=42)
+sgd_reg.fit(X, y.ravel())
+sgd_reg.predict([[1.5]])
+#+END_SRC
+其中的penalty参数为惩罚的类型。
 ***** 4.2.4.2 套索回归 Lasso Regression
 ***** 4.2.4.3 弹性网络 Elastic Net
-*** 逻辑回归 Logistic Regression
-*** 多元逻辑回归 Softmax Regression (Multinomial Regression)
+*** 4.3 逻辑回归 Logistic Regression
+*** 4.4 多元逻辑回归 Softmax Regression (Multinomial Regression)
