@@ -5,23 +5,32 @@
 #+email: li.gaoyang@live.com
 #+OPTIONS: num:nil
 
-* [[file:Python_learning_notebook.org][Python学习笔记]]
-* [[file:pd_learning.org][Python Pandas库笔记]]
-* Python Numpy库笔记
-** Copy or View?
+** 目录 :TOC@2:QUOTE:
+#+BEGIN_QUOTE
+  - [[#python学习笔记][Python学习笔记]]
+  - [[#python-pandas库笔记][Python Pandas库笔记]]
+  - [[#python-numpy库笔记][Python Numpy库笔记]]
+  - [[#机器学习实战学习笔记][《机器学习实战》学习笔记]]
+  - [[#机器学习的一般操作过程以kaggle-titanic为例][机器学习的一般操作过程（以Kaggle Titanic为例）]]
+#+END_QUOTE
+
+** [[file:Python_learning_notebook.org][Python学习笔记]]
+** [[file:pd_learning.org][Python Pandas库笔记]]
+** Python Numpy库笔记
+*** Copy or View?
 - vew
   - Slice view
   - Dtype view
 - shallow copy
 - deep copy
-** 数组的in place改变
+*** 数组的in place改变
 以下是不同的操作过程：
 #+BEGIN_SRC python
 # y = np.arange(8)
 y += 1 # 更快
 y = y + 1 # 更慢
 #+END_SRC
-** 常用函数
+*** 常用函数
 #+BEGIN_SRC python :results output
 import numpy as np
 a = np.arange(3)
@@ -33,16 +42,15 @@ d.shape
 d.resize(2, 3) # 无返回值，将原数组形变，接收元组
 f = d.reshape(（2,3）) # 返回变形后的数组，原数组不变，接收元组
 #+END_SRC
-
-* [[file:handson-ml-learning.org][《机器学习实战》学习笔记]]
-* 机器学习的一般操作过程（以Kaggle Titanic为例）
+** [[file:handson-ml-learning.org][《机器学习实战》学习笔记]]
+** 机器学习的一般操作过程（以Kaggle Titanic为例）
 疑问：
 - 分离出测试集应该在预览数据之前还是之后？
 - 清理数据时，是对整个数据集操作还是只对训练集操作？
 - 交叉验证总是需要的吗？只是在出现过拟合时使用？
 Jupyter Notebook:
 [[file:titanic-a_data_science_framework_to_achieve_99_accuracy.ipynb][titanic-a_data_science_framework_to_achieve_99_accuracy.ipynb]]
-** 加载数据
+*** 加载数据
 Kaggle网站上Titanic竞赛中的数据集test.csv指求解时的实例，去掉了标签'Survived'.
 #+NAME: read
 #+BEGIN_src python
@@ -61,7 +69,7 @@ data1 = df.copy(deep=True) #复制df的indices和数据，并在内存中创建�
 #+BEGIN_src python
 data_clearner = [data1, df2] #可以一起清理
 #+END_SRC
-** 预览数据
+*** 预览数据
 #+NAME: preview
 #+BEGIN_src python
 df.info()
@@ -69,14 +77,14 @@ df.head()
 df.tail()
 df.sample(10)
 #+END_SRC
-** 清理数据
+*** 清理数据
 4个'C':
 - *Correcting*: 更正异常值，离群值
 - *Completing*: 补全缺失信息
 - *Creating*: 创建新的特征，用以之后的分析
 - *Converting*: 转换数据的格式，以备后续的计算与呈现
 
-*** Completing
+**** Completing
 不推荐删除记录，尤其当它占的比例大时。最好impute. 对于定性值，
 一般使用mode，对于定量值一般用中值、平均值或以平均值+随机化的标准差来代替。
 还有针对具体问题更特殊的处理方法，如代之以某个小类别中的中值等。
@@ -90,7 +98,7 @@ df['Embarked'].fillna(df['Embarked'].mode()[0], inplace=True)
 drop_index = ['PassengerId', 'Ticket'] # index to drop
 df.drop(drop_index, axis=1, inplace=True) # drop features/columns
 #+END_SRC
-*** Creating
+**** Creating
 特征工程：用已经存在的特征来创造新的特征，以检查是否对结果预测提供新的信息。
 #+BEGIN_src python
 df['FamilySize'] = df.['SibSp'] + df.['Parch'] + 1 # 新建特征
@@ -104,7 +112,7 @@ df['AgeBins'] = pd.qcut(df['Age'].astype(int), 5) # 离散化连续值到区间
 title_name = df['Title'].value_counts() < 10
 df['Title'] = df['Title'].apply(lambda x: 'Misc' if title_name[x] else x)
 #+END_SRC
-*** Converting
+**** Converting
 如对object类型的数据格式化，使算法可以处理。
 #+BEGIN_src python
 from sklearn.preprocessing import LabelEncoder OneHotEncoder
@@ -115,7 +123,7 @@ df['Sex']  = encoder.fit_transform(df['Sex'])
 encoder2 = OneHotEncoder()
 df['Sex']  = encoder2.fit_transform(df['Sex'].reshape(-1,1))
 #+END_SRC
-** 从训练集中分离出测试集
+*** 从训练集中分离出测试集
 两种方法：
 - 固定比例分离
 # #+BEGIN_src example
@@ -128,7 +136,7 @@ train1_x, test1_x, train1_y, test1_y = model_selection.train_test_split(data1[da
 #+BEGIN_src example
 model_selection.cross_val_score()
 #+END_SRC
-** 分析数据，找到关联性
+*** 分析数据，找到关联性
 #+BEGIN_SRC python
 df[['Sex', 'Survived']].groupby('Sex',as_index=False).mean() # 特定特征与标签的关系
 # 图示某一个特征与标签的关系
@@ -167,8 +175,8 @@ def correlation_heatmap(df):
 
 correlation_heatmap(data1)
 #+end_src
-** 模型化数据集
-*** 背景知识
+*** 模型化数据集
+**** 背景知识
 机器学习算法可以分为四个部分：
 - 分类
 - 回归
