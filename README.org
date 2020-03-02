@@ -30,7 +30,7 @@
 - [[#注意点摘自机器学习实战][注意点（摘自机器学习实战）]]
 - [[#机器学习实战][机器学习实战]]
   - [[#第四章-训练模型][第四章 训练模型]]
-    - [[#41-线性回归-linear-regression][4.1 线性回归 Linear Regression]]
+    - [[#41-纯线性回归-linear-regression][4.1 (纯)线性回归 Linear Regression]]
     - [[#42-多项式回归-polynomial-regression][4.2 多项式回归 Polynomial Regression]]
     - [[#43-正则线性模型线性模型的正则化][4.3 正则线性模型（线性模型的正则化）]]
     - [[#44-逻辑回归-logistic-regression][4.4 逻辑回归 Logistic Regression]]
@@ -289,7 +289,7 @@ correlation_heatmap(data1)
 - 注意：目标值一般不进行绽放，并且只对训练集缩放
 * 机器学习实战
 ** 第四章 训练模型
-*** 4.1 线性回归 Linear Regression
+*** 4.1 (纯)线性回归 Linear Regression
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令x_0 = 1:
 #+ATTR_HTML: :width 400
 [[file:images/linear_hypothsis.png]]
@@ -425,7 +425,7 @@ sgd_reg.predict([[1.5]])
 **** 4.3.2 套索回归 Lasso Regression
 套索回归是另一种正则化方法，也叫最小绝对收缩和选择算子回归（Least Absolute Shrinkage and Selection Operator Regression），简称Lasso。它为成本函数增加的一项是权重向量的l_{1}范数。Lasso回归的成本函数为：
 #+BEGIN_CENTER
-J(\theta) = MSE(\theta) + \alpha\sum_{i=1}^{n} |\theta_{i}|
+J(\theta) = MSE(\theta) + \alpha \sum_{i=1}^{n} |\theta_{i}|
 #+END_CENTER
 Lasso回归倾向于完全消除最不重要特征的权重，换句话说，它会自动执行特征选择并输出一个稀疏模型（即只有少量特征的权重非零）。sklearn的Lasso类 +实现的是什么算法？+
 #+BEGIN_SRC python
@@ -443,9 +443,9 @@ sgd_reg.predict([[1.5]])
 **** 4.3.3 弹性网络 Elastic Net
 弹性网络是岭回归和Lasso回归的中间地带，其正则项是它们正则项的混合，比例由r来控制。r=0时相当于岭回归，r=1时相当于Lasso回归。其成本函数为：
 #+BEGIN_CENTER
-J(\theta) = MSE(\theta) + r\alpha\sum_{i=1}^{n} |\theta_{i}| + (1-r)\alpha/2*\sum_{i=1}^{n} \theta_{i}^{2}
+J(\theta) = MSE(\theta) + r\alpha \sum_{i=1}^{n} |\theta_{i}| + (1-r)\alpha/2*\sum_{i=1}^{n} \theta_{i}^{2}
 #+END_CENTER
-sklearn的Lasso类代码如下：
+sklearn的ElasticNet类代码如下：
 #+BEGIN_SRC python
 from sklearn.linear_model import ElasticNet
 elastic_net = ElasticNet(alpha=0.1, l1_ratio=0.5, random_state=42)
