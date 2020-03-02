@@ -314,7 +314,7 @@ correlation_heatmap(data1)
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令$x_0 = 1$:
 #+name: linear
 #+caption: linear_hypothsis
-#+attr_latex: :width 5cm
+#+attr_html: :width 5cm
 #+attr_html: :align center
 [[file:images/linear_hypothsis.png]]
 
