@@ -328,6 +328,11 @@ Pearson关联的绘图函数：
 
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令\(x_0 = 1\):
 
+\begin{equation}
+\hat{y} = \theta_0 + \theta_1 x_1 + \theta_2 x_2 + \cdots + \theta_n x_n
+\end{equation}
+
+
 ![img](images/linear_hypothsis.png)
 
 上面的表达式也称之为回归方程（regression equation），\\theta为回归系数。
