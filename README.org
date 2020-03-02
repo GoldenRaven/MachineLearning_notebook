@@ -259,9 +259,9 @@ correlation_heatmap(data1)
 ** 第四章 训练模型
 *** 4.1 线性回归 Linear Regression
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令x_0 = 1:
-#+attr_html: :width 200px
-#+caption: hi
-#+attr_html: :align center
+#+ATTR_HTML: :width 200px
+#+CAPTION: This is the caption for the next table (or link)
+#+ATTR_HTML: :align center
 [[file:images/linear_hypothsis.png]]
 
 上面的表达式也称之为回归方程（regression equation），\theta为回归系数。
