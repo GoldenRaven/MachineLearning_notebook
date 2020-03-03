@@ -11,10 +11,8 @@ bash crop-convert.bash
 
 #+END_COMMENT
 
-* 《机器学习实战》学习笔记
 ** 目录 :TOC@3:QUOTE:
 #+BEGIN_QUOTE
-- [[#机器学习实战学习笔记][《机器学习实战》学习笔记]]
   - [[#注意][注意]]
   - [[#第四章-训练模型][第四章 训练模型]]
     - [[#41-纯线性回归-linear-regression][4.1 (纯)线性回归 Linear Regression]]
