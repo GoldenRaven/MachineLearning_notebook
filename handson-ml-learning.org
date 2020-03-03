@@ -7,7 +7,7 @@ bash crop-convert.bash
 | /home/ligy/Documents/MachineLearning_notebook/pdfs |       |            |         |           |          |           |    |       |           |
 | PDFCROP                                            | 1.38, | 2012/11/02 | -       | Copyright | (c)      | 2002-2012 | by | Heiko | Oberdiek. |
 | ==>                                                |     1 | page       | written | on        | `1.pdf'. |           |    |       |           |
-| cross2.pdf                                         |       |            |         |           |          |           |    |       |           |
+| softmax.pdf                                        |       |            |         |           |          |           |    |       |           |
 
 #+END_COMMENT
 
@@ -319,7 +319,7 @@ log_reg.fit(X, y)
 #+END_EXAMPLE
 
 Softmax回归是逻辑回归的推广，可以直接支持多类别，不需要训练并组合多个二元分类器。
-对于一个特定实例 *x*, Softmax回归会计算出每个类别k的分数s_{k}(*x*), 然后应用
+对于一个特定实例 *x*, Softmax 回归会计算出每个类别k的分数s_{k}(*x*), 然后应用
 softmax函数（也叫归一化指数），估算每个类别的概率。softmax分数：
 
 #+BEGIN_COMMENT
