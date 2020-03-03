@@ -12,6 +12,18 @@ bash crop-convert.bash
 #+END_COMMENT
 
 * 《机器学习实战》学习笔记
+** 目录 :TOC@3:QUOTE:
+#+BEGIN_QUOTE
+- [[#机器学习实战学习笔记][《机器学习实战》学习笔记]]
+  - [[#注意][注意]]
+  - [[#第四章-训练模型][第四章 训练模型]]
+    - [[#41-纯线性回归-linear-regression][4.1 (纯)线性回归 Linear Regression]]
+    - [[#42-多项式回归-polynomial-regression][4.2 多项式回归 Polynomial Regression]]
+    - [[#43-正则线性模型线性模型的正则化][4.3 正则线性模型（线性模型的正则化）]]
+    - [[#44-逻辑回归-logistic-regression][4.4 逻辑回归 Logistic Regression]]
+    - [[#45-多元逻辑回归-softmax-regression][4.5 多元逻辑回归 Softmax Regression]]
+#+END_QUOTE
+
 ** 注意
 - 对收入分层抽样，不能分太多层
 - 分层方法：除以1.5，向上取整；然后合并大于5的分类
