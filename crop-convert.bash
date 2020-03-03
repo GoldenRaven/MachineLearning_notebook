@@ -8,6 +8,6 @@ do
     convert -density 200 1.pdf -quality 90 1.png
     s=`echo ${file} |cut -d '.' -f 1`
     mv 1.png ../images/$s.png
-    rm -f 1.pdf
+    rm -f 1.pdf $file
     echo $file
 done

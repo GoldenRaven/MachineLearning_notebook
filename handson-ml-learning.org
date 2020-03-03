@@ -7,13 +7,7 @@ bash crop-convert.bash
 | /home/ligy/Documents/MachineLearning_notebook/pdfs |       |            |         |           |          |           |    |       |           |
 | PDFCROP                                            | 1.38, | 2012/11/02 | -       | Copyright | (c)      | 2002-2012 | by | Heiko | Oberdiek. |
 | ==>                                                |     1 | page       | written | on        | `1.pdf'. |           |    |       |           |
-| cost_log.pdf                                       |       |            |         |           |          |           |    |       |           |
-| PDFCROP                                            | 1.38, | 2012/11/02 | -       | Copyright | (c)      | 2002-2012 | by | Heiko | Oberdiek. |
-| ==>                                                |     1 | page       | written | on        | `1.pdf'. |           |    |       |           |
-| logistic.pdf                                       |       |            |         |           |          |           |    |       |           |
-| PDFCROP                                            | 1.38, | 2012/11/02 | -       | Copyright | (c)      | 2002-2012 | by | Heiko | Oberdiek. |
-| ==>                                                |     1 | page       | written | on        | `1.pdf'. |           |    |       |           |
-| sigmoid.pdf                                        |       |            |         |           |          |           |    |       |           |
+| cross2.pdf                                         |       |            |         |           |          |           |    |       |           |
 
 #+END_COMMENT
 
@@ -321,8 +315,123 @@ log_reg.fit(X, y)
 进行）。
 
 #+BEGIN_EXAMPLE
-注意：只有对于在大数据集上表现糟糕的算法（SVM），OvO是优先的选择;对于大多数二元分类器来
-说，OvA策略更好。
+注意：只有对于在大数据集上表现糟糕的算法（SVM），OvO是优先的选择;对于大多数二元分类器来说，OvA策略更好。
 #+END_EXAMPLE
 
 Softmax回归是逻辑回归的推广，可以直接支持多类别，不需要训练并组合多个二元分类器。
+对于一个特定实例 *x*, Softmax回归会计算出每个类别k的分数s_{k}(*x*), 然后应用
+softmax函数（也叫归一化指数），估算每个类别的概率。softmax分数：
+
+#+BEGIN_COMMENT
+#+BEGIN_SRC latex :file pdfs/softmax.pdf
+\[
+s_{k}(\textbf{x}) = \theta_{k}^T \cdot \textbf{x}
+\]
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_LaTeX
+[[file:pdfs/softmax.pdf]]
+#+END_LaTeX
+#+END_COMMENT
+
+#+attr_html: :width 500px
+[[file:images/softmax.png]]
+
+每个类别都有自己的权重向量 *\theta_{k}*, 所有这些向量通常作为行，存贮在参数矩阵
+\Theta 中。
+
+有了类别分数后，实例 *x* 属于类别k的概率被定义为：
+
+#+BEGIN_COMMENT
+#+BEGIN_SRC latex :file pdfs/softmax2.pdf
+\[
+\hat{p}_{k} = \sigma(\textbf{s}(\textbf{x}))_{k} = \frac{exp(s_{k}(\textbf{x}))}{\sum_{j=1}^{K}exp(s_{j}(\textbf{x}))}
+\]
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_LaTeX
+[[file:pdfs/softmax2.pdf]]
+#+END_LaTeX
+#+END_COMMENT
+
+#+attr_html: :width 500px
+[[file:images/softmax2.png]]
+
+预测类别\hat{y} 是概率\hat{p}_k 最大的类别k：
+
+#+BEGIN_COMMENT
+#+BEGIN_SRC latex :file pdfs/softmax-pred.pdf
+\[
+\hat{y} = argmax_{k} \sigma(\textbf{s}(\textbf{x})) = argmax_{k} (\theta_{k}^T \cdot \textbf{x})
+\]
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_LaTeX
+[[file:pdfs/softmax-pred.pdf]]
+#+END_LaTeX
+#+END_COMMENT
+
+#+attr_html: :width 500px
+[[file:images/softmax-pred.png]]
+
+#+BEGIN_EXAMPLE
+注意： Softmax回归器每次只能预测一个类别，也就是说它是多类别，但不是多输出。所以仅适用于互斥的类别。
+#+END_EXAMPLE
+
+我们已经知道了模型怎么估算概率，并做出预测，那怎么训练呢？需要最小化的成本函数（交叉熵）：
+
+
+#+BEGIN_COMMENT
+#+BEGIN_SRC latex :file pdfs/cross-entropy.pdf
+\[
+J(\Theta) = -\frac{1}{m} \sum_{i=1}^{m} \sum_{k=1}^{K} y_{k}^{(i)} log(\hat{p}_{k}^{(i)})
+\]
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_LaTeX
+[[file:pdfs/cross-entropy.pdf]]
+#+END_LaTeX
+#+END_COMMENT
+
+#+attr_html: :width 500px
+[[file:images/cross-entropy.png]]
+
+它来源于信息理论，描述的是多类别预测的准确性。两个离散概率分布p和q之间的交叉熵定义为：
+
+#+BEGIN_COMMENT
+#+BEGIN_SRC latex :file pdfs/cross2.pdf
+\[
+H(p, q) = \sum_{x} p(x) \rm{log}\ q(x)
+\]
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_LaTeX
+[[file:pdfs/cross2.pdf]]
+#+END_LaTeX
+#+END_COMMENT
+
+#+attr_html: :width 500px
+[[file:images/cross2.png]]
+
+对于这个成本函数可以作用随机梯度下降或其他优化算法找到最优解参数矩阵\Theta （每个类别
+的权重向量 *\theta_{k}* ）。在sklearn中，当对多个类别进行训练时
+LogisticRegression会默认选择OvA策略。将参数multi_class设置为"multinomial"
+可以将其切换成Softmax回归。还要指定一个支持Softmax回归的求解器。默认使用l_{2}正则化，
+用超参C控制。代码如下：
+
+#+BEGIN_SRC python
+softmax_reg = LogisticRegression(multi_class="multinomial",solver="lbfgs", C=10, random_state=42)
+softmax_reg.fit(X, y)
+y_proba = softmax_reg.predict_proba(X_new) # 预测特定实例的每个类别概率
+y_predict = softmax_reg.predict(X_new) # 预测特定实例的类别
+#+END_SRC
+
+- 此时的决策边界如何理解？
+
+#+attr_html: :width 600px
+[[file:images/decision_boundary.png]]
