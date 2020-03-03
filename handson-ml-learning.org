@@ -242,7 +242,7 @@ for epoch in range(1000):
 #+END_COMMENT
 \sigma(t)是sigmoid函数
 # #+begin_center
-\qquad 00A0 \sigma(t) = 1/(1+exp(-t))
+\ 00A0 \sigma(t) = 1/(1+exp(-t))
 # #+end_center
 
 成本函数为：
