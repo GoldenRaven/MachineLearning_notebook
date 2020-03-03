@@ -7,7 +7,13 @@ bash crop-convert.bash
 | /home/ligy/Documents/MachineLearning_notebook/pdfs |       |            |         |           |          |           |    |       |           |
 | PDFCROP                                            | 1.38, | 2012/11/02 | -       | Copyright | (c)      | 2002-2012 | by | Heiko | Oberdiek. |
 | ==>                                                |     1 | page       | written | on        | `1.pdf'. |           |    |       |           |
+| cost_log.pdf                                       |       |            |         |           |          |           |    |       |           |
+| PDFCROP                                            | 1.38, | 2012/11/02 | -       | Copyright | (c)      | 2002-2012 | by | Heiko | Oberdiek. |
+| ==>                                                |     1 | page       | written | on        | `1.pdf'. |           |    |       |           |
 | logistic.pdf                                       |       |            |         |           |          |           |    |       |           |
+| PDFCROP                                            | 1.38, | 2012/11/02 | -       | Copyright | (c)      | 2002-2012 | by | Heiko | Oberdiek. |
+| ==>                                                |     1 | page       | written | on        | `1.pdf'. |           |    |       |           |
+| sigmoid.pdf                                        |       |            |         |           |          |           |    |       |           |
 
 #+END_COMMENT
 
@@ -149,7 +155,8 @@ J(\theta) = MSE(\theta) + \alpha/2*\sum_{i=1}^{n} \theta_{i}^{2}
 1. 求和从i=1开始，对偏置项不正则化。
 2. 执行岭回归前，要对数据进行缩放（大多数正则化模型都需要）。
 #+END_EXAMPLE
-与线性回归相同，可以直接闭式解，也可以使用随机梯度下降。sklearn的Ridge执行闭式解法，利用Andre-Louis Cholesdy的矩阵因式分解：
+与线性回归相同，可以直接闭式解，也可以使用随机梯度下降。sklearn的Ridge执行闭式解法，
+利用Andre-Louis Cholesdy的矩阵因式分解：
 #+BEGIN_SRC python
 from sklearn.linear_model import Ridge
 # ridge_reg = Ridge(alpha=1, solver="sag", random_state=42)
@@ -222,9 +229,10 @@ for epoch in range(1000):
         best_model = clone(sgd_reg)
 #+END_SRC
 *** 4.4 逻辑回归 Logistic Regression
-一些回归算法也被用于分类任务，反之亦然。
+一些回归算法也被用于分类任务，反之亦然。逻辑回归依然是线性模型。
 逻辑回归，也叫罗吉思回归，被广泛用于估算一个实例属于某个特定类别的概率。如果预概率测超过50%，则判定为正类，反之则为负类。这样它就成一个二元分类器。
 与线性回归不同的是，它用 *\theta^{T}\cdot X* 的sigmoid函数值作为概率值，而不是 *\theta^{T}\cdot X* 本身：
+
 #+attr_html: :width 500px
 [[file:images/logistic.png]]
 
@@ -240,10 +248,67 @@ for epoch in range(1000):
 [[file:pdfs/logistic.pdf]]
 #+END_LaTeX
 #+END_COMMENT
-\sigma(t)是sigmoid函数
-# #+begin_center
-\ 00A0 \sigma(t) = 1/(1+exp(-t))
-# #+end_center
+\sigma(t)是sigmoid函数：
 
-成本函数为：
+#+BEGIN_COMMENT
+#+BEGIN_SRC latex :file pdfs/sigmoid.pdf
+\[
+\sigma(t) = \frac{1}{(1+exp(-t))}
+\]
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_LaTeX
+[[file:pdfs/sigmoid.pdf]]
+#+END_LaTeX
+#+END_COMMENT
+
+#+attr_html: :width 500px
+[[file:images/sigmoid.png]]
+
+成本函数为log损失函数：
+
+#+BEGIN_COMMENT
+#+BEGIN_SRC latex :file pdfs/cost_log.pdf
+\[
+J(\theta) = - \frac{1}{m}\sum_{i=1}^{n} [y^{(i)}\rm{log}(
+\hat{p}^{(i)}) + (1-y^{(i)})\rm{log}(1-\hat{p}^{(i)})]
+\]
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_LaTeX
+[[file:pdfs/cost_log.pdf]]
+#+END_LaTeX
+#+END_COMMENT
+
+#+attr_html: :width 500px
+[[file:images/cost-log.png]]
+
+这个函数没有闭式解，只能迭代优化，而且它是个凸函数。可以用随机梯度下降等优化算法求解。
+如下：
+
+#+begin_src python
+from sklearn.linear_model import LogisticRegression
+log_reg = LogisticRegression(solver="liblinear", random_state=42)
+log_reg.fit(X, y)
+#+end_src
+
+**** 决策边界
+决策边界，顾名思义，就是用来划清界限的边界，边界的形态可以不定，可以是点，可以是线，
+也可以是平面。Andrew Ng 在公开课中强调：“决策边界是预测函数h_{\theta}(x)的属性，
+而不是训练集属性”，这是因为能作出“划清”类间界限的只有h_{\theta}(x)，而训练集只是用来
+训练和调节参数的。
+
+决策边界由h_{\theta}(x) = \theta^{T} \cdot X = 0定义，所以如果h_{\theta}(x)
+函数是线性的，那么决策边界就是线性的;如果h_{\theta}(x)是非线性的，那么决策边界就是线性的。
+
+#+begin_example
+注意： 与上述多项式回归同理，虽然决策边界是非线性的，但是模型依然是线性的。
+#+end_example
+
+**** 逻辑回归的正则化
+与其他线性模型一样，逻辑回归也可以用l_{1}或l_{2}惩罚函数来正则化，默认是l_{2}函数。
+sklearn的LogisticRegression类中控制正则化程度的超参为C，是\alpha 的逆反，（其他
+线性模型为\alpha ），C越 +大+ 小，正则化程度越大。
 *** 4.5 多元逻辑回归 Softmax Regression (Multinomial Regression)
