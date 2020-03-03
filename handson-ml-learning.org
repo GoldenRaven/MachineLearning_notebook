@@ -1,4 +1,16 @@
-#+LATEX_HEADER: math
+#+BEGIN_COMMENT
+#+BEGIN_SRC sh :session
+bash crop-convert.bash
+#+END_SRC
+
+#+RESULTS:
+| /home/ligy/Documents/MachineLearning_notebook/images |       |            |         |           |          |           |    |       |           |
+| PDFCROP                                              | 1.38, | 2012/11/02 | -       | Copyright | (c)      | 2002-2012 | by | Heiko | Oberdiek. |
+| ==>                                                  |     1 | page       | written | on        | `1.pdf'. |           |    |       |           |
+| logistic.pdf                                         |       |            |         |           |          |           |    |       |           |
+
+#+END_COMMENT
+
 * 《机器学习实战》学习笔记
 ** 注意
 - 对收入分层抽样，不能分太多层
@@ -211,8 +223,22 @@ for epoch in range(1000):
 #+END_SRC
 *** 4.4 逻辑回归 Logistic Regression
 一些回归算法也被用于分类任务，反之亦然。逻辑回归，也叫罗吉思回归，被广泛用于估算一个实例属于某个特定类别的概率。如果预概率测超过50%，则判定为正类，反之则为负类。这样它就成一个二元分类器。与线性回归不同的是，它用 *\theta^{T}\cdot X* 的sigmoid函数值作为概率值，而不是 *\theta^{T}\cdot X* 本身。
-#+attr_html: :width 100px
+#+attr_html: :width 600px
+# [[file:images/logistic.png]]
+
 [[file:images/logistic.png]]
 
+#+BEGIN_COMMENT
+#+BEGIN_SRC latex :file images/logistic.pdf
+\[
+\hat{p} = h_\theta(\textbf{X}) = \sigma(\theta^T\cdot \textbf{X})
+\]
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_LaTeX
+[[file:images/logistic.pdf]]
+#+END_LaTeX
+#+END_COMMENT
 成本函数为：
 *** 4.5 多元逻辑回归 Softmax Regression (Multinomial Regression)
