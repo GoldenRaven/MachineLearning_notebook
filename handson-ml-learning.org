@@ -283,7 +283,7 @@ J(\theta) = - \frac{1}{m}\sum_{i=1}^{n} [y^{(i)}\rm{log}(
 #+END_COMMENT
 
 #+attr_html: :width 500px
-[[file:images/cost-log.png]]
+[[file:images/cost_log.png]]
 
 这个函数没有闭式解，只能迭代优化，而且它是个凸函数。可以用随机梯度下降等优化算法求解。
 如下：
@@ -301,14 +301,15 @@ log_reg.fit(X, y)
 训练和调节参数的。
 
 决策边界由h_{\theta}(x) = \theta^{T} \cdot X = 0定义，所以如果h_{\theta}(x)
-函数是线性的，那么决策边界就是线性的;如果h_{\theta}(x)是非线性的，那么决策边界就是线性的。
+函数是线性的，那么决策边界就是线性的;如果h_{\theta}(x)是非线性的，那么决策边界就是非
+线性的。
 
 #+begin_example
 注意： 与上述多项式回归同理，虽然决策边界是非线性的，但是模型依然是线性的。
 #+end_example
 
 **** 逻辑回归的正则化
-与其他线性模型一样，逻辑回归也可以用l_{1}或l_{2}惩罚函数来正则化，默认是l_{2}函数。
-sklearn的LogisticRegression类中控制正则化程度的超参为C，是\alpha 的逆反，（其他
-线性模型为\alpha ），C越 +大+ 小，正则化程度越大。
+与其他线性模型一样，逻辑回归也可以用'l_{1}','l_{2}'或'elasticnet'惩罚函数来正则化，
+默认是l_{2}函数。sklearn的LogisticRegression类中控制正则化程度的超参为C，
+是\alpha 的逆反，（其他线性模型为\alpha ），C越 +大+ 小，正则化程度越大。
 *** 4.5 多元逻辑回归 Softmax Regression (Multinomial Regression)
