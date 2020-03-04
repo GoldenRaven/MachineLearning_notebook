@@ -2,8 +2,10 @@
 这个笔记的大部分是leonvanbokhorst的Github帐号下词条NoteBooks-Statistics-and-MachineLearning
 的内容，其余部分是自己的总结。原词条下的内容在我学习后会陆续加进来，更多内容请至原词条查看，
 [[https://github.com/leonvanbokhorst/NoteBooks-Statistics-and-MachineLearning][这里是原项目地址]]。
-** [[https://github.com/leonvanbokhorst/NoteBooks-Statistics-and-MachineLearning/blob/master/0001%20Using%20Python%20pandas%20Series.ipynb][Using Python pandas Series]]
-** [[https://github.com/leonvanbokhorst/NoteBooks-Statistics-and-MachineLearning/blob/master/0002%20Using%20Python%20pandas%20DataFrame.ipynb][Using Python pandas DataFrame]]
+** Series
+- [[https://github.com/leonvanbokhorst/NoteBooks-Statistics-and-MachineLearning/blob/master/0001%20Using%20Python%20pandas%20Series.ipynb][Using Python pandas Series.ipynb]]
+** DataFrame
+- [[https://github.com/leonvanbokhorst/NoteBooks-Statistics-and-MachineLearning/blob/master/0002%20Using%20Python%20pandas%20DataFrame.ipynb][Using Python pandas DataFrame.ipynb]]
 - DataFrame中的方法属性：
 #+NAME: df_methods
 #+BEGIN_src example
