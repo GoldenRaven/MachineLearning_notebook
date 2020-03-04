@@ -3,18 +3,19 @@
 #+AUTHOR: GoldenRaven
 #+DATE: 2020年3月4日
 #+EMAIL: li.gaoyang@foxmail.com
+#+OPTIONS: num:t
 
 本笔记是我在学习过程中阅读过的内容，以及自己的总结，原作者内容请跟随链接跳转。
 
 * 目录                                                          :TOC@2:QUOTE:
 #+BEGIN_QUOTE
-- [[#python最佳实践指南-hitchhikers-guide-to-python的中文翻译][Python最佳实践指南 "Hitchhiker's Guide to Python"的中文翻译]]
+- [[#python最佳实践指南][Python最佳实践指南]]
   - [[#写出优雅的python代码][写出优雅的Python代码]]
 - [[#常用函数][常用函数]]
 #+END_QUOTE
 
-* Python最佳实践指南 "Hitchhiker's Guide to Python"的中文翻译
-本章内容来源于项目地址：[[https://github.com/Prodesire/Python-Guide-CN][https://github.com/Prodesire/Python-Guide-CN]]，我发现这个项目是源于
+* Python最佳实践指南
+本章内容是"Hitchhiker's Guide to Python"的中文翻译，来源于项目地址：[[https://github.com/Prodesire/Python-Guide-CN][https://github.com/Prodesire/Python-Guide-CN]]，我发现这个项目是源于
 [[https://github.com/521xueweihan/HelloGitHub][这个有趣的项目: HelloGitHub]]的推荐。
 ** 写出优雅的Python代码
 *** 代码风格
@@ -34,21 +35,21 @@ Python代码具有高可读性的其中一个原因是它的相对完整的代�
 - 习语 (Idiom)
   - 解包（unpacking）
   - 创建一个被忽略的变量（如果您需要赋值（比如，在 解包（Unpacking） ）但不需要这个变量，
-    请使用 __，而不是_）
+    请使用 ~__~ ，而不是 ~_~ ）
   - 创建一个含N个列表的列表（用列表推导）
-  - 根据列表来创建字符串（''.join(l)）
+  - 根据列表来创建字符串（ ~''.join(l)~ ）
   - Python事实上的代码风格指南（PEP8）
 - 约定
-  - 访问字典元素（x in d）
-  - 过滤列表（filter()）
+  - 访问字典元素（ ~x in d~ ）
+  - 过滤列表（ ~filter()~ ）
   - 如果只是要遍历列表，请考虑使用迭代器
   - 如果有其他变量引用原始列表，则修改它可能会有风险。但如果你真的想这样做，
     你可以使用 切片赋值（slice assignment）
   - 请记住，赋值永远不会创建新对象
   - 创建一个新的列表对象并保留原始列表对象会更安全
-  - 使用 enumerate() 函数比手动维护计数有更好的可读性。而且，
+  - 使用 ~enumerate()~ 函数比手动维护计数有更好的可读性。而且，
     它对迭代器进行了更好的优化
-  - 使用 with open 语法来读取文件会更好，因为它能确保您总是关闭文件
+  - 使用 ~with open~ 语法来读取文件会更好，因为它能确保您总是关闭文件
   - 行的延续(一个更好的解决方案是在元素周围使用括号。左边以一个未闭合的括号开头，
     Python 解释器会把行的结尾和下一行连接起来直到遇到闭合的括号)
 *** 阅读好的代码
