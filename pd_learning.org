@@ -1,7 +1,14 @@
-* Python Pandas库笔记
-这个笔记的大部分是leonvanbokhorst的Github帐号下词条NoteBooks-Statistics-and-MachineLearning
-的内容，其余部分是自己的总结。原词条下的内容在我学习后会陆续加进来，更多内容请至原词条查看，
-[[https://github.com/leonvanbokhorst/NoteBooks-Statistics-and-MachineLearning][这里是原项目地址]]。
+# -*- org -*-
+#+TITLE: Python Pandas库笔记
+#+AUTHOR: GoldenRaven
+#+DATE: <2020-03-04 Wed>
+#+EMAIL: li.gaoyang@foxmail.com
+
+这是我学习过程的阅读资料及自己的总结。
+* NoteBooks-Statistics-and-MachineLearning内容
+这一节内容的大部分是leonvanbokhorst的Github帐号下词条NoteBooks-Statistics-and-MachineLearning
+的内容，其余部分是自己的总结。原词条下的内容在我学习后会陆续加进来，更多关于统计学和机器学习的内容
+请至原词条查看，[[https://github.com/leonvanbokhorst/NoteBooks-Statistics-and-MachineLearning][这里是原项目地址]]。
 ** Series
 - [[https://github.com/leonvanbokhorst/NoteBooks-Statistics-and-MachineLearning/blob/master/0001%20Using%20Python%20pandas%20Series.ipynb][Using Python pandas Series.ipynb]]
 ** DataFrame
@@ -38,3 +45,7 @@
 'tshift', 'tz_convert', 'tz_localize', 'unstack', 'update', 'values', 'var',
 'where', 'xs'
 #+END_SRC
+* pandas-tutorial内容
+本节内容来自词条[[https://github.com/hangsz/pandas-tutorial][pandas-tutorial]]，更多内容请自行跳转。
+** Series and DataFrame :Reading:
+- [[https://github.com/hangsz/pandas-tutorial/blob/master/1.%20Series%E5%92%8CDataFrame%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA.ipynb][1. Series和DataFrame对象的创建.ipynb]]
