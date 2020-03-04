@@ -4,7 +4,17 @@
 #+DATE: <2020-03-04 Wed>
 #+EMAIL: li.gaoyang@foxmail.com
 
+#+BEGIN_QUOTE
 这是我学习过程的阅读资料及自己的总结。
+#+END_QUOTE
+
+* 目录 :TOC@2:
+- [[#notebooks-statistics-and-machinelearning内容][NoteBooks-Statistics-and-MachineLearning内容]]
+  - [[#series][Series]]
+  - [[#dataframe][DataFrame]]
+- [[#pandas-tutorial内容][pandas-tutorial内容]]
+  - [[#series-and-dataframe][Series and DataFrame]]
+
 * NoteBooks-Statistics-and-MachineLearning内容
 这一节内容的大部分是leonvanbokhorst的Github帐号下词条NoteBooks-Statistics-and-MachineLearning
 的内容，其余部分是自己的总结。原词条下的内容在我学习后会陆续加进来，更多关于统计学和机器学习的内容
