@@ -7,12 +7,6 @@
 
 本笔记是我在学习过程中阅读过的内容，以及自己的总结，原作者内容请跟随链接跳转。
 
-* 目录                                                          :TOC@2:
-- [[#python最佳实践指南][Python最佳实践指南]]
-  - [[#写出优雅的python代码][写出优雅的Python代码]]
-- [[#python-编程经验分享][Python 编程经验分享]]
-  - [[#常用函数][常用函数]]
-
 * Python最佳实践指南
 本章内容是"Hitchhiker's Guide to Python"的中文翻译，来源于项目地址：[[https://github.com/Prodesire/Python-Guide-CN][https://github.com/Prodesire/Python-Guide-CN]]，我发现这个项目是源于
 [[https://github.com/521xueweihan/HelloGitHub][这个有趣的项目: HelloGitHub]]的推荐。

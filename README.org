@@ -9,17 +9,6 @@
 摘抄，而是我在学习中选择性地参考了不同资料的不同部分，自己学习的理解与总结。原词条都有相关链接，
 请自行跳转。
 
-* 目录                                                          :TOC@2:
-- [[#python学习笔记][Python学习笔记]]
-- [[#python-pandas库笔记][Python Pandas库笔记]]
-- [[#python-numpy库笔记][Python Numpy库笔记]]
-  - [[#copy-or-view][Copy or View?]]
-  - [[#数组的in-place改变][数组的in place改变]]
-  - [[#常用函数][常用函数]]
-- [[#机器学习实战学习笔记][《机器学习实战》学习笔记]]
-- [[#二分类问题示例kaggle-titanic][二分类问题示例Kaggle Titanic]]
-- [[#一些其他有用的东西][一些其他有用的东西]]
-
 * [[file:Python_learning_notebook.org][Python学习笔记]]
 * [[file:pd_learning.org][Python Pandas库笔记]]
 * Python Numpy库笔记
