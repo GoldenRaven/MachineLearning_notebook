@@ -1,3 +1,10 @@
+# -*- org -*-
+#+TITLE: 《机器学习实战》笔记
+#+AUTHOR: GoldenRaven
+#+DATE: <2020-02-27 Thu>
+#+EMAIL: li.gaoyang@foxmail.com
+#+OPTIONS: num:t
+
 #+BEGIN_COMMENT
 #+BEGIN_SRC sh :session
 bash crop-convert.bash

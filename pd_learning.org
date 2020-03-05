@@ -3,6 +3,7 @@
 #+AUTHOR: GoldenRaven
 #+DATE: <2020-03-04 Wed>
 #+EMAIL: li.gaoyang@foxmail.com
+#+OPTIONS: num:t
 
 #+BEGIN_QUOTE
 这是我学习过程的阅读资料及自己的总结。
