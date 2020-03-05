@@ -7,12 +7,11 @@
 
 本笔记是我在学习过程中阅读过的内容，以及自己的总结，原作者内容请跟随链接跳转。
 
-* 目录                                                          :TOC@2:QUOTE:
-#+BEGIN_QUOTE
+* 目录                                                          :TOC@2:
 - [[#python最佳实践指南][Python最佳实践指南]]
   - [[#写出优雅的python代码][写出优雅的Python代码]]
-- [[#常用函数][常用函数]]
-#+END_QUOTE
+- [[#python-编程经验分享][Python 编程经验分享]]
+  - [[#常用函数][常用函数]]
 
 * Python最佳实践指南
 本章内容是"Hitchhiker's Guide to Python"的中文翻译，来源于项目地址：[[https://github.com/Prodesire/Python-Guide-CN][https://github.com/Prodesire/Python-Guide-CN]]，我发现这个项目是源于
@@ -74,7 +73,10 @@ HTTP数据，cookie处理，文件上传，强大的URL路由系统和一些社�
 Requests是Apache2许可的HTTP库，使用Python编写。
 
 Tablib是无格式的表格数据集库，使用Python编写。
-* 常用函数
+* Python 编程经验分享
+内容涵盖编码技巧、最佳实践与思维模式等方面，词条[[https://github.com/piglei/one-python-craftsman][https://github.com/piglei/one-python-craftsman]]
+
+** 常用函数
 #+BEGIN_SRC python
 %timeit func() # 考查操作的运行时间
 map(func_obj, iter1, iter2) # 但是请尽量用生成器
