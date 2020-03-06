@@ -1,9 +1,9 @@
 # -*- org -*-
-#+TITLE: 《机器学习实战》笔记
+# #+TITLE: 《机器学习实战》笔记
 #+AUTHOR: GoldenRaven
 #+DATE: <2020-02-27 Thu>
 #+EMAIL: li.gaoyang@foxmail.com
-#+OPTIONS: num:t
+# #+OPTIONS: num:t
 
 #+BEGIN_COMMENT
 #+BEGIN_SRC sh :session
@@ -18,7 +18,7 @@ bash crop-convert.bash
 
 #+END_COMMENT
 
-** 注意
+* 注意
 - 对收入分层抽样，不能分太多层
 - 分层方法：除以1.5，向上取整；然后合并大于5的分类
 - 地理数据可视化，用其他相关属性作为颜色，和散点大小
@@ -36,8 +36,8 @@ bash crop-convert.bash
 - 保存每个尝试过的模型，用pickel或sklearn的joblib
 - 训练集分数明显低于验证集分数，则过度拟合
 - 注意：目标值一般不进行绽放，并且只对训练集缩放
-** 第四章 训练（线性）模型
-*** 4.1 (纯)线性回归 Linear Regression
+* 第四章 训练（线性）模型
+** 4.1 (纯)线性回归 Linear Regression
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令x_0 = 1:
 #+ATTR_HTML: :width 400
 [[file:images/linear_hypothsis.png]]
@@ -47,7 +47,7 @@ bash crop-convert.bash
 #+attr_html: :width 400px
 [[file:images/MSE.png]]
 
-**** 4.1.1 闭式解-标准方程（normal equation）
+*** 4.1.1 闭式解-标准方程（normal equation）
 即直接通过解析表达式计算得到参数向量\theta:
 #+attr_html: :width 200px
 [[file:images/normal_equation.png]]
@@ -68,7 +68,7 @@ lin_reg.predict(X_new) # 预测
 theta_best_svd, residuals, rank, s = np.linalg.lstsq(X_b, y, rcond=1e-6)
 theta_best_svd
 #+END_SRC
-**** 4.1.2 梯度下降(迭代优化)
+*** 4.1.2 梯度下降(迭代优化)
 从随机值开始，每一步降低成本函数，直到成本函数最小值。每一步的步长取决于超参数: /学习率/ /\eta/ ( /learning rate/ ).
 # #+BEGIN_EXAMPLE
 注意：
@@ -78,9 +78,9 @@ theta_best_svd
 4. 可以使用sklearn的StandardScaler类。
 5. 学习率的选取很关键，可以限制迭代次数进行网格搜索。
 # #+END_EXAMPLE
-***** 4.1.2.1 批量梯度下降
+**** 4.1.2.1 批量梯度下降
 在计算梯度下降的每一步时，都基于整个训练集。训练集庞大时很耗时，但随特征数增大时，算法表现良好。
-***** 4.1.2.2 随机梯度下降
+**** 4.1.2.2 随机梯度下降
 在计算梯度下降的每一步时，只随机地使用一个训练集实例。训练集庞大时很耗时，但随特征数增大时，算法表现良好。
 - 当成本函数有局部最小时，可以跳出局部最小，找到全局最小
 - 设定 /学习计划/ ，开始时大步长，最后小步长（模拟退火）
@@ -91,9 +91,9 @@ sgd_reg = SGDRegressor(max_iter=50, tol=-np.infty, penalty=None, eta0=0.1, rando
 sgd_reg.fit(X, y.ravel())
 sgd_reg.intercept_, sgd_reg.coef_
 #+END_SRC
-***** 4.1.2.3 小批量梯度下降
+**** 4.1.2.3 小批量梯度下降
 在计算梯度下降的每一步时，只随机地使用一个小的实例集。主要优势在于可以用GPU加速计算。
-**** 4.1.3 标准方程与梯度下降对比
+*** 4.1.3 标准方程与梯度下降对比
 |--------------------------+----------------------------------------|
 | 梯度下降（Gradient descending） | 标准方程（Normal equation）              |
 |--------------------------+----------------------------------------|
@@ -105,9 +105,9 @@ sgd_reg.intercept_, sgd_reg.coef_
 |--------------------------+----------------------------------------|
 | 能应用在更复杂的算法中（如逻辑回归） | 需要矩阵可逆（满秩）                   |
 |--------------------------+----------------------------------------|
-*** 4.2 多项式回归 Polynomial Regression
+** 4.2 多项式回归 Polynomial Regression
 也称为多元线性回归，所以也属于线性回归，即使用以拟合非线性数据集。从参数\theta的角度看，这个模型将线性回归特征的高次幂项作为新的特征，并将它们线性组合起来，所以依然属于线性模型。
-**** 4.2.1 训练集增广
+*** 4.2.1 训练集增广
 将原特征的次幂项作为新的特征加入训练集，在这个拓展过的特征集上训练线性模型。可以使用sklearn的PolynomialFeatures类来进行：
 #+BEGIN_SRC python
 from sklearn.preprocessing import PolynomialFeatures
@@ -123,7 +123,7 @@ lin_reg.intercept_, lin_reg.coef_
 1. 高次幂项也包括特征的交叉项
 2. 作用PolynomialFeatures类要小心特征数量爆炸！
 #+END_EXAMPLE
-**** 4.2.2 学习曲线
+*** 4.2.2 学习曲线
 在使用模型时要经常判断：模型是否过度拟合或者拟合不足？
 - 一种是第二章中学习的，使用交叉验证来评估模型的泛化性能。如果在训练集上表现比交叉验证的泛化表现好很多，则是过度拟合。如果两者表现都不佳，则拟合不足。
 - 还有一种，即观察学习曲线。
@@ -136,11 +136,11 @@ lin_reg.intercept_, lin_reg.coef_
 *改进方法* :
 - 拟合不足：增加模型复杂程度
 - 过度拟合：提供更多数据，或约束模型（正则化）
-**** 4.2.3 偏差/方差权衡
+*** 4.2.3 偏差/方差权衡
 增加模型复杂度会显著减少模型的偏差，增加拟合的方差;相反，降低模型复杂度会显著提升模型的偏差，降低拟合的方差。
-*** 4.3 正则线性模型（线性模型的正则化）
+** 4.3 正则线性模型（线性模型的正则化）
 对多项式模型来说，正则化的简单方法是降低多项式除数;对线性模型来说，正则化通常通过约束模型的权重来实现，比如有如下三种不同的实现方法：岭回归、套索回归、弹性网络。
-**** 4.3.1 岭回归 Ridge Regression
+*** 4.3.1 岭回归 Ridge Regression
 也叫吉洪诺夫正则化，在成本函数中添加一个正则项 \alpha/2 \sum_{i=1}^{n} \theta_{i}^{2}。
 #+BEGIN_EXAMPLE
 注意：正则化只能在训练时添加到成本函数，完成训练后要用未经正则化的性能指标来评估模型性能。
@@ -171,7 +171,7 @@ sgd_reg.fit(X, y.ravel())
 sgd_reg.predict([[1.5]])
 #+END_SRC
 其中的penalty参数为惩罚的类型。
-**** 4.3.2 套索回归 Lasso Regression
+*** 4.3.2 套索回归 Lasso Regression
 套索回归是另一种正则化方法，也叫最小绝对收缩和选择算子回归（Least Absolute Shrinkage and Selection Operator Regression），简称Lasso。它为成本函数增加的一项是权重向量的l_{1}范数。Lasso回归的成本函数为：
 #+BEGIN_CENTER
 J(\theta) = MSE(\theta) + \alpha \sum_{i=1}^{n} |\theta_{i}|
@@ -189,7 +189,7 @@ sgd_reg = SGDRegressor(max_iter=50, tol=-np.infty, penalty="l1", random_state=42
 sgd_reg.fit(X, y.ravel())
 sgd_reg.predict([[1.5]])
 #+END_SRC
-**** 4.3.3 弹性网络 Elastic Net
+*** 4.3.3 弹性网络 Elastic Net
 弹性网络是岭回归和Lasso回归的中间地带，其正则项是它们正则项的混合，比例由r来控制。r=0时相当于岭回归，r=1时相当于Lasso回归。其成本函数为：
 #+BEGIN_CENTER
 J(\theta) = MSE(\theta) + r\alpha \sum_{i=1}^{n} |\theta_{i}| + (1-r)\alpha/2*\sum_{i=1}^{n} \theta_{i}^{2}
@@ -207,9 +207,9 @@ sgd_reg = SGDRegressor(max_iter=50, tol=-np.infty, penalty="elasticnet", random_
 elastic_net.fit(X, y)
 elastic_net.predict([[1.5]])
 #+END_SRC
-**** 4.3.4 如何在线性回归和以上三种回归之中选择呢？
+*** 4.3.4 如何在线性回归和以上三种回归之中选择呢？
 通常而言，有正则化总比没有强，所以大多数时候应该避免使用纯线性回归。岭回归是个不错的默认选择，但如果你觉得实际用到的特征只有少数几个，那就应该更倾向于Lasso或弹性网络，因为它们可以对特征进行自动选择。一般而言，弹性网络优于Lasso回归，因为当特征数大于训练实例数或特征强相关时，Lasso回归可能非常不稳定。
-**** 4.4.4 早期停止法
+*** 4.4.4 早期停止法
 对于梯度下降等迭代算法，还有一个正则化方法，就是在验证误差达到最小误差时停止训练。（可以先观察是否真正达到最小误差）
 #+BEGIN_SRC python
 from sklearn.base import clone
@@ -228,7 +228,7 @@ for epoch in range(1000):
         best_epoch = epoch
         best_model = clone(sgd_reg)
 #+END_SRC
-*** 4.4 逻辑回归 Logistic Regression
+** 4.4 逻辑回归 Logistic Regression
 一些回归算法也被用于分类任务，反之亦然。逻辑回归依然是线性模型。
 逻辑回归，也叫罗吉思回归，被广泛用于估算一个实例属于某个特定类别的概率。如果预概率测超过50%，则判定为正类，反之则为负类。这样它就成一个二元分类器。
 与线性回归不同的是，它用 *\theta^{T}\cdot X* 的sigmoid函数值作为概率值，而不是 *\theta^{T}\cdot X* 本身：
@@ -294,7 +294,7 @@ log_reg = LogisticRegression(solver="liblinear", random_state=42)
 log_reg.fit(X, y)
 #+end_src
 
-**** 决策边界
+*** 决策边界
 决策边界，顾名思义，就是用来划清界限的边界，边界的形态可以不定，可以是点，可以是线，
 也可以是平面。Andrew Ng 在公开课中强调：“决策边界是预测函数h_{\theta}(x)的属性，
 而不是训练集属性”，这是因为能作出“划清”类间界限的只有h_{\theta}(x)，而训练集只是用来
@@ -308,11 +308,11 @@ log_reg.fit(X, y)
 注意： 与上述多项式回归同理，虽然决策边界是非线性的，但是模型依然是线性的。
 #+end_example
 
-**** 逻辑回归的正则化
+*** 逻辑回归的正则化
 与其他线性模型一样，逻辑回归也可以用“l_{1}”, “l_{2}”或“elasticnet”惩罚函数来正则化，
 默认是l_{2}函数。sklearn的LogisticRegression类中控制正则化程度的超参为C，
 是\alpha 的逆反，（其他线性模型为\alpha ），C越 +大+ 小，正则化程度越大。
-*** 4.5 多元逻辑回归 Softmax Regression
+** 4.5 多元逻辑回归 Softmax Regression
 对于多分类问题，如前所述，可以采用OvA策略，也可采用OvO策略。OvA指为每个类别分别训练一
 个二分类器，用以识别是否是该类别，对于特定实例取最近的类别为预测类别。即将多分类转化成
 多次二分类问题。OvO策略指任何两个类别训练一个二分类器，如MNIST中，要训练C_{10}^{2}=45
@@ -441,7 +441,7 @@ y_predict = softmax_reg.predict(X_new) # 预测特定实例的类别
 
 #+attr_html: :width 600px
 [[file:images/decision_boundary.png]]
-** 第五章 支持向量机（SVM, support vector machine）
+* 第五章 支持向量机（SVM, support vector machine）
 #+BEGIN_QUOTE
 只读一本书不是学习，而是娱乐。
 #+END_QUOTE
@@ -449,7 +449,7 @@ y_predict = softmax_reg.predict(X_new) # 预测特定实例的类别
 于 ~异常值检测~ 任务。SVM是机器学习领域最受欢迎的模型之一，特别适用于中小型复杂
 数据集的分类。
 
-** 线性SVM分类（SVC）
+** 线性SVM分类
 数据集可以分为线性可分和线性不可分，也就是说可不可以用一条直线轻松地分开。
 #+begin_example
 疑问：线性SVM分类器是个二分类器？
