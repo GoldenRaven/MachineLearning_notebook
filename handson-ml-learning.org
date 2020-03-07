@@ -593,7 +593,7 @@ rbf_kernel_svm_clf.fit(X, y) # 训练数据
   2. 超参C的作用：正则化，越小正则化越强。
 #+END_EXAMPLE
 
-*** 算法对比
+*** sklearn的分类算法对比
 这么多核函数，该如何选择呢？
 
 #+name: sklearn线性SVM分类算法对比
@@ -625,3 +625,57 @@ rbf_kernel_svm_clf.fit(X, y) # 训练数据
 - 如果训练不是很大，可以尝试高斯RBF核，大多数情况都很好用。
 - 如果你还有多余时间和计算能力，可以使用交叉和网格搜索来尝试其他核函数，尤其是那些专门
   针对你的数据集数据结构的核函数（如字符串核）。
+*** SVM回归（线性和非线性回归任务）
+SVM不仅可以用于线性、非线性分类，还可以用于线性和非线性回归。需要转换一下思路：
+不再是在拟合两个类别之间最宽的街道的同时限制间隔违例，SVM回归要做的是让尽可能多的实
+例位于街道上，同时限制间隔违例（不在街道上的实例）。街道的宽度由超参数\epsilon
+控制。
+
+与SVM分类同理，间隔内添加更多的实例不影响模型的预测，所以这个模型被为\epsilon
+不敏感。
+
+对于线性的回归任务，可以用sklearn的LinearSVR类来执行，代码如下：
+
+#+BEGIN_SRC python
+import numpy as np
+from sklearn import datasets
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVR
+
+iris = datasets.load_iris()
+X = iris["data"][:, (2, 3)]  # petal length, petal width
+y = (iris["target"] == 2).astype(np.float64)  # Iris-Virginica
+
+svm_reg = Pipeline([
+        ("scaler", StandardScaler()), # 需要缩放特征，并集中
+        ("linear_svr", LinearSVR(epsilon=1.5)), # 线性支持向量机回归
+    ])
+
+svm_reg.fit(X, y)
+svm_reg.predict([[5.5, 1.7]])
+#+END_SRC
+
+对于非线性的回归任务，可以用核化的SVC类。
+
+#+BEGIN_SRC python
+from sklearn.svm import SVR
+
+svm_reg = Pipeline([
+        ("scaler", StandardScaler()), # 需要缩放特征，并集中
+        ("svr", SVR(kernel='poly',degree=2, C=100, epsilon=0.1)), # 线性支持向量机回归
+    ])
+
+svm_reg.fit(X, y)
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+注意：
+1. SVR类是SVC类的回归等价物
+2. LinearSVR类是LinearSVC类的回归等价物
+3. 它们性质也与它们的等价物相同，见章节：sklearn的分类算法对比
+#+END_EXAMPLE
+
+** SVM的工作原理
+上面我们讲了如何用sklearn来训练一个SVM分类器或回归器，但是SVM是如何预测的？
+又是如何训练的呢？
