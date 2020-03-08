@@ -704,13 +704,14 @@ w^{T}\cdot *x* + b = w_{1}x_{1} + \cdot\cdot\cdot + w_{n}x_{n} + b
 硬间隔和软间隔分类都是线性约束的凸二次优化问题，被称为二次规划（QP）。
 
 可以对原始问题使用梯度下降，成本函数为 ~hinge损失函数~ ，使用方法与Loss回归一样。
-
-线性SVM目标（原始问题）的对偶问题形式：
+原问题的成本函数为：
 
 #+ATTR_HTML: :width 700
-[[file:images/dual.png]]
+[[file:images/loss-hinge.png]]
 
+#+BEGIN_EXAMPLE
 使用对偶问题的原因是它可以使用核技巧，而原问题不可以。
+#+END_EXAMPLE
 
 *** 非线性SVM分类
 
@@ -728,6 +729,7 @@ Mercer定理：
 #+ATTR_HTML: :width 800
 [[file:images/kernels.png]]
 
+对于大规模非线性问题，你可能需要使用神经网络模型。
 *** 线性SVM回归
 
 #+ATTR_HTML: :width 900
