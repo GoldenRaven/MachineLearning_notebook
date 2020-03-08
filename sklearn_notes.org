@@ -1,4 +1,4 @@
-#+TITLE: Scikit-learn 0.2学习笔记
+#+TITLE: Scikit-learn 学习笔记
 #+AUTHOR: GoldenRaven
 #+DATE: 2020年3月8日
 
