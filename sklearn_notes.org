@@ -1,0 +1,248 @@
+#+TITLE: Scikit-learn 0.2学习笔记
+#+AUTHOR: GoldenRaven
+#+DATE: 2020年3月8日
+
+这个笔记是Scikit-learn 0.22.2版本User Guide学习过程的记录，地址在[[https://scikit-learn.org/stable/user_guide.html]]
+0.21.3版本的中文翻译地址为[[https://sklearn.apachecn.org/docs/0.21.3/]]，由apachecn维护。
+
+1. 简单高效的数据挖掘和数据分析工具
+2. 可供大家在各种环境中重复使用
+3. 建立在 NumPy ，SciPy 和 matplotlib 上
+4. 开源，可商业使用 - BSD许可证
+
+* 监督学习
+** 广义线性模型
+
+在整个模块中，我们定义向量w=(w_{1}, \cdot\cdot\cdot, w_{p})作为 ~coef_~ ，
+定义w_{0}作为 ~intercept_~ 。
+
+*** 普通最小二乘法
+
+~LinearRegression~ 调用 fit 方法来拟合数组 X， y，并且将线性模型的系数 w
+存储在其成员变量 coef_ 中:
+
+#+BEGIN_SRC python
+>>> from sklearn import linear_model
+>>> reg = linear_model.LinearRegression()
+>>> reg.fit ([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
+LinearRegression(copy_X=True, fit_intercept=True, n_jobs=1, normalize=False)
+>>> reg.coef_
+array([ 0.5,  0.5])
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+注意：对于普通最小二乘的系数估计问题，其依赖于模型各项的相互独立性。
+#+END_EXAMPLE
+
+当各项是相关的，且设计矩阵 X 的各列近似线性相关，那么，设计矩阵会趋向于奇异矩阵，
+这种特性导致最小二乘估计对于随机误差非常敏感，可能产生很大的方差。
+
+~LinearRegression~ 使用X矩阵的奇异值分解，如果 m>=n, 则复杂度为 O(m*n^{2}) 。
+
+*** 岭回归 Ridge
+Ridge回归通过对系数的大小施加惩罚来解决普通最小二乘法的一些问题。
+岭系数最小化的是带罚项的残差平方和，超参 \alpha >= 0, 越大正则化越强。
+与其他线性模型一样， Ridge 用 ~fit~ 方法完成拟合，并将模型系数 w 存储在其
+~coef_~ 成员中:
+
+#+BEGIN_SRC python
+>>> from sklearn import linear_model
+>>> reg = linear_model.Ridge (alpha = .5)
+>>> reg.fit ([[0, 0], [0, 0], [1, 1]], [0, .1, 1])
+Ridge(alpha=0.5, copy_X=True, fit_intercept=True, max_iter=None,
+ normalize=False, random_state=None, solver='auto', tol=0.001)
+>>> reg.coef_
+array([ 0.34545455,  0.34545455])
+>>> reg.intercept_
+0.13636...
+#+END_SRC
+
+这种方法与普通最小二乘法的复杂度是相同的。
+
+设置正则化参数：广义交叉验证。RidgeCV 通过内置的关于的 alpha 参数的交叉验证来实现岭回归。
+该对象与 GridSearchCV 的使用方法相同，只是它默认为 Generalized Cross-Validation
+(广义交叉验证 GCV)。指定cv属性的值将触发(通过GridSearchCV的)交叉验证。例如，cv=10
+将触发10折的交叉验证，而不是广义交叉验证(GCV)。
+
+#+BEGIN_SRC python
+>>> from sklearn import linear_model
+>>> reg = linear_model.RidgeCV(alphas=[0.1, 1.0, 10.0])
+>>> reg.fit([[0, 0], [0, 0], [1, 1]], [0, .1, 1])
+RidgeCV(alphas=[0.1, 1.0, 10.0], cv=None, fit_intercept=True, scoring=None,
+ normalize=False)
+>>> reg.alpha_
+0.1
+#+END_SRC
+*** Lasso
+Lasso 是拟合稀疏系数的线性模型。 它在一些情况下是有用的，因为它倾向于使用具有较少参数值的情况，
+有效地减少给定解决方案所依赖变量的数量。 因此，Lasso 及其变体是压缩感知领域的基础。
+它由一个带有 l_{1} 先验的正则项的线性模型组成。
+
+Lasso 类的实现使用了 coordinate descent （ ~坐标下降算法~ ）来拟合系数:
+
+#+BEGIN_SRC python
+>>> from sklearn import linear_model
+>>> reg = linear_model.Lasso(alpha = 0.1)
+>>> reg.fit([[0, 0], [1, 1]], [0, 1])
+Lasso(alpha=0.1, copy_X=True, fit_intercept=True, max_iter=1000,
+ normalize=False, positive=False, precompute=False, random_state=None,
+ selection='cyclic', tol=0.0001, warm_start=False)
+>>> reg.predict([[1, 1]])
+array([ 0.8])
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+注意：由于 Lasso 回归产生稀疏模型，因此可以用于执行特征选择
+#+END_EXAMPLE
+
+\alpha 和 SVM 的正则化参数C 之间的等式关系是 \alpha = 1 / C 或者 \alpha =
+ 1 / (n_samples * C) ，依赖于估计器和模型优化的确切的目标函数。
+
+*** 弹性网络
+弹性网络 是一种使用 l_{1}， l_{2} 范数作为先验正则项训练的线性回归模型。在实践中，Lasso
+ 和 Ridge 之间权衡的一个优势是它允许在循环过程（Under rotate）中继承 Ridge 的稳定性。
+
+ElasticNetCV 类可以通过交叉验证来设置参数 alpha （ \alpha ） 和 l1_ratio （ \rho ） 。
+
+*** 贝叶斯回归
+**** 贝叶斯岭回归
+*** 逻辑回归
+logistic 回归，虽然名字里有 “回归” 二字，但实际上是解决分类问题的一类线性模型。
+在某些文献中，logistic 回归又被称作 logit 回归，maximum-entropy classification
+（MaxEnt，最大熵分类），或 log-linear classifier（对数线性分类器）。该模型利用函数
+logistic function 将单次试验（single trial）的可能结果输出为概率。
+
+scikit-learn 中 logistic 回归在 LogisticRegression 类中实现了二分类（binary）、
+一对多分类（one-vs-rest）及多项式 logistic 回归，并带有可选的 L1 和 L2 正则化。
+
+总的来说，各求解器特点如下:
+
+
+| 罚项                             | liblinear   | lbfgs   | newton-cg   | sag   | saga   |
+| -----                            | -----       | -----   | -----       | ----- | -----  |
+| 多项式损失+L2罚项                | ×          | √      | √          | √    | √     |
+| 一对剩余（One vs Rest） + L2罚项 | √          | √      | √          | √    | √     |
+| 多项式损失 + L1罚项              | ×          | ×      | ×          | ×    | √     |
+| 一对剩余（One vs Rest） + L1罚项 | √          | ×      | ×          | ×    | √     |
+| 弹性网络                         | ×          | ×      | ×          | ×    | √     |
+| 无罚项                           | ×          | √      | √          | √    | √     |
+| **表现**                         |             |         |             |       |        |
+| 惩罚偏置值(差)                   | √          | ×      | ×          | ×    | ×     |
+| 大数据集上速度快                 | ×          | ×      | ×          | √    | √     |
+| 未缩放数据集上鲁棒               | √          | √      | √          | ×    | ×     |
+
+默认情况下，lbfgs求解器鲁棒性占优。对于大型数据集，saga求解器通常更快。对于大数据集，
+还可以用 SGDClassifier ，并使用对数损失（log loss）这可能更快，但需要更多的调优。
+
+LogisticRegressionCV 对 logistic 回归 的实现内置了交叉验证（cross-validation），
+可以找出最优的 C和l1_ratio参数 。newton-cg， sag， saga 和 lbfgs 在高维数据上更快，
+这是因为采用了热启动（warm-starting）。
+
+*** 随机梯度下降， SGD
+随机梯度下降是拟合线性模型的一个简单而高效的方法。在样本量（和特征数）很大时尤为有用。
+方法 partial_fit 可用于 online learning （在线学习）或基于 out-of-core
+learning （外存的学习）
+
+SGDClassifier 和 SGDRegressor 分别用于拟合分类问题和回归问题的线性模型，
+可使用不同的（凸）损失函数，支持不同的罚项。 例如，设定 loss="log" ，则 SGDClassifier
+拟合一个逻辑斯蒂回归模型，而 loss="hinge" 拟合线性支持向量机（SVM）。
+*** Perceptron（感知器）
+Perceptron 是适用于大规模学习的一种简单算法。默认情况下：
+
+- 不需要设置学习率（learning rate）。
+- 不需要正则化处理。
+- 仅使用错误样本更新模型。
+最后一点表明使用合页损失（hinge loss）的感知机比 SGD 略快，所得模型更稀疏。
+*** Passive Aggressive Algorithms（被动攻击算法）
+*** 稳健回归（Robustness regression）: 处理离群点（outliers）和模型错误
+*** 多项式回归：用基函数展开线性模型
+机器学习中一种常见的模式，是使用线性模型训练数据的非线性函数。这种方法保持了一般快速的线性方法的性能，
+同时允许它们适应更广泛的数据范围。
+** 线性和二次判别分析
+Linear Discriminant Analysis（线性判别分析）(discriminant_analysis.LinearDiscriminantAnalysis)
+ 和 Quadratic Discriminant Analysis （二次判别分析）(discriminant_analysis.QuadraticDiscriminantAnalysis)
+ 是两个经典的分类器。 正如他们名字所描述的那样，他们分别代表了线性决策平面和二次决策平面。
+** 内核岭回归
+** 支持向量机
+支持向量机 (SVMs) 可用于以下监督学习算法: 分类, 回归 和 异常检测。
+
+支持向量机的优势在于:
+- 在高维空间中非常高效.
+- 即使在数据维度比样本数量大的情况下仍然有效.
+- 在决策函数（称为支持向量）中使用训练集的子集,因此它也是高效利用内存的.
+- 通用性: 不同的核函数与特定的决策函数一一对应.常见的 kernel 已经提供,
+  也可以指定定制的内核.
+
+支持向量机的缺点包括:
+- 如果特征数量比样本数量大得多,在选择核函数时要避免过拟合,而且正则化项是非常重要的.
+- 支持向量机不直接提供概率估计,这些都是使用昂贵的五次交叉验算计算的.
+*** 分类
+SVC, NuSVC 和 LinearSVC 能在数据集中实现多元分类。SVC 和 NuSVC 为多元分类实现了
+“one-against-one”的方法(Knerr et al., 1990)。LinearSVC实现“one-vs-the-rest”
+多类别策略。
+*** 回归
+支持向量回归有三种不同的实现形式: SVR, NuSVR 和 LinearSVR。
+*** 密度估计, 异常（novelty）检测
+** 随机梯度下降
+随机梯度下降(SGD)是一种简单但又非常高效的方法，主要用于凸损失函数下线性分类器的判别式学习，
+例如(线性) 支持向量机 和 Logistic 回归 。
+
+Stochastic Gradient Descent （随机梯度下降法）的优势:
+- 高效。
+- 易于实现 (有大量优化代码的机会)。
+
+Stochastic Gradient Descent （随机梯度下降法）的劣势:
+- SGD 需要一些超参数，例如 regularization （正则化）参数和 number of
+   iterations （迭代次数）。
+- SGD 对 feature scaling （特征缩放）敏感。
+*** 分类
+SGDClassifier支持分类问题不同的损失函数和正则化方法。具体的loss function（损失函数）
+可以通过 loss 参数来设置。SGDClassifier 支持以下的 loss functions（损失函数）：
+- loss="hinge": (soft-margin) linear Support Vector Machine （（软-间隔）线性支持向量机），
+- loss="modified_huber": smoothed hinge loss （平滑的 hinge 损失），
+- loss="log": logistic regression （logistic 回归），
+- and all regression losses below（以及所有的回归损失）。
+
+具体的惩罚方法可以通过 penalty 参数来设定。 SGD 支持以下 penalties（惩罚）:
+- penalty="l2": L2 norm penalty on coef_.
+- penalty="l1": L1 norm penalty on coef_.
+- penalty="elasticnet": Convex combination of L2 and L1（L2 型和 L1
+  型的凸组合）: (1 - l1_ratio) * L2 + l1_ratio * L1
+
+SGDClassifier通过利用“one versus all”（OVA）方法来组合多个二分类器，从而实现多分类。
+*** 回归
+SGDRegressor类实现了一个简单的随机梯度下降学习例程，它支持用不同的损失函数和惩罚来拟合线性回归模型。
+SGDRegressor 非常适用于有大量训练样本（>10,000)的回归问题，对于其他问题，我们推荐使用
+Ridge ，Lasso ，或 ElasticNet 。
+*** 实用小贴士
+- 随机梯度下降法对 feature scaling （特征缩放）很敏感，因此强烈建议您缩放您的数据
+- 最好使用 GridSearchCV 找到一个合理的 regularization term （正则化项） \alpha ，
+  它的范围通常在 10.0**-np.arange(1,7)
+- 经验表明，SGD 在处理约 10^6 训练样本后基本收敛。因此，对于迭代次数第一个合理的猜想是
+  n_iter = np.ceil(10**6 / n)，其中 n 是训练集的大小。
+- 我们发现，当特征很多或 eta0 很大时， ASGD（平均随机梯度下降） 效果更好。
+*** 数学描述
+为了做预测， 我们只需要看 f(x) 的符号。找到模型参数的一般选择是通过最小化由以下式子给出的正则化训练误差。
+[[file:images/580270908cf4e5ba3907b7267fcfbb44.jpg]]
+其中 L 衡量模型(mis)拟合程度的损失函数，R 是惩罚模型复杂度的正则化项（也叫作惩罚）; \alpha > 0
+是一个超参数。
+
+L 的不同选择产生不同的分类器，例如：
+- Hinge: (软-间隔) 支持向量机。
+- Log: Logistic 回归。
+- Least-Squares: 岭回归。
+- Epsilon-Insensitive: (软-间隔) 支持向量回归
+
+比较流行的正则化项 R 包括：
+- L2 norm: R(w) := \frac{1}{2} \sum_{i=1}^{n} w_i^2,
+- L1 norm: R(w) := \sum_{i=1}^{n} |w_i|, 这导致了稀疏解。
+- Elastic Net: R(w) := \frac{\rho}{2} \sum_{i=1}^{n} w_i^2 + (1-\rho) \sum_{i=1}^{n} |w_i|,
+  l2和l1的凸组合, 其中 \rho由1 - l1_ratio给出.
+** 最近邻
+* 无监督学习
+* 模型选择和求解
+* 检查
+* 可视化
+* 数据集转换
+* 数据集加载工具
+* 用Scikit-learn计算

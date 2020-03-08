@@ -38,6 +38,7 @@ d.resize(2, 3) # 无返回值，将原数组形变，接收元组
 f = d.reshape(（2,3）) # 返回变形后的数组，原数组不变，接收元组
 #+END_SRC
 * [[file:handson-ml-learning.org][《机器学习实战》学习笔记]]
+* [[file:sklearn_notes.org][sklearn学习笔记]]
 * [[file:Kaggle_Titanic.org][二分类问题示例Kaggle Titanic]]
 * 一些其他有用的东西
 - [[https://github.com/FavioVazquez/ds-cheatsheets][数据科学领域速查表]]
