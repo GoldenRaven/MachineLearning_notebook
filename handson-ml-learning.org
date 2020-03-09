@@ -61,17 +61,21 @@ bash crop-convert.bash
 注意：书中有误，Scikit-Learn的LinearRegression类并不是标准方程的实现，而是基于X的SVD分解。其时间复杂度为O(n^2)，在m<n或特征线性相关时依然可以工作（标准方程不行，因为不满秩）。
 LinearRegression类不需要对特征进行标度。
 #+END_EXAMPLE
+*** 4.1.2 闭式解-X矩阵的SVD分解
 #+BEGIN_SRC python
 from sklearn.linear_model import LinearRegression
 lin_reg = LinearRegression() # 基于scipy.linalg.lstsq()
 lin_reg.fit(X, y)
 lin_reg.intercept_, lin_reg.coef_ # 偏置\theta_0与权重\theta_i
 lin_reg.predict(X_new) # 预测
-# 可能直接调用lstsq()，意为最小平方
+#+END_SRC
+也可以直接调用lstsq()，意为最小平方：
+
+#+BEGIN_SRC python
 theta_best_svd, residuals, rank, s = np.linalg.lstsq(X_b, y, rcond=1e-6)
 theta_best_svd
 #+END_SRC
-*** 4.1.2 梯度下降(迭代优化)
+*** 4.1.3 梯度下降(迭代优化)
 从随机值开始，每一步降低成本函数，直到成本函数最小值。每一步的步长取决于超参数: /学习率/ /\eta/ ( /learning rate/ ).
 # #+BEGIN_EXAMPLE
 注意：
@@ -96,7 +100,7 @@ sgd_reg.intercept_, sgd_reg.coef_
 #+END_SRC
 **** 4.1.2.3 小批量梯度下降
 在计算梯度下降的每一步时，只随机地使用一个小的实例集。主要优势在于可以用GPU加速计算。
-*** 4.1.3 标准方程与梯度下降对比
+*** 4.1.4 标准方程与梯度下降对比
 |--------------------------+----------------------------------------|
 | 梯度下降（Gradient descending） | 标准方程（Normal equation）              |
 |--------------------------+----------------------------------------|
