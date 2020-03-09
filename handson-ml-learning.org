@@ -751,7 +751,7 @@ Mercer定理：
 不同的算法从不同的成本函数或损失函数出发，再加上不同的正则化项就形成了不同
 算法。sklearn对这些算法都有实现，不同的实现适用的问题也不同，具体见表格。
 
-** 回归算法（第四章和第五章内容）
+** 回归算法
 目前学习到的用于 ~回归任务~ 的算法包括：
 - 线性回归（不加正则化的线性回归，或普通的最小二乘法，LinearRegression）
 - 岭回归（Ridge）
@@ -763,27 +763,35 @@ Mercer定理：
 
 sklearn实现的不同回归算法的横向对比见下表：
 
-| sklearn类名      | 损失函数(loss)              | 正则项(penalty)                        | 算法名称           | 实现方法                                                 |
-|------------------+-----------------------------+----------------------------------------+--------------------+----------------------------------------------------------|
-| LinearRegression | squared_loss                | 无                                     | 普通最小二乘法     | *X* 矩阵的SVD分解（闭式解）                              |
-| Ridge            | squared_loss                | l_{2}正则项                            | 岭回归             | ？                                                       |
-| Lasso            | squared_loss                | l_{1}正则项                            | 套索回归           | 坐标下降（迭代优化）                                     |
-| ElasticNet       | squared_loss                | \rho l_{1}+(1-\rho)l_{2}               | 弹性网络           | ？                                                       |
-| SGDRegressor     | squared_loss                | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | 以上四种算法       | 随机梯度下降                                             |
-|                  | huber                       | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | Huber回归          | 随机梯度下降                                             |
-|                  | epsilon_insensitive         | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | 线性支持向量机回归 | 随机梯度下降                                             |
-|                  | squared_epsilon_insensitive | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | 无                 | 随机梯度下降                                             |
-| LinearSVR        | epsilon_insensitive         | l_{1}正则项                            | 线性支持向量机回归 | 基于liblinear的优化算法，快速收敛                        |
-|                  | squared_epsilon_insensitive | l_{2}正则项                            | 线性支持向量机回归 | 基于liblinear的优化算法，快速收敛                        |
-| SVR              | epsilon_insensitive         | l_{2}正则项                            | 支持向量机回归     | kernel={linear, rbf, poly ,sigmoid ,precomputed ,自定义} |
+| sklearn类名      | 损失函数(loss)              | 正则项(penalty)                        | 算法名称           | 是否支持核技巧 | 优点                                                                                 | 缺点                                 |
+|------------------+-----------------------------+----------------------------------------+--------------------+----------------+--------------------------------------------------------------------------------------+--------------------------------------|
+| LinearRegression | squared_loss                | 无                                     | 普通最小二乘法     | 否             | 使用 *X* 矩阵的SVD分解（闭式解），直接求解，不用迭代                                 | 大数据集太慢，特征相关性强时误差很大 |
+| Ridge            | squared_loss                | l_{2}正则项                            | 岭回归             | 否             | 闭式解法，同上;比普通最小二乘法稳定                                                  | 大数据集太慢                         |
+| Lasso            | squared_loss                | l_{1}正则项                            | 套索回归           | 否             | 实现方法：坐标下降（迭代优化）;可用于特征选择                                        | 当n>m或特征强相关时可能非常不稳定    |
+| ElasticNet       | squared_loss                | \rho l_{1}+(1-\rho)l_{2}               | 弹性网络           | 否             | 继承了Ridge的稳定性，也可作特征选择                                                  | 大数据集太慢                         |
+| SGDRegressor     | squared_loss                | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | 以上四种算法       | 否             | 随机梯度下降（迭代优化），可用于大数据集（高效）                                     | 对缩放敏感，需要设置一些超参         |
+|                  | huber                       | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | Huber回归          | 否             | 同上？                                                                               | 同上？                               |
+|                  | epsilon_insensitive         | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | 线性支持向量机回归 | 否             | 同上？                                                                               | 同上？                               |
+|                  | squared_epsilon_insensitive | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | 无                 | 否             | 同上？                                                                               | 同上？                               |
+| LinearSVR        | epsilon_insensitive         | l_{1}正则项                            | 线性支持向量机回归 | 否             | 基于liblinear的优化算法，快速收敛 （迭代优化），在高维空间十分高效                   | 要小心过拟合，不提供概率估计         |
+|                  | squared_epsilon_insensitive | l_{2}正则项                            | 线性支持向量机回归 | 否             | 同上？                                                                               | 同上？                               |
+| SVR              | epsilon_insensitive         | l_{2}正则项                            | 支持向量机回归     | 是             | kernel={linear, rbf, poly ,sigmoid ,precomputed ,自定义}可以用于线性、非线性回归任务 | 只适用于复杂但中小型的训练集         |
 
-
-
-
-** 分类算法（第四章和第五章内容）
+** 分类算法
 目前学习到的用于 ~分类任务~ 的算法包括：
 - 逻辑回归（LogisticRegression）
 - 多元逻辑回归（Softmax回归）
 - 线性支持向量机分类器（LinearSVC）
 - 支持向量机分类器（SVC）
 - 随机梯度下降分类器（SGDClassifier）
+
+** 这么多算法该如何选择呢？
+*经验：*
+- 通常而言，有正则化总比没有强，所以大多数时候应该避免使用纯线性回归。岭回归是个不错的默认选择，
+  但如果你觉得实际用到的特征只有少数几个，那就应该更倾向于Lasso或弹性网络，因为它们可以对特征进行自动选择。
+  一般而言，弹性网络优于Lasso回归，因为当特征数大于训练实例数或特征强相关时，Lasso回归可能非常不稳定。
+- 永远先从线性核函数开始尝试（记住：LinearSVC比SVC的linear kernel快得多），
+  特别是当训练集很大或特征很多时。
+- 如果训练不是很大，可以尝试高斯RBF核，大多数情况都很好用。
+- 如果你还有多余时间和计算能力，可以使用交叉和网格搜索来尝试其他核函数，尤其是那些专门
+  针对你的数据集数据结构的核函数（如字符串核）。
