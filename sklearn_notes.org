@@ -2,13 +2,15 @@
 #+AUTHOR: GoldenRaven
 #+DATE: 2020年3月8日
 
-这个笔记是Scikit-learn 0.22.2版本User Guide学习过程的记录，地址在[[https://scikit-learn.org/stable/user_guide.html]]
+这个笔记是Scikit-learn User Guide学习过程的记录，地址在[[https://scikit-learn.org/stable/user_guide.html]].
+
 0.21.3版本的中文翻译地址为[[https://sklearn.apachecn.org/docs/0.21.3/]]，由apachecn维护。
 
-1. 简单高效的数据挖掘和数据分析工具
-2. 可供大家在各种环境中重复使用
-3. 建立在 NumPy ，SciPy 和 matplotlib 上
-4. 开源，可商业使用 - BSD许可证
+sklearn:
+- 简单高效的数据挖掘和数据分析工具
+- 可供大家在各种环境中重复使用
+- 建立在 NumPy ，SciPy 和 matplotlib 上
+- 开源，可商业使用 - BSD许可证
 
 * 监督学习
 ** 广义线性模型
