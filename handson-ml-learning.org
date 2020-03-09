@@ -738,3 +738,52 @@ Mercer定理：
 
 #+ATTR_HTML: :width 900
 [[file:images/svr.png]]
+* 第四章和第五章总结
+今天总结了一下《机器学习实战》第四章和第五章的内容和sklearn的user guide相关
+内容。通过算法之间的横向比较，对目前尝到的回归算法和分类算法有了更深刻地理解。但
+总感觉对支持向量机的工作机制还是理解不够，书上内容过于简略，需要找其他的书或网页
+来看看。
+
+#+BEGIN_QUOTE
+只读一本书不是学习，是娱乐。
+#+END_QUOTE
+
+不同的算法从不同的成本函数或损失函数出发，再加上不同的正则化项就形成了不同
+算法。sklearn对这些算法都有实现，不同的实现适用的问题也不同，具体见表格。
+
+** 回归算法（第四章和第五章内容）
+目前学习到的用于 ~回归任务~ 的算法包括：
+- 线性回归（不加正则化的线性回归，或普通的最小二乘法，LinearRegression）
+- 岭回归（Ridge）
+- 套索回归（Lasso）
+- 弹性网络（ElasticNet）
+- 线性支持向量机回归器（LinearSVR）
+- 支持向量机回归器（SVR）
+- 随机梯度下降回归器（SGDRegressor）
+
+sklearn实现的不同回归算法的横向对比见下表：
+
+| sklearn类名      | 损失函数(loss)              | 正则项(penalty)                        | 算法名称           | 实现方法                                                 |
+|------------------+-----------------------------+----------------------------------------+--------------------+----------------------------------------------------------|
+| LinearRegression | squared_loss                | 无                                     | 普通最小二乘法     | *X* 矩阵的SVD分解（闭式解）                              |
+| Ridge            | squared_loss                | l_{2}正则项                            | 岭回归             | ？                                                       |
+| Lasso            | squared_loss                | l_{1}正则项                            | 套索回归           | 坐标下降（迭代优化）                                     |
+| ElasticNet       | squared_loss                | \rho l_{1}+(1-\rho)l_{2}               | 弹性网络           | ？                                                       |
+| SGDRegressor     | squared_loss                | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | 以上四种算法       | 随机梯度下降                                             |
+|                  | huber                       | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | Huber回归          | 随机梯度下降                                             |
+|                  | epsilon_insensitive         | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | 线性支持向量机回归 | 随机梯度下降                                             |
+|                  | squared_epsilon_insensitive | {None, 'l_{2}', 'l_{1}', 'elasticnet'} | 无                 | 随机梯度下降                                             |
+| LinearSVR        | epsilon_insensitive         | l_{1}正则项                            | 线性支持向量机回归 | 基于liblinear的优化算法，快速收敛                        |
+|                  | squared_epsilon_insensitive | l_{2}正则项                            | 线性支持向量机回归 | 基于liblinear的优化算法，快速收敛                        |
+| SVR              | epsilon_insensitive         | l_{2}正则项                            | 支持向量机回归     | kernel={linear, rbf, poly ,sigmoid ,precomputed ,自定义} |
+
+
+
+
+** 分类算法（第四章和第五章内容）
+目前学习到的用于 ~分类任务~ 的算法包括：
+- 逻辑回归（LogisticRegression）
+- 多元逻辑回归（Softmax回归）
+- 线性支持向量机分类器（LinearSVC）
+- 支持向量机分类器（SVC）
+- 随机梯度下降分类器（SGDClassifier）
