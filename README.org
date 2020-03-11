@@ -9,12 +9,13 @@
 摘抄，而是我在学习中选择性地参考了不同资料的不同部分，自己学习的理解与总结。原词条都有相关链接，
 请自行跳转。
 
-* [[file:Python_learning_notebook.org][Python学习笔记]]
-* [[file:pd_learning.org][Python Pandas库笔记]]
-* [[file:Python_Numpy_notebook.org][Python Numpy库笔记]]
-* [[file:handson-ml-learning.org][《机器学习实战》学习笔记]]
-* [[file:sklearn_notes.org][sklearn学习笔记]]
-* [[file:ML_wikipedia.org][维基百科 机器学习笔记]]
-* [[file:Kaggle_Titanic.org][二分类问题示例Kaggle Titanic]]
-* 一些其他有用的东西
+- [[file:Python_notebook.org][Python学习笔记]]
+- [[file:Python_pandas_notebook.org][Python Pandas库笔记]]
+- [[file:Python_Numpy_notebook.org][Python Numpy库笔记]]
+- [[file:handson-ml-learning.org][《机器学习实战》学习笔记]]
+- [[file:sklearn_notes.org][sklearn学习笔记]]
+- [[file:ML_wikipedia.org][维基百科 机器学习笔记]]
+- [[file:Kaggle_Titanic.org][二分类问题示例Kaggle Titanic]]
+
+一些其他有用的东西
 - [[https://github.com/FavioVazquez/ds-cheatsheets][数据科学领域速查表]]
