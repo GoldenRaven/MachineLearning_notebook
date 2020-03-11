@@ -1,0 +1,290 @@
+* 第五章 支持向量机（SVM, support vector machine）
+#+BEGIN_QUOTE
+只读一本书不是学习，而是娱乐。
+#+END_QUOTE
+支持向量机可以用于 ~线性~ 、 ~非线性~ 的 ~分类~ 和 ~回归~ 任务，也可以用
+于 ~异常值检测~ 任务。SVM是机器学习领域最受欢迎的模型之一，特别适用于中小型复杂
+数据集的分类。
+
+** 线性SVM分类 :硬间隔分类:软间隔分类:
+数据集可以分为线性可分和线性不可分，也就是说可不可以用一条直线轻松地分开。
+#+begin_example
+疑问：线性SVM分类器是个二分类器？
+#+end_example
+
+~支持向量机分类器~ 的 ~基本思想~ ：拟合类别之间可能的、最宽“街道”，因此也
+叫大间隔分类。决策边界完全由位于街道上的（包括街道边缘上的）实例所决定（支
+持），这些实例称为支持向量。预测结果时只涉及支持向量，而不涉及整个训练集。
+
+#+begin_example
+注意：SVM对特征的缩放特别敏感，如果不缩放，SVM将趋于忽略小的特征。
+#+end_example
+
+- 硬间隔分类：严格要求所有实例都不在街道上，且都位于正确的一侧。存在问题：
+  + 1. 数据集一定是线性可分时才有效。
+  + 2. 对异常值十分敏感。
+- 软间隔分类：尽可能地保持街道宽阔、同时限制间隔违例（位于街道之上、甚至在错误一
+边的实例）
+
+上述过程可以看作是在正则化，在sklearn的 ~SVM~ 类中，超参数C控制这个平衡：
+C越小，街道越宽，间隔违例越多，正则化越强;反则反之。在sklearn中可以有以下实现：
+- 使用 ~LinearSVC~ 类， ~LinearSVC(C=1, loss='hinge')~ 。它会对偏置项作正则化，
+所以要先减去平均值使训练集集中。可以使用StandardScaler进行。超参数loss='hinge'，
+dual='False'。快速收敛。
+- 也可选择SVC类， ~SVC(kernel='linear', C=1)~ ，但比LinearSVC慢得多，
+尤其对于大型数据集而言。不推荐使用。
+- 还可以使用 ~SGDClassifier(loss='hinge', alpha=1/(m*C))~,
+这适于常规随机梯度下降来训练SVM分类器。并不快速收敛，但对大数据集或在线分类任务有效。
+
+#+begin_example
+注意：
+  1. 如果你的SVM模型过拟合了，试试减小C来进行正则化
+  2. 与Logistic回归分类器不同，SVM不会输出类别概率，可以设probability=True，
+     来用Logistic回归对SVM校准，可以获得predict_proba()和predict_log_proba()方法
+#+end_example
+sklearn的LinearSVC示例代码如下：
+
+#+BEGIN_SRC python
+import numpy as np
+from sklearn import datasets
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVC
+
+iris = datasets.load_iris()
+X = iris["data"][:, (2, 3)]  # petal length, petal width
+y = (iris["target"] == 2).astype(np.float64)  # Iris-Virginica
+
+svm_clf = Pipeline([
+        ("scaler", StandardScaler()),
+        ("linear_svc", LinearSVC(C=1, loss="hinge", random_state=42)),
+        #("SVC_liear-kenel", SVC(kernel='linear', C=1)),
+        #("SGDClassifier", SGDClassifier(loss='hinge', alpha=1/(C*m))),
+    ])
+
+svm_clf.fit(X, y)
+svm_clf.predict([[5.5, 1.7]])
+#+END_SRC
+** 非线性SVM分类
+通常情况下线性SVM分类器是有效的，而且出人意料地好。但有些数据集是线性不可分的。
+处理的方法之一是添加更多特征（数据集增广），比如多项式特征。
+*** 添加多项式特征（数据集增广）
+在某些情况下，这可以使数据集线性可分。实现起来非常简单，而且对所有机器学习算法都很有效。
+
+#+BEGIN_EXAMPLE
+思路：对原数据集添加（比如多项式）特征，使得数据集线性可分，再使用线性SVM分类器解决。
+#+END_EXAMPLE
+
+用sklearn的实现如下：
+
+#+BEGIN_SRC python
+from sklearn.datasets import make_moons # 插入卫星数据集
+from sklearn.pipeline import Pipeline # 包含管道
+from sklearn.preprocessing import PolynomialFeatures # 引入多项式特征转换器
+
+polynomial_svm_clf = Pipeline([
+        ("poly_features", PolynomialFeatures(degree=3)), # 添加三阶多项式特征
+        ("scaler", StandardScaler()), # 缩放特征
+        ("svm_clf", LinearSVC(C=10, loss="hinge", random_state=42)) # 调用线性SVM分类
+    ])
+
+polynomial_svm_clf.fit(X, y) # 训练数据
+#+END_SRC
+
+*** 多项式核
+添加多项式特征虽然有效，但存在这样的问题：
+  1. 如果多项式阶数太低，不能处理复杂数据集
+  2. 如果阶数太高，会创造出大量特征（特征爆炸），导致模型太慢
+
+Fortunately, 有一个数学技巧可以不用真正地添加特征，但其效果就同添加了一样，这个技巧叫
+~核技巧~.这里多次提到的核技巧会在后面说到。
+
+sklearn的SVC类实现了核技巧，如表格[[sklearn线性SVM分类算法对比]]所示。代码如下：
+
+#+BEGIN_SRC python
+from sklearn.svm import SVC
+poly_kernel_svm_clf = Pipeline([
+        ("scaler", StandardScaler()), # 缩放特征
+        ("svm_clf", SVC(kernel="poly", degree=3, coef0=1, C=5)) # 多项式核SVC
+    ])
+poly_kernel_svm_clf.fit(X, y) # 训练数据
+#+END_SRC
+
+其中超参数coef0控制的是高阶还是低阶多项式影响的程度。
+
+#+BEGIN_EXAMPLE
+注意：
+  1. 拟合不足时，应该提高多项式阶数;过拟合时，应该降低阶数。
+  2. 多了解超参数的作用，可以帮助你快速筛选超参的有效范围，大大提高网格搜索的效率。
+  3. 搜索时先进行一次粗略的网格搜索，再在最好的值附近进行下一轮更精细的搜索，这样会更高效。
+#+END_EXAMPLE
+
+*** 添加相似特征
+解决非线性问题的另一个方法是添加相似特征。第一个实例的新特征由相似函数计算得出。如高斯RBF：
+
+\phi_{\gamma}(*x*,l) = exp(-\gamma || *x*-l ||^{2})
+
+它是一个钟形曲线。这个方法的缺点是：一个有m个实例，n个特征的训练集会被转换为一个有m个实例，
+m个特征的训练集。如果训练集很大，将得到大量特征。
+
+*** 高斯RBF核
+与多项式特征法一样，相似特征法也 可以用于所有机器学习算法，但代价非常昂贵，尤其对大数据集
+而言。同样可以使用 ~核技巧~, sklearn代码如下（与上面相比，只有kernel不同）：
+
+#+BEGIN_SRC python
+from sklearn.svm import SVC
+rbf_kernel_svm_clf = Pipeline([
+        ("scaler", StandardScaler()), # 缩放特征
+        ("svm_clf", SVC(kernel="rbf", gamma=5, C=0.001)) # rbf核SVC
+    ])
+rbf_kernel_svm_clf.fit(X, y) # 训练数据
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+  1. 超参gamma的作用：增大gamma使钟形曲线变得更窄，每个实例的影响范围更小，决策边界更不规则;
+     反之减小gamma会使决策边界更平坦。
+  2. gamma就像一个正则化超参数，过拟合就减小它的值;拟合不足就增大它的值。
+  2. 超参C的作用：正则化，越小正则化越强。
+#+END_EXAMPLE
+
+*** sklearn的分类算法对比
+
+#+name: sklearn线性SVM分类算法对比
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+|              | LinearSVC类                                        | SVC类的linear kernel             | SGDClassifier类的hinge损失函数             |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+| 调用方法     | LinearSVC(C=1, loss='hinge')                       | SVC(kernel='linear', C=1)        | SGDClassifier(loss='hinge', alpha=1/(m*C)) |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+| 时间复杂度   | O(m*n)                                             | O(m^{2}*n)与O(m^{3}*n)之间       | O(m*n)                                     |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+| 需要缩放？   | 是                                                 | 是                               | 是                                         |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+| 支持核外？   | 否                                                 | 否                               | 是                                         |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+| 运算速度     | 快                                                 | 慢                               | 慢                                         |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+| 支持核技巧？ | 否                                                 | 是                               | 否                                         |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+| 优点         | 基于 /liblinear/ 库实现的优化算法，收敛快          | 基于 /libsvm/ 库，支持核技巧     | 对大型数据集有效，对 ~在线分类~ 任务有效   |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+| 缺点         | 不支持核技巧                                       | 只适用于复杂但中小型的训练集     | 不支持核技巧                               |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+| 注意         | 要先减去平均值使训练集集中，还要设置超参loss和dual | 不要用在大型数据集上（超过十万） | 成本函数要可导才能用梯度下降               |
+|--------------+----------------------------------------------------+----------------------------------+--------------------------------------------|
+
+这么多核函数，该如何选择呢？
+
+*经验：*
+- 永远先从线性核函数开始尝试（记住：LinearSVC比SVC的linear kernel快得多），
+  特别是当训练集很大或特征很多时。
+- 如果训练不是很大，可以尝试高斯RBF核，大多数情况都很好用。
+- 如果你还有多余时间和计算能力，可以使用交叉和网格搜索来尝试其他核函数，尤其是那些专门
+  针对你的数据集数据结构的核函数（如字符串核）。
+*** SVM回归（线性和非线性回归任务）
+SVM不仅可以用于线性、非线性 ~分类~,还可以用于线性和非线性 ~回归~ 。需要转换一下思路：
+不再是在拟合两个类别之间最宽的街道的同时限制间隔违例，SVM回归要做的是让尽可能多的实
+例位于街道上，同时限制间隔违例（不在街道上的实例）。街道的宽度由超参数\epsilon
+控制。
+
+与SVM分类同理，间隔内添加更多的实例不影响SVM回归模型的预测，所以这个模型被为\epsilon
+不敏感。
+
+对于线性的回归任务，可以用sklearn的LinearSVR类来执行，代码如下：
+
+#+BEGIN_SRC python
+import numpy as np
+from sklearn import datasets
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVR
+
+iris = datasets.load_iris()
+X = iris["data"][:, (2, 3)]  # petal length, petal width
+y = (iris["target"] == 2).astype(np.float64)  # Iris-Virginica
+
+svm_reg = Pipeline([
+        ("scaler", StandardScaler()), # 需要缩放特征，并集中
+        ("linear_svr", LinearSVR(epsilon=1.5)), # 线性支持向量机回归
+    ])
+
+svm_reg.fit(X, y)
+svm_reg.predict([[5.5, 1.7]])
+#+END_SRC
+
+对于非线性的回归任务，可以用核化的SVC类：
+
+#+BEGIN_SRC python
+from sklearn.svm import SVR
+
+svm_reg = Pipeline([
+        ("scaler", StandardScaler()), # 需要缩放特征，并集中
+        ("svr", SVR(kernel='poly',degree=2, C=100, epsilon=0.1)), # 多项式核支持向量机回归
+    ])
+
+svm_reg.fit(X, y)
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+注意：
+1. SVR类是SVC类的回归等价物
+2. LinearSVR类是LinearSVC类的回归等价物
+3. 它们性质也与它们的等价物相同，见章节：sklearn的分类算法对比
+#+END_EXAMPLE
+
+** SVM的工作原理
+上面我们讲了如何用sklearn来训练一个SVM分类器或回归器，但是SVM是如何预测的？
+又是如何训练的呢？
+
+#+BEGIN_EXAMPLE
+注意：
+1. 有个学习支持向量机的好地方，那就是sklearn库的帮助文档，https://scikit-learn.org/stable/modules/svm.html#
+2. 你也许想再逛逛这个帮助文档的其他部分，可以让你获益非浅哦！ https://scikit-learn.org/stable/user_guide.html
+#+END_EXAMPLE
+
+*** 线性SVM分类
+决策函数：
+
+w^{T}\cdot *x* + b = w_{1}x_{1} + \cdot \cdot \cdot + w_{n}x_{n} + b
+
+预测：如果上式结果为正，则预测为正类;为负则预测为负类。
+
+软间隔SVM分类器的目标可以看成一个约束优化问题：
+
+#+ATTR_HTML: :width 900
+[[file:images/SVC2.png]]
+
+\zeta^{(i)} 衡量的是第i个实例多在程度上允许间隔违例。
+
+硬间隔和软间隔分类都是线性约束的凸二次优化问题，被称为二次规划（QP）。
+
+可以对原始问题使用梯度下降，成本函数为 ~hinge损失函数~ ，使用方法与Loss回归一样。
+原问题的成本函数为：
+
+#+ATTR_HTML: :width 700
+[[file:images/loss-hinge.png]]
+
+#+BEGIN_EXAMPLE
+使用对偶问题的原因是它可以使用核技巧，而原问题不可以。
+#+END_EXAMPLE
+
+*** 非线性SVM分类
+
+#+BEGIN_QUOTE
+Mercer定理：
+  如果函数K(a, b)满足以下条件，则存在函数\phi，将 *a* *b* 映射到时另一空间，
+  使得K(a, b) = \phi(*a*)^{T} \cdot \phi(*b*):
+    1. K函数是连续的。
+    2. K关于其自变量对称。
+    3. 其他？
+#+END_QUOTE
+
+常用核函数：
+
+#+ATTR_HTML: :width 800
+[[file:images/kernels.png]]
+
+对于大规模非线性问题，你可能需要使用神经网络模型。
+*** 线性SVM回归
+
+#+ATTR_HTML: :width 900
+[[file:images/svr.png]]
