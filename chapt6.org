@@ -1,0 +1,20 @@
+#+AUTHOR: GoldenRaven
+#+DATE: 2010年3月12日
+#+EMAIL: li.gaoyang@foxmail.com
+* 决策树 decision tree
+** 分类
+sklearn实现示例：
+*** 如何预测
+gini系数
+估算类别概率
+*** 如何训练
+**** CART
+CART
+复杂度
+gini vs 香农熵
+*** 如何正则
+非参数模型
+min_*
+max_*
+剪枝
+** 回归
