@@ -24,7 +24,7 @@ bash crop-convert.bash
 - [[file:chapt4.org][第四章 训练（线性）模型]]
 - [[file:chapt5.org][第五章 支持向量机（SVM, support vector machine）]]
 - [[file:summary_chap4_5.org][第四章和第五章总结]]
-- [[chatp6.org][第六章 决策树（decision tree）]]
+- [[file:chatp6.org][第六章 决策树（decision tree）]]
 - 注意:
   + 对收入分层抽样，不能分太多层
   + 分层方法：除以1.5，向上取整；然后合并大于5的分类
