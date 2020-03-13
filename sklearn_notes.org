@@ -108,9 +108,7 @@ array([ 0.8])
 ElasticNetCV 类可以通过交叉验证来设置参数 alpha （ \alpha ） 和 l1_ratio （ \rho ） 。
 
 *** 贝叶斯回归
-pass
 **** 贝叶斯岭回归
-pass
 *** 逻辑回归
 logistic 回归，虽然名字里有 “回归” 二字，但实际上是解决分类问题的一类线性模型。
 在某些文献中，logistic 回归又被称作 logit 回归，maximum-entropy classification
@@ -159,9 +157,7 @@ Perceptron 是适用于大规模学习的一种简单算法。默认情况下：
 - 仅使用错误样本更新模型。
 最后一点表明使用合页损失（hinge loss）的感知机比 SGD 略快，所得模型更稀疏。
 *** Passive Aggressive Algorithms（被动攻击算法）
-pass
 *** 稳健回归（Robustness regression）: 处理离群点（outliers）和模型错误
-pass
 *** 多项式回归：用基函数展开线性模型
 机器学习中一种常见的模式，是使用线性模型训练数据的非线性函数。这种方法保持了一般快速的线性方法的性能，
 同时允许它们适应更广泛的数据范围。
@@ -190,7 +186,6 @@ SVC, NuSVC 和 LinearSVC 能在数据集中实现多元分类。SVC 和 NuSVC �
 *** 回归
 支持向量回归有三种不同的实现形式: SVR, NuSVR 和 LinearSVR。
 *** 密度估计, 异常（novelty）检测
-pass
 ** 随机梯度下降
 随机梯度下降(SGD)是一种简单但又非常高效的方法，主要用于凸损失函数下线性分类器的判别式学习，
 例如(线性) 支持向量机 和 Logistic 回归 。
@@ -248,7 +243,42 @@ L 的不同选择产生不同的分类器，例如：
 - Elastic Net: R(w) := \frac{\rho}{2} \sum_{i=1}^{n} w_{i}^{2} + (1-\rho) \sum_{i=1}^{n} |w_i|,
   l_{2}和l_{1}的凸组合, 其中 \rho由1 - l1_ratio给出.
 ** 最近邻
-pass
+** 决策树
+*** 分类
+DecisionTreeClassifier既能用于二分类也能用于多分类。
+
+#+BEGIN_SRC python
+>>> from sklearn import tree
+>>> clf = tree.DecisionTreeClassifier() # 调用决策树
+>>> clf = clf.fit(X, Y) # 训练树
+>>> clf.predict([[2., 2.]]) # 预测类别
+>>> clf.predict_proba([[2., 2.]]) # 预测概率
+#+END_SRC
+经过训练，我们可以使用 export_graphviz 导出器以 Graphviz 格式导出决策树。
+*** 回归
+决策树通过使用 DecisionTreeRegressor 类也可以用来解决回归问题。如在分类设置中，
+拟合方法将数组X和数组y作为参数，只有在这种情况下，y数组预期才是浮点值:
+
+#+BEGIN_SRC python
+>>> from sklearn import tree
+>>> X = [[0, 0], [2, 2]]
+>>> y = [0.5, 2.5]
+>>> clf = tree.DecisionTreeRegressor()
+>>> clf = clf.fit(X, y)
+>>> clf.predict([[1, 1]])
+array([ 0.5])
+#+END_SRC
+*** 多输出
+*** 实际使用技巧
+- 对于拥有大量特征的数据决策树会出现过拟合的现象。获得一个合适的样本比例和特征数量十分重要，因为在高维空间中只有少量的样本的树是十分容易过拟合的。
+- 考虑事先进行降维( PCA , ICA ，使您的树更好地找到具有分辨性的特征。
+- 通过 export 功能可以可视化您的决策树。使用 max_depth=3 作为初始树深度，让决策树知道如何适应您的数据，然后再增加树的深度。
+- 请记住，填充树的样本数量会增加树的每个附加级别。使用 max_depth 来控制输的大小防止过拟合。
+- 通过使用 min_samples_split 和 min_samples_leaf 来控制叶节点上的样本数量。当这个值很小时意味着生成的决策树将会过拟合，然而当这个值很大时将会不利于决策树的对样本的学习。所以尝试 min_samples_leaf=5 作为初始值。如果样本的变化量很大，可以使用浮点数作为这两个参数中的百分比。两者之间的主要区别在于 min_samples_leaf 保证叶结点中最少的采样数，而 min_samples_split 可以创建任意小的叶子，尽管在文献中 min_samples_split 更常见。
+- 在训练之前平衡您的数据集，以防止决策树偏向于主导类.可以通过从每个类中抽取相等数量的样本来进行类平衡，或者优选地通过将每个类的样本权重 (sample_weight) 的和归一化为相同的值。还要注意的是，基于权重的预修剪标准 (min_weight_fraction_leaf) 对于显性类别的偏倚偏小，而不是不了解样本权重的标准，如 min_samples_leaf 。
+- 如果样本被加权，则使用基于权重的预修剪标准 min_weight_fraction_leaf 来优化树结构将更容易，这确保叶节点包含样本权重的总和的至少一部分。
+- 所有的决策树内部使用 np.float32 数组 ，如果训练数据不是这种格式，将会复制数据集。
+- 如果输入的矩阵X为稀疏矩阵，建议您在调用fit之前将矩阵X转换为稀疏的csc_matrix ,在调用predict之前将 csr_matrix 稀疏。当特征在大多数样本中具有零值时，与密集矩阵相比，稀疏矩阵输入的训练时间可以快几个数量级。
 * 无监督学习
 * 模型选择和求解
 * 检查
