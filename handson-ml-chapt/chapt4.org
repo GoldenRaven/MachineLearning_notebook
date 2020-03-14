@@ -2,17 +2,17 @@
 ** 4.1 (纯)线性回归 Linear Regression
 用以描述线性化数据集，模型或假设（hypothesis）是特征（x）的线性函数,或者写成向量形式，令x_0 = 1:
 #+ATTR_HTML: :width 400
-[[file:images/linear_hypothsis.png]]
+[[file:../images/linear_hypothsis.png]]
 
 上面的表达式也称之为回归方程（regression equation），\theta为回归系数。
 成本函数，MSE函数：
 #+attr_html: :width 400px
-[[file:images/MSE.png]]
+[[file:../images/MSE.png]]
 
 *** 4.1.1 闭式解-标准方程（normal equation）
 即直接通过解析表达式计算得到参数向量\theta:
 #+attr_html: :width 200px
-[[file:images/normal_equation.png]]
+[[file:../images/normal_equation.png]]
 
 可以使用Numpy的线性代数模块np.linalg中的inv()函数来求矩阵逆，用dot()方法计算内积。
 特征数量大时标准方程计算极其缓慢，此时可以用迭代优化法。
@@ -200,7 +200,7 @@ for epoch in range(1000):
 与线性回归不同的是，它用 *\theta^{T}\cdot X* 的sigmoid函数值作为概率值，而不是 *\theta^{T}\cdot X* 本身：
 
 #+attr_html: :width 500px
-[[file:images/logistic.png]]
+[[file:../images/logistic.png]]
 
 #+BEGIN_COMMENT
 #+BEGIN_SRC latex :file pdfs/logistic.pdf
@@ -211,7 +211,7 @@ for epoch in range(1000):
 
 #+RESULTS:
 #+BEGIN_LaTeX
-[[file:pdfs/logistic.pdf]]
+[[file:../pdfs/logistic.pdf]]
 #+END_LaTeX
 #+END_COMMENT
 \sigma(t)是sigmoid函数：
@@ -225,12 +225,12 @@ for epoch in range(1000):
 
 #+RESULTS:
 #+BEGIN_LaTeX
-[[file:pdfs/sigmoid.pdf]]
+[[file:../pdfs/sigmoid.pdf]]
 #+END_LaTeX
 #+END_COMMENT
 
 #+attr_html: :width 500px
-[[file:images/sigmoid.png]]
+[[file:../images/sigmoid.png]]
 
 成本函数为log损失函数：
 
@@ -244,12 +244,12 @@ J(\theta) = - \frac{1}{m}\sum_{i=1}^{n} [y^{(i)}\rm{log}(
 
 #+RESULTS:
 #+BEGIN_LaTeX
-[[file:pdfs/cost_log.pdf]]
+[[file:../pdfs/cost_log.pdf]]
 #+END_LaTeX
 #+END_COMMENT
 
 #+attr_html: :width 500px
-[[file:images/cost_log.png]]
+[[file:../images/cost_log.png]]
 
 这个函数没有闭式解，只能迭代优化，而且它是个凸函数。可以用随机梯度下降等优化算法求解。
 如下：
@@ -303,12 +303,12 @@ s_{k}(\textbf{x}) = \theta_{k}^T \cdot \textbf{x}
 
 #+RESULTS:
 #+BEGIN_LaTeX
-[[file:pdfs/softmax.pdf]]
+[[file:../pdfs/softmax.pdf]]
 #+END_LaTeX
 #+END_COMMENT
 
 #+attr_html: :width 500px
-[[file:images/softmax.png]]
+[[file:../images/softmax.png]]
 
 每个类别都有自己的权重向量 *\theta_{k}*, 所有这些向量通常作为行，存贮在参数矩阵
 \Theta 中。
@@ -324,12 +324,12 @@ s_{k}(\textbf{x}) = \theta_{k}^T \cdot \textbf{x}
 
 #+RESULTS:
 #+BEGIN_LaTeX
-[[file:pdfs/softmax2.pdf]]
+[[file:../pdfs/softmax2.pdf]]
 #+END_LaTeX
 #+END_COMMENT
 
 #+attr_html: :width 500px
-[[file:images/softmax2.png]]
+[[file:../images/softmax2.png]]
 
 预测类别\hat{y} 是概率\hat{p}_k 最大的类别k：
 
@@ -342,12 +342,12 @@ s_{k}(\textbf{x}) = \theta_{k}^T \cdot \textbf{x}
 
 #+RESULTS:
 #+BEGIN_LaTeX
-[[file:pdfs/softmax-pred.pdf]]
+[[file:../pdfs/softmax-pred.pdf]]
 #+END_LaTeX
 #+END_COMMENT
 
 #+attr_html: :width 500px
-[[file:images/softmax-pred.png]]
+[[file:../images/softmax-pred.png]]
 
 #+BEGIN_EXAMPLE
 注意： Softmax回归器每次只能预测一个类别，也就是说它是多类别，但不是多输出。所以仅适用于互斥的类别。
@@ -365,12 +365,12 @@ J(\Theta) = -\frac{1}{m} \sum_{i=1}^{m} \sum_{k=1}^{K} y_{k}^{(i)} log(\hat{p}_{
 
 #+RESULTS:
 #+BEGIN_LaTeX
-[[file:pdfs/cross-entropy.pdf]]
+[[file:../pdfs/cross-entropy.pdf]]
 #+END_LaTeX
 #+END_COMMENT
 
 #+attr_html: :width 500px
-[[file:images/cross-entropy.png]]
+[[file:../images/cross-entropy.png]]
 
 它来源于信息理论，描述的是多类别预测的准确性。两个离散概率分布p和q之间的交叉熵定义为：
 
@@ -383,12 +383,12 @@ H(p, q) = \sum_{x} p(x) \rm{log}\ q(x)
 
 #+RESULTS:
 #+BEGIN_LaTeX
-[[file:pdfs/cross2.pdf]]
+[[file:../pdfs/cross2.pdf]]
 #+END_LaTeX
 #+END_COMMENT
 
 #+attr_html: :width 500px
-[[file:images/cross2.png]]
+[[file:../images/cross2.png]]
 
 对于这个成本函数可以作用随机梯度下降或其他优化算法找到最优解参数矩阵\Theta （每个类别
 的权重向量 *\theta_{k}* ）。在sklearn中，当对多个类别进行训练时
@@ -406,4 +406,4 @@ y_predict = softmax_reg.predict(X_new) # 预测特定实例的类别
 - 此时的决策边界如何理解？
 
 #+attr_html: :width 600px
-[[file:images/decision_boundary.png]]
+[[file:../images/decision_boundary.png]]

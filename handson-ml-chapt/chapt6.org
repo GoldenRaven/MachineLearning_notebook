@@ -37,7 +37,7 @@ export_graphviz( # 决策过程可视化，输出到dot文件
 dot -Tpng iris_tree.dot -o iris_tree.png
 #+END_SRC
 
-[[file:images/decision_trees/iris_tree.png]]
+[[file:../images/decision_trees/iris_tree.png]]
 
 #+BEGIN_EXAMPLE
 决策树优点：1. 需要的数据准备工作非常少，尤其不用特征缩放和集中，但要预处理缺失值。
@@ -123,7 +123,7 @@ gini vs 香农熵？
 可以在训练时加入正则化来降低决策树的自由度，比如在sklearn的实现中可以增大超参min_*或减
 小max_*使模型正则化。
 
-[[file:images/classification_tree.png]]
+[[file:../images/classification_tree.png]]
 
 *剪枝* :
 
@@ -161,7 +161,7 @@ J(k,t_{k}) = (m_{left}/m) * MSE{left} + (m_{right}/m) * MSE{right}
 *** 如何正则
 与分类相同（如设置min_samples_leaf=10）
 
-[[file:images/regression_tree.png]]
+[[file:../images/regression_tree.png]]
 
 ** 决策树的优缺点
 优点：

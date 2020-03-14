@@ -251,7 +251,7 @@ w^{T}\cdot *x* + b = w_{1}x_{1} + \cdot \cdot \cdot + w_{n}x_{n} + b
 软间隔SVM分类器的目标可以看成一个约束优化问题：
 
 #+ATTR_HTML: :width 900
-[[file:images/SVC2.png]]
+[[file:../images/SVC2.png]]
 
 \zeta^{(i)} 衡量的是第i个实例多在程度上允许间隔违例。
 
@@ -261,7 +261,7 @@ w^{T}\cdot *x* + b = w_{1}x_{1} + \cdot \cdot \cdot + w_{n}x_{n} + b
 原问题的成本函数为：
 
 #+ATTR_HTML: :width 700
-[[file:images/loss-hinge.png]]
+[[file:../images/loss-hinge.png]]
 
 #+BEGIN_EXAMPLE
 使用对偶问题的原因是它可以使用核技巧，而原问题不可以。
@@ -281,10 +281,10 @@ Mercer定理：
 常用核函数：
 
 #+ATTR_HTML: :width 800
-[[file:images/kernels.png]]
+[[file:../images/kernels.png]]
 
 对于大规模非线性问题，你可能需要使用神经网络模型。
 *** 线性SVM回归
 
 #+ATTR_HTML: :width 900
-[[file:images/svr.png]]
+[[file:../images/svr.png]]

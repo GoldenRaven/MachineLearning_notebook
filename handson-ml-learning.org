@@ -21,10 +21,15 @@ bash crop-convert.bash
 [[file:images/handson.jpg]]
 
 这是我在学习Aurelien Geron的书籍《机器学习实战》时自己的总结，欢迎留言。
-- [[file:chapt4.org][第四章 训练（线性）模型]]
-- [[file:chapt5.org][第五章 支持向量机（SVM, support vector machine）]]
-- [[file:summary_chap4_5.org][第四章和第五章总结]]
-- [[file:chapt6.org][第六章 决策树（decision tree）]]
+- [[file:chapt/chapt3.ipynb][第三章 分类]]
+- 第三章 练习题
+  + [[file:chapt/chapt3_exercise.ipynb][精度97%的KNN、MNIST数据集增广]]
+  + [[file:Kaggle_Titanic.org][二分类问题示例Kaggle Titanic]]
+  + 垃圾邮件分类？
+- [[file:chapt/chapt4.org][第四章 训练（线性）模型]]
+- [[file:chapt/chapt5.org][第五章 支持向量机（SVM, support vector machine）]]
+- [[file:chapt/summary_chapt4_5.org][第四章和第五章总结]]
+- [[file:chapt/chapt6.org][第六章 决策树（decision tree）]]
 - 注意:
   + 对收入分层抽样，不能分太多层
   + 分层方法：除以1.5，向上取整；然后合并大于5的分类
