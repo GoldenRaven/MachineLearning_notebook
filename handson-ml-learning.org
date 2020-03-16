@@ -31,6 +31,7 @@ bash crop-convert.bash
 - [[file:handson-ml-chapt/chapt5.org][第五章 支持向量机（SVM, support vector machine）]]
 - [[file:handson-ml-chapt/summary_chapt4_5.org][第四章和第五章总结]]
 - [[file:handson-ml-chapt/chapt6.org][第六章 决策树（decision tree）]]
+- [[file:handson-ml-chapt/chapt7.org][第七章 集成学习和随机森林]]
 - 注意:
   + 对收入分层抽样，不能分太多层
   + 分层方法：除以1.5，向上取整；然后合并大于5的分类
