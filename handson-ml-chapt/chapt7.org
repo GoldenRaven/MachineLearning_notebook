@@ -27,14 +27,14 @@
 *** 硬投票分类器
 硬投票：聚合每个分类器的预测，将得票最多的类别作为预测结果。
 
-*sklearn实现* ：参数 ~volting='soft'~
+*sklearn实现* ：参数 ~volting="soft"~
 *** 软投票分类器
 软投票：如果所有被集成的分类器都能给出类别概率（即有predict_proba()方法），那到么可以将不同类别
 的概率在所有分类器上进行平均，以平均概率最高的类别作为预测结果。
 
 通常来说，软投票比硬投票表现更好！因为它给予那些高度自信的投票更高的权重。
 
-*sklearn实现* ：1.确保所有预测器都能给出概率。2.参数 ~volting='soft'~
+*sklearn实现* ：1.确保所有预测器都能给出概率。2.参数 ~volting="soft"~
 
 #+BEGIN_EXAMPLE
 注意：SVC默认不能给出概率，所以不能用以软投票;除非设probability为true,但这会开启交叉验证，减慢训练速度。
@@ -65,11 +65,129 @@ voting_clf.fit(X_train, y_train)
 
 与分类相对应的回归实现为 ~VotingRegressor~ ，使用方法也相同。
 
-** 三种不同的集成方法
+** 三种不同的集成方法（bagging/pasting, boosting, stacking）
 *** bagging/pasting（相同算法在不同训练集随机子集上的聚合）
+使用同一算法，在训练集的不同随机子集上进行训练，再聚合。
+
 bagging是bootstrap aggregating的缩写，即自举汇聚法。bootstrap的意思是adj.依靠自已力量的，
 boot的意思是靴子，strap的意思是（皮）带子。aggregate是v. 合计、聚合的意思。
+
+采样时如果将实例放回，就叫bagging;采样时不放回样本，就叫pasting。也就是说bagging和pasting都
+允许同一实例被不同预测器中多次采样，而bagging的放回允许同一实例被同一预测器多次采用。
+
+训练完成后，将所有预测器的预测结果用 ~聚合函数~ 简单地聚合起来，来对新实例做出预测。聚合函数通常是
+~统计法~ （如大多数投票）用于分类或 ~平均法~ 用于回归。
+
+#+BEGIN_EXAMPLE
+注意：bagging和pasting流行的原因之一是，在训练和预测时可以并行处理。
+#+END_EXAMPLE
+
 *** sklearn中bagging/pasting的实现
+sklearn提供了 ~BaggingClassifier~ 类用于bagging和pasting。相应的也有BaggingRegressor
+用于回归。
+
+#+BEGIN_SRC python
+from sklearn.ensemble import BaggingClassifier
+from sklearn.tree import DecisionTreeClassifier
+
+tree_clf = DecisionTreeClassifier() # 调用决策树
+bag_clf = BaggingClassifier( # 组装集成分类器
+    tree_clf, # 基础预测器
+    n_estimators=500, # 基础预测器的个数
+    max_samples = 100, # 每次从训练集中随机采样的个数
+    bootstrap=True, # 采样时是否放回
+    n_jobs=-1 # 使用CPU核的个数，-1表示全用
+)
+bag_clf.fit(X_train, y_train) # 使用训练集训练模型参数
+y_pred = bag_clf.predict(X_test) # 用训练得到的模型参数进行预测
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+注意：
+1.如果基础分类器能给出预测概率，BaggingClassifier就默认使用软投票，而不是硬投票。
+2.由于bagging在采样时引入了更多的多样性，所以通常表现比pasting要好。
+3.如果时间和计算资源充足，也可以用交叉验证来对bagging和pasting进行比较，再做选择。
+#+END_EXAMPLE
+*** 对bagging进行评估：外包评估
+使用bagging会导致有些训练集实例未被采用（大约37%），这些未被采用的实例称为 ~外包(oob)~
+实例。 ~对所有预测器来说，这是不一样37%~ 。
+
+正好可以用这些外包实例来评估模型。将每个预测器在其外包上的评估结果进行平均，即为对集成的
+评估。
+*** sklearn中bagging外包评估的实现
+创建 ~BaggingClassifier~ 时设置 ~oob_score=True~ ，就可以在训练结束后自动进行
+外包评估。通过 ~oob_score_~ 可以取得集成的最终评估分数。
+
+#+BEGIN_SRC python
+bag_clf = BaggingClassifier(
+    tree_clf,
+    n_estimators=500,
+    max_samples=100,
+    bootstrap=True, # 放回采样bagging
+    oob_score=True, # 开启外包评估
+    n_jobs=-1
+)
+bag_clf.fit(X_train, y_train) # 训练
+bag_clf.oob_score_ # 取得对bagging集成的评估分数
+#+END_SRC
+*决策函数？P171*
+
+在 ~BaggingClassifier~ 类中，对特征抽样由参数 ~bootstrap_features~ 和 ~max_features~
+控制，对实例抽样由参数 ~bootstrap~ 和 ~max_samples~ 控制。
+
+Random Patches方法：对训练实例和特征都随机抽样; ~bootstrap=True, max_samples<1.0~ ,
+~bootstrap_features=True, max_features<1.0~
+
+随机子空间法：保留所有实例，只对特征随机抽样; ~bootstrap=False, max_samples=1.0~ ,
+~bootstrap_features=True, max_features<1.0~
+
+#+BEGIN_EXAMPLE
+注意：特征随机抽样，对高维输入特别有用（如图像）。
+#+END_EXAMPLE
+*** 在sklearn中实现随机森林（决策树的集成）
+方法一：在BaggingClassifier中调用DecisionTreeClassifier.
+
+方法二：使用RandomForestClassifier类，它对决策树更优化。相应地有也有RandomForestRegressor。
+代码如下：
+
+#+BEGIN_SRC python
+from sklearn.ensemble import RandomForestClassifier
+rdf_clf = RandomForestClassifier(
+    n_estimators=500,
+    max_leaf_nodes=16,
+    n_jobs=-1
+    )
+rdf_clf.fit(X_train, y_train)
+y_pred = rdf_clf.predict(X_test)
+#+END_SRC
+~RandomForestClassifier~ 有绝大多数 ~DecisionTreeClassifier~ 的超参数，
+以及所有BaggingClassifier的超参数。前者控制树的生长，后者控制集成。
+
+#+BEGIN_EXAMPLE
+注意：
+    1.RandomForestClassifier中没有max_samples超参（强制为1.0）。
+    2.RandomForestClassifier中引入了更多随机性：分裂节点时，只在随机特征子空间中搜索最好特征，用以分裂节点。
+#+END_EXAMPLE
+*** 极端随机树
+对每个特征使用随机阀值而不是最佳阀值（如常规决策树），可以让决策树生长得更加随机。
+这种树组成的森林称为 ~极端随机树集成~ 。
+*** 极端随机树的sklearn实现
+sklearn实现为 ~ExtraTreesClassifier~ 类，它的API与RandomForestClassifier相同。
+相应地 ~ExtraTreesRegressor~ 的API与 ~RandomForestRegressor~ 相同。
+
+#+BEGIN_EXAMPLE
+注意：
+    1.训练极端随机树集成要比随机森林快得多，因为找到最佳阀值是个耗时的任务。
+    2.通常很难预先知道RandomForestClassifier与ExtraTreesClassifier哪个好，
+    唯一的方法是两种都尝试一遍，再用交叉验证进行比较。
+#+END_EXAMPLE
+*** 特征重要性
+在训练好的决策树中，越重要的特征越可能出现在靠近根节点的位置，不重要的特征出现在靠近节点的位置，
+甚至根本不出现。因此可以用特征在森林中的平均深度来评估其重要性。随机森林是一个非常便利的了解
+什么特征真正重要的方法，可以用于 ~特征选择~ 。
+
+sklearn在训练结束后自动计算特征重要性。可以通过 ~feature_importances_~ 来访问。
+~rdf_clf.feature_importances_~ 。
 *** boosting 提升法（将弱学习结合成强学习的任意集成方法）
 大多数提升法的总体思路是先循环训练预测器，每一次都对前序做出一些修正。有许多提升法，
 比较流行的是自适应提升Adaboost和梯度提升Gradient Boosting.
