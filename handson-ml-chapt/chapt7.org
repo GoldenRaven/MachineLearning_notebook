@@ -307,6 +307,7 @@ scores = validation(clfs, X_train, y_train)
 : ['RandomForestClassifier', 0.75125]
 : ['ExtraTreesClassifier', 0.773125]
 
+#+BEGIN_EXAMPLE
 BaggingClassifier 0.78296875
 
 ['LogisticRegression', 0.784375]
@@ -317,3 +318,4 @@ BaggingClassifier 0.78296875
 ['BaggingClassifier', 0.748125]
 ['RandomForestClassifier', 0.75125]
 ['ExtraTreesClassifier', 0.773125]
+#+END_EXAMPLE
