@@ -206,7 +206,7 @@ sklearn在训练结束后自动计算特征重要性。可以通过 ~feature_imp
 *** sklearn对stacking的实现（不直接支持！）
 ** 练习
 *** 对比本章学到的分类器性能（超参调节的影响）
-#+BEGIN_SRC python :results output
+#+BEGIN_SRC python :results output :export code
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
 #import numpy as np
@@ -218,7 +218,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
 
 X, y = make_moons( # 生成卫星数据集
-    n_samples=8000, # 800个实例，中等大小
+    n_samples=8000, # 8000个实例，中等大小
     shuffle=True,
     noise=0.6,
     random_state=42
