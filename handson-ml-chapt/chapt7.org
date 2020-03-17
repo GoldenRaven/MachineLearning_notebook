@@ -179,7 +179,7 @@ sklearn实现为 ~ExtraTreesClassifier~ 类，它的API与RandomForestClassifier
 注意：
     1.训练极端随机树集成要比随机森林快得多，因为找到最佳阀值是个耗时的任务。
     2.通常很难预先知道RandomForestClassifier与ExtraTreesClassifier哪个好，
-    唯一的方法是两种都尝试一遍，再用交叉验证进行比较。
+      唯一的方法是两种都尝试一遍，再用交叉验证进行比较。
 #+END_EXAMPLE
 *** 特征重要性
 在训练好的决策树中，越重要的特征越可能出现在靠近根节点的位置，不重要的特征出现在靠近节点的位置，
@@ -204,3 +204,105 @@ sklearn在训练结束后自动计算特征重要性。可以通过 ~feature_imp
 **** sklearn中Gradient boosting的实现
 *** stacking 堆叠法
 *** sklearn对stacking的实现（不直接支持！）
+** 练习
+*** 对比本章学到的分类器性能（超参调节的影响）
+#+BEGIN_SRC python :results output
+from sklearn.datasets import make_moons
+from sklearn.model_selection import train_test_split
+#import numpy as np
+from sklearn.ensemble import VotingClassifier, BaggingClassifier, RandomForestClassifier, ExtraTreesClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
+
+X, y = make_moons( # 生成卫星数据集
+    n_samples=8000, # 800个实例，中等大小
+    shuffle=True,
+    noise=0.6,
+    random_state=42
+)
+X_train, X_test, y_train, y_test = train_test_split( # 分离测试集
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    shuffle=True
+)
+stdscaler = StandardScaler() # 调用特征缩放器
+X_train = stdscaler.fit_transform(X_train) # 缩放特征
+
+log_clf = LogisticRegression(n_jobs=-1) # 创建逻辑回归
+svc = SVC(kernel='rbf') # 创建支持向量机分类器，高斯核
+dt = DecisionTreeClassifier( # 创建决策树分类器
+    min_samples_leaf=5, # 节点最小实例数为5
+    max_depth=20, # 最大深度20
+    criterion='gini' # 分裂标准为不纯度
+)
+vt_clf = VotingClassifier( # 创建投票分类器（集成方法）
+    estimators=[('log', log_clf), ('svc', svc), ('dt', dt)],
+    voting='hard', # 硬投票
+    n_jobs=-1 # 使用全部内核
+)
+bg1_clf = BaggingClassifier( # 创建自助法分类器（集成方法）
+    dt, # 基础预测器为决策树分类器
+    bootstrap=True, # 抽样放回，bagging
+    max_samples=0.5, # 每次抽样最大数比例
+    n_estimators=500, # 集成树的个数
+    oob_score=True, # 开启外包评估
+    n_jobs=-1 # 使用所有内核
+)
+bg2_clf = BaggingClassifier(
+    dt,
+    bootstrap=False, # 抽样不放回，pasting
+    max_samples=0.5,
+    n_estimators=500,
+    n_jobs=-1
+)
+rdf_clf = RandomForestClassifier( # 创建随机森林分类器
+    min_samples_leaf=5, # 最小节点实例数为5
+    max_depth=20, # 最大深度为20
+    criterion='gini', # 分裂标准为不纯度
+    n_estimators=500, # 集成个数
+    n_jobs=-1 # 全内核并行
+    #max_samples=0.5, # 没有这一参数
+)
+ex_clf = ExtraTreesClassifier( # 创建极端随机树集成
+    min_samples_leaf=5,
+    max_depth=20,
+    criterion='gini',
+    n_estimators=500,
+    n_jobs=-1
+    #max_samples=0.5, # 没有这一参数
+)
+clfs = (log_clf, svc, dt, vt_clf, bg1_clf, bg2_clf, rdf_clf, ex_clf)
+
+def validation(clfs, X, y): # 怎么评估不同模型的性能？
+    scores = []
+    for clf in clfs:
+        clf.fit(X, y)
+        try:
+            print(clf.__class__.__name__, clf.oob_score_)
+        except:
+            pass
+        y_pred = clf.predict(X_test)
+        acc_score = accuracy_score(y_pred, y_test)
+        scores.append([clf.__class__.__name__, acc_score])
+    return scores
+
+scores = validation(clfs, X_train, y_train)
+[print(x) for x in scores]
+
+#+END_SRC
+
+#+RESULTS:
+: BaggingClassifier 0.78296875
+: ['LogisticRegression', 0.784375]
+: ['SVC', 0.7775]
+: ['DecisionTreeClassifier', 0.705625]
+: ['VotingClassifier', 0.775]
+: ['BaggingClassifier', 0.758125]
+: ['BaggingClassifier', 0.748125]
+: ['RandomForestClassifier', 0.75125]
+: ['ExtraTreesClassifier', 0.773125]
