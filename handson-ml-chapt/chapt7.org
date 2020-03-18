@@ -288,7 +288,85 @@ grd_reg.fit(X_train, y_train)
 可以训练一个模型用来函数，而不是简单地用投票等方法。
 *** sklearn对stacking的实现（不直接支持！）(TODO)
 ** 练习
-*** 1.对比本章学到的分类器性能
+*** 1.决策树超参调优
+#+BEGIN_SRC python :results output :export code
+from sklearn.datasets import make_moons
+from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
+from sklearn.ensemble import VotingClassifier, BaggingClassifier, RandomForestClassifier, ExtraTreesClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
+
+X, y = make_moons( # 生成卫星数据集
+    n_samples=10000, # 10000个实例，中等大小
+    #shuffle=True,
+    noise=0.4,
+    #random_state=42
+)
+X_train, X_test, y_train, y_test = train_test_split( # 分离测试集
+    X,
+    y,
+    test_size=0.25,
+    random_state=42,
+    shuffle=True
+)
+stdscaler = StandardScaler() # 调用特征缩放器
+X_train = stdscaler.fit_transform(X_train) # 缩放特征
+
+dt = DecisionTreeClassifier( # 创建决策树分类器
+    criterion='gini' # 分裂标准为不纯度
+)
+bg1_clf = BaggingClassifier( # 创建自助法分类器（集成方法）
+    dt, # 基础预测器为决策树分类器
+    bootstrap=True, # 抽样放回，bagging
+    max_samples=0.5, # 每次抽样最大数比例
+    n_estimators=500, # 集成树的个数
+    oob_score=True, # 开启外包评估
+    n_jobs=-1 # 使用所有内核
+)
+rdf_clf = RandomForestClassifier( # 创建随机森林分类器
+    min_samples_leaf=5, # 最小节点实例数为5
+    max_leaf_nodes=20, # 最大
+    criterion='gini', # 分裂标准为不纯度
+    n_estimators=500, # 集成个数
+    n_jobs=-1 # 全内核并行
+    #max_samples=0.5, # 没有这一参数
+)
+grid_param = {
+    'max_leaf_nodes': range(100),
+    'max_depth': range(80),
+    'min_samples_leaf': range(50)
+}
+#grid_search = GridSearchCV(
+grid_search = RandomizedSearchCV(
+    dt,
+    grid_param,
+    cv=5,
+    scoring='accuracy',
+    n_jobs=-1,
+)
+grid_search.fit(X_train, y_train)
+best_clf  = grid_search.best_estimator_
+print(best_clf)
+y_pred = best_clf.predict(X_test)
+print(grid_search.best_params_, grid_search.best_score_, accuracy_score(y_pred, y_test))
+#+end_src
+
+#+RESULTS:
+: DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
+:                        max_depth=54, max_features=None, max_leaf_nodes=5,
+:                        min_impurity_decrease=0.0, min_impurity_split=None,
+:                        min_samples_leaf=40, min_samples_split=2,
+:                        min_weight_fraction_leaf=0.0, presort='deprecated',
+:                        random_state=None, splitter='best')
+: {'min_samples_leaf': 40, 'max_leaf_nodes': 5, 'max_depth': 54} 0.8566666666666667 0.8104
+
+训练时交叉验证的精度为85.52%， 测试的精度为79.92%，显然存在过拟合的情况，需要正则化。
+可以设置参数的上下限或进行剪枝！
+
+用随机网格搜索后得到交叉验证精度0.8566666666666667，测试集精度0.8104。
+
+*** 2.对比本章学到的分类器性能
 #+BEGIN_SRC python :results output :export code
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
@@ -411,5 +489,3 @@ scores = validation(clfs, X_train, y_train)
 ['AdaBoostClassifier', 0.7496]
 ['GradientBoostingClassifier', 0.7548]
 #+END_EXAMPLE
-
-*** 2.超参调节的影响
