@@ -201,7 +201,7 @@ sklearn在训练结束后自动计算特征重要性。可以通过 ~feature_imp
 #+END_EXAMPLE
 给每个实例一个权重，最初的权重相同，均为 w^{(i)}=1/m ，每个预测器预测后更新权重 w^{(i)} 。
 更新规则如下：
-[[file:../images/updatewpng]]
+[[file:../images/updatew.png]]
 
 [[file:../images/pred_w.png]]
 
@@ -288,7 +288,7 @@ grd_reg.fit(X_train, y_train)
 可以训练一个模型用来函数，而不是简单地用投票等方法。
 *** sklearn对stacking的实现（不直接支持！）(TODO)
 ** 练习
-*** 对比本章学到的分类器性能
+*** 1.对比本章学到的分类器性能
 #+BEGIN_SRC python :results output :export code
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
@@ -300,6 +300,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
 from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier
+
 X, y = make_moons( # 生成卫星数据集
     n_samples=10000, # 10000个实例，中等大小
     #shuffle=True,
@@ -360,25 +361,34 @@ ex_clf = ExtraTreesClassifier( # 创建极端随机树集成
     #max_samples=0.5, # 没有这一参数
 )
 ada_clf = AdaBoostClassifier( # 创建自适应提升集成
-    dt,
-    n_estimators=300
+    dt, # 被集成的基础预测器
+    n_estimators=500, # 基础预测器的数量
+    algorithm='SAMME.R', # 使用概率聚合而不使用类别
+    learning_rate=0.5, # 学习率，用来对每个基础预测器的贡献进行缩放
+    #n_jobs=-1 # 没有这一参数，依序学习，不能并行
+)
+gb_clf = GradientBoostingClassifier(
+    n_estimators=500, # 基础预测器的数量
+    #algorithm='SAMME.R', # 没有这一参数
+    learning_rate=0.5, # 学习率，用来对每个基础预测器的贡献进行缩放
+    subsample=0.5
 )
 
-clfs = (log_clf, svc, dt, vt_clf, bg1_clf, bg2_clf, rdf_clf, ex_clf)
-
+clfs = (log_clf, svc, dt, vt_clf, bg1_clf, bg2_clf, rdf_clf, ex_clf, ada_clf, gb_clf)
+#clfs = (gb_clf)
 def validation(clfs, X, y): # 怎么评估不同模型的性能？
     scores = []
     for clf in clfs:
         clf.fit(X, y)
-        try:
-            print(clf.__class__.__name__, clf.oob_score_)
-        except:
-            pass
-        finally:
-            try:
-                print(clf.__class__.__name__, clf.feature_importances_)
-            except:
-                pass
+        #try:
+        #    print(clf.__class__.__name__, clf.oob_score_)
+        #except:
+        #    pass
+        #finally:
+        #    try:
+        #        print(clf.__class__.__name__, clf.feature_importances_)
+        #    except:
+        #        pass
         y_pred = clf.predict(X_test)
         acc_score = accuracy_score(y_pred, y_test)
         scores.append([clf.__class__.__name__, acc_score])
@@ -386,38 +396,20 @@ def validation(clfs, X, y): # 怎么评估不同模型的性能？
 
 scores = validation(clfs, X_train, y_train)
 [print(x) for x in scores]
-
 #+END_SRC
 
-#+RESULTS:
-#+begin_example
-DecisionTreeClassifier [0.4170659 0.5829341]
-BaggingClassifier 0.8584
-RandomForestClassifier [0.43802162 0.56197838]
-ExtraTreesClassifier [0.47212465 0.52787535]
-['LogisticRegression', 0.8168]
-['SVC', 0.8]
-['DecisionTreeClassifier', 0.804]
-['VotingClassifier', 0.806]
-['BaggingClassifier', 0.7976]
-['BaggingClassifier', 0.7984]
-['RandomForestClassifier', 0.794]
-['ExtraTreesClassifier', 0.8036]
-#+end_example
-
 #+BEGIN_EXAMPLE
-DecisionTreeClassifier [0.41068407 0.58931593]
-BaggingClassifier 0.8588
-RandomForestClassifier [0.44065242 0.55934758]
-ExtraTreesClassifier [0.4475797 0.5524203]
-['LogisticRegression', 0.8112]
-['SVC', 0.812]
-['DecisionTreeClassifier', 0.8152]
-['VotingClassifier', 0.8196]
-['BaggingClassifier', 0.8048]
-['BaggingClassifier', 0.8088]
-['RandomForestClassifier', 0.8076]
-['ExtraTreesClassifier', 0.8128]
+#+RESULTS:
+['LogisticRegression', 0.8256]
+['SVC', 0.8116]
+['DecisionTreeClassifier', 0.7992]
+['VotingClassifier', 0.8116]
+['BaggingClassifier', 0.8016]
+['BaggingClassifier', 0.8028]
+['RandomForestClassifier', 0.8016]
+['ExtraTreesClassifier', 0.814]
+['AdaBoostClassifier', 0.7496]
+['GradientBoostingClassifier', 0.7548]
 #+END_EXAMPLE
 
-*** 超参调节的影响
+*** 2.超参调节的影响
