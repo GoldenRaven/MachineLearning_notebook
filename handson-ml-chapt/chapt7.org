@@ -130,7 +130,7 @@ bag_clf = BaggingClassifier(
 bag_clf.fit(X_train, y_train) # 训练
 bag_clf.oob_score_ # 取得对bagging集成的评估分数
 #+END_SRC
-*决策函数？P171*
+*决策函数P171(TODO)*
 
 在 ~BaggingClassifier~ 类中，对特征抽样由参数 ~bootstrap_features~ 和 ~max_features~
 控制，对实例抽样由参数 ~bootstrap~ 和 ~max_samples~ 控制。
@@ -199,13 +199,96 @@ sklearn在训练结束后自动计算特征重要性。可以通过 ~feature_imp
 疑问：训练时就更加关注难预测的实例了？还是说，只为了得到聚合权重，
      训练时前序预测器的预测结果不影响后序预测器的预测？
 #+END_EXAMPLE
+给每个实例一个权重，最初的权重相同，均为 w^{(i)}=1/m ，每个预测器预测后更新权重 w^{(i)} 。
+更新规则如下：
+[[file:../images/updatewpng]]
+
+[[file:../images/pred_w.png]]
+
+[[file:../images/w_error.png]]
+
+权重更新函数用gnuplot绘制如下所示：
+#+BEGIN_SRC gnuplot
+set term qt font "Times New Roman,20" # 输出到屏幕
+# set output "../images/update.png"
+set title "Ada boost预测器权重{/symbol a}_j={/symbol \150}log((1-r_j)/r_j)与权重更新幅度exp({/symbol a}_j)"
+eta = 0.8
+f(x) = eta * log((1-x)/x)
+g(x) = exp(f(x))
+set xrange [0:1]
+set yrange [-4:8]
+# unset k
+set xlabel "r_j"
+set ylabel "{/symbol a}_j"
+# set grid
+plot f(x) w l lw 2 t '预测器权重', g(x) w lp lw 2 t '权重更新幅度', 1 t '{/symbol a}_j=1' w l dt 2 lw 1 lc 8
+pause mouse close # 允许鼠标拖动
+# set output
+#+END_SRC
+
+[[file:../images/update_weight.png]]
+
+对上述Adaboost的权重更新规则我们可以发现以下几点：
+#+BEGIN_EXAMPLE
+1. 权重更新时，只对分类错误的实例进行提升，且提升的幅度相同。
+2. 预测器解决难题的能力越强，其对自己分类错误的实例提升幅度越大。
+3. 预测器分类错误的实例的权重和越小，其解决难题能力越强。
+4. 预测器权重函数和更新规则函数都是单调递减的。
+#+END_EXAMPLE
+然后将所有权重更新后重新归一化，并重复这一过程。预测：计算所有预测器的预测结果，并使用
+预测器权重\alpha_{j}对预测结果进行加权平均，得到大多数投票的类别就是预测类别。
 **** sklearn中Adaboost的实现
+sklearn实现的是AdaBoost的的多分类版本SAMME。当只有两个类别时，SAMME等同于AdaBoost.
+如果基础预测器可以给出类别概率，sklearn会使用SAMME的变体SAMME.R，它使用概率而不是类别。
+
+~AdaboostClassifier~ 用于自适应提升分类， ~AdaBoostRegressor~ 用于自适应提升回归。
+
+#+BEGIN_SRC python
+from sklearn.ensemble import AdaBoostClassifier
+ada_clf = AdaBoostClassifier(
+    DecisionTreeClassifier(max_depth=1), # 默认的基础预测器，深度为1
+    n_estimators=200,
+    algorithm='SAMME.R',
+    learning_rate=0.5
+)
+ada_clf.fit(X_train, y_train)
+#+END_SRC
+如果AdaBoost集成过拟合，可以减少估算器数量，或增加基础估算器的正则化程度。
 **** Gradient Boosting 梯度提升
+梯度提升不是像自适应那样调整实例权重，而是让新的预测器针对前序预测器的残差进行拟合。
+可用于分类也可用于回归。将所有这些预测器的预测相加即为新实例的预测结果。
+
+使用决策树作为基础预测器的梯度提升回归被称为 ~梯度提升回归树(GBRT)~
 **** sklearn中Gradient boosting的实现
-*** stacking 堆叠法
-*** sklearn对stacking的实现（不直接支持！）
+sklearn中可以用 ~GradientBoostingRegressor~ 类来实现GBRT，它有控制树成长的参数，
+也有控制集成的参数，与 ~RandomForestRegressor~ 类似。下面的代码用以重现
+三棵决策树的梯度提升集成。
+#+BEGIN_SRC python
+from sklearn.ensemble import GradientBoostingRegressor
+grd_reg = GradientBoostingRegressor(
+    max_depth=2,
+    n_estimators=3,
+    learning_rate=1.0
+)
+grd_reg.fit(X_train, y_train)
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+注意：
+    1. 超参learning_rate对每棵树的贡献进行缩放，可以缩小它用来正则化。
+    2. 可以用早期停止法来，寻找最佳的树数量，再用这个数量的树进行训练。
+    3. 也可以不用训练大量的树再找最佳数量，而真的提前停止训练。（利用warm_start=True）
+    4. 超参数subsample=0.25,用于指定每训练棵树的实例数量比例为随机的25%。这称为 ~随机梯度提升~。
+    5. 随机梯度提升引入了更多变化，也大量地加快了训练过程。
+    6. 超参数loss来指定成本函数。
+#+END_EXAMPLE
+实现早期停止法可以用staged_predict()方法，它会在每训练完一棵树就返回一个
+迭代器，
+*** stacking 堆叠法(TODO)
+可以训练一个模型用来函数，而不是简单地用投票等方法。
+*** sklearn对stacking的实现（不直接支持！）(TODO)
 ** 练习
-*** 对比本章学到的分类器性能（超参调节的影响）
+*** 对比本章学到的分类器性能
 #+BEGIN_SRC python :results output :export code
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
@@ -216,17 +299,17 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
-
+from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier
 X, y = make_moons( # 生成卫星数据集
-    n_samples=8000, # 8000个实例，中等大小
-    shuffle=True,
-    noise=0.6,
-    random_state=42
+    n_samples=10000, # 10000个实例，中等大小
+    #shuffle=True,
+    noise=0.4,
+    #random_state=42
 )
 X_train, X_test, y_train, y_test = train_test_split( # 分离测试集
     X,
     y,
-    test_size=0.2,
+    test_size=0.25,
     random_state=42,
     shuffle=True
 )
@@ -236,8 +319,8 @@ X_train = stdscaler.fit_transform(X_train) # 缩放特征
 log_clf = LogisticRegression(n_jobs=-1) # 创建逻辑回归
 svc = SVC(kernel='rbf') # 创建支持向量机分类器，高斯核
 dt = DecisionTreeClassifier( # 创建决策树分类器
-    min_samples_leaf=5, # 节点最小实例数为5
-    max_leaf_nodes=20, # 最大
+    #min_samples_leaf=5, # 节点最小实例数为5
+    max_leaf_nodes=10, # 最大
     criterion='gini' # 分裂标准为不纯度
 )
 vt_clf = VotingClassifier( # 创建投票分类器（集成方法）
@@ -276,6 +359,11 @@ ex_clf = ExtraTreesClassifier( # 创建极端随机树集成
     n_jobs=-1
     #max_samples=0.5, # 没有这一参数
 )
+ada_clf = AdaBoostClassifier( # 创建自适应提升集成
+    dt,
+    n_estimators=300
+)
+
 clfs = (log_clf, svc, dt, vt_clf, bg1_clf, bg2_clf, rdf_clf, ex_clf)
 
 def validation(clfs, X, y): # 怎么评估不同模型的性能？
@@ -302,30 +390,34 @@ scores = validation(clfs, X_train, y_train)
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_EXAMPLE
-DecisionTreeClassifier [0.43667506 0.56332494]
-BaggingClassifier 0.78734375
-RandomForestClassifier [0.46004629 0.53995371]
-ExtraTreesClassifier [0.48780261 0.51219739]
-['LogisticRegression', 0.784375]
-['SVC', 0.7775]
-['DecisionTreeClassifier', 0.768125]
-['VotingClassifier', 0.7775]
-['BaggingClassifier', 0.775]
-['BaggingClassifier', 0.770625]
-['RandomForestClassifier', 0.770625]
-['ExtraTreesClassifier', 0.776875]
-#+END_EXAMPLE
+#+begin_example
+DecisionTreeClassifier [0.4170659 0.5829341]
+BaggingClassifier 0.8584
+RandomForestClassifier [0.43802162 0.56197838]
+ExtraTreesClassifier [0.47212465 0.52787535]
+['LogisticRegression', 0.8168]
+['SVC', 0.8]
+['DecisionTreeClassifier', 0.804]
+['VotingClassifier', 0.806]
+['BaggingClassifier', 0.7976]
+['BaggingClassifier', 0.7984]
+['RandomForestClassifier', 0.794]
+['ExtraTreesClassifier', 0.8036]
+#+end_example
 
 #+BEGIN_EXAMPLE
-BaggingClassifier 0.78296875
-
-['LogisticRegression', 0.784375]
-['SVC', 0.7775]
-['DecisionTreeClassifier', 0.705625]
-['VotingClassifier', 0.775]
-['BaggingClassifier', 0.758125]
-['BaggingClassifier', 0.748125]
-['RandomForestClassifier', 0.75125]
-['ExtraTreesClassifier', 0.773125]
+DecisionTreeClassifier [0.41068407 0.58931593]
+BaggingClassifier 0.8588
+RandomForestClassifier [0.44065242 0.55934758]
+ExtraTreesClassifier [0.4475797 0.5524203]
+['LogisticRegression', 0.8112]
+['SVC', 0.812]
+['DecisionTreeClassifier', 0.8152]
+['VotingClassifier', 0.8196]
+['BaggingClassifier', 0.8048]
+['BaggingClassifier', 0.8088]
+['RandomForestClassifier', 0.8076]
+['ExtraTreesClassifier', 0.8128]
 #+END_EXAMPLE
+
+*** 超参调节的影响
