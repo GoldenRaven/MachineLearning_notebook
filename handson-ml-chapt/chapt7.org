@@ -27,14 +27,14 @@
 *** 硬投票分类器
 硬投票：聚合每个分类器的预测，将得票最多的类别作为预测结果。
 
-*sklearn实现* ：参数 ~volting="soft"~
+*sklearn实现* ：参数 ~volting=soft~
 *** 软投票分类器
 软投票：如果所有被集成的分类器都能给出类别概率（即有predict_proba()方法），那到么可以将不同类别
 的概率在所有分类器上进行平均，以平均概率最高的类别作为预测结果。
 
 通常来说，软投票比硬投票表现更好！因为它给予那些高度自信的投票更高的权重。
 
-*sklearn实现* ：1.确保所有预测器都能给出概率。2.参数 ~volting="soft"~
+*sklearn实现* ：1.确保所有预测器都能给出概率。2.参数 ~volting=soft~
 
 #+BEGIN_EXAMPLE
 注意：SVC默认不能给出概率，所以不能用以软投票;除非设probability为true,但这会开启交叉验证，减慢训练速度。
@@ -237,7 +237,7 @@ log_clf = LogisticRegression(n_jobs=-1) # 创建逻辑回归
 svc = SVC(kernel='rbf') # 创建支持向量机分类器，高斯核
 dt = DecisionTreeClassifier( # 创建决策树分类器
     min_samples_leaf=5, # 节点最小实例数为5
-    max_depth=20, # 最大深度20
+    max_leaf_nodes=20, # 最大
     criterion='gini' # 分裂标准为不纯度
 )
 vt_clf = VotingClassifier( # 创建投票分类器（集成方法）
@@ -262,7 +262,7 @@ bg2_clf = BaggingClassifier(
 )
 rdf_clf = RandomForestClassifier( # 创建随机森林分类器
     min_samples_leaf=5, # 最小节点实例数为5
-    max_depth=20, # 最大深度为20
+    max_leaf_nodes=20, # 最大
     criterion='gini', # 分裂标准为不纯度
     n_estimators=500, # 集成个数
     n_jobs=-1 # 全内核并行
@@ -270,7 +270,7 @@ rdf_clf = RandomForestClassifier( # 创建随机森林分类器
 )
 ex_clf = ExtraTreesClassifier( # 创建极端随机树集成
     min_samples_leaf=5,
-    max_depth=20,
+    max_leaf_nodes=20, # 最大
     criterion='gini',
     n_estimators=500,
     n_jobs=-1
@@ -286,6 +286,11 @@ def validation(clfs, X, y): # 怎么评估不同模型的性能？
             print(clf.__class__.__name__, clf.oob_score_)
         except:
             pass
+        finally:
+            try:
+                print(clf.__class__.__name__, clf.feature_importances_)
+            except:
+                pass
         y_pred = clf.predict(X_test)
         acc_score = accuracy_score(y_pred, y_test)
         scores.append([clf.__class__.__name__, acc_score])
@@ -297,15 +302,20 @@ scores = validation(clfs, X_train, y_train)
 #+END_SRC
 
 #+RESULTS:
-: BaggingClassifier 0.78296875
-: ['LogisticRegression', 0.784375]
-: ['SVC', 0.7775]
-: ['DecisionTreeClassifier', 0.705625]
-: ['VotingClassifier', 0.775]
-: ['BaggingClassifier', 0.758125]
-: ['BaggingClassifier', 0.748125]
-: ['RandomForestClassifier', 0.75125]
-: ['ExtraTreesClassifier', 0.773125]
+#+BEGIN_EXAMPLE
+DecisionTreeClassifier [0.43667506 0.56332494]
+BaggingClassifier 0.78734375
+RandomForestClassifier [0.46004629 0.53995371]
+ExtraTreesClassifier [0.48780261 0.51219739]
+['LogisticRegression', 0.784375]
+['SVC', 0.7775]
+['DecisionTreeClassifier', 0.768125]
+['VotingClassifier', 0.7775]
+['BaggingClassifier', 0.775]
+['BaggingClassifier', 0.770625]
+['RandomForestClassifier', 0.770625]
+['ExtraTreesClassifier', 0.776875]
+#+END_EXAMPLE
 
 #+BEGIN_EXAMPLE
 BaggingClassifier 0.78296875
