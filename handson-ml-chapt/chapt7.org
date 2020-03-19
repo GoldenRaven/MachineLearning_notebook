@@ -66,6 +66,29 @@ voting_clf.fit(X_train, y_train)
 与分类相对应的回归实现为 ~VotingRegressor~ ，使用方法也相同。
 
 ** 三种不同的集成方法（bagging/pasting, boosting, stacking）
+*** 实际使用经验
+#+BEGIN_EXAMPLE
+注意：
+    1.训练极端随机树集成要比随机森林快得多，因为找到最佳阀值是个耗时的任务。
+    2.通常很难预先知道RandomForestClassifier与ExtraTreesClassifier哪个好，
+      唯一的方法是两种都尝试一遍，再用交叉验证进行比较。
+    3.使用随机森林和极端随机树时，要调整的参数主要是 n_estimators 和 max_features。
+    4.根据经验，回归问题中使用 max_features = None （总是考虑所有的特征），
+      分类问题使用 max_features = "sqrt" （随机考虑 sqrt(n_features) 特征，
+      其中 n_features 是特征的个数）是比较好的默认值。
+    5.max_depth = None 和 min_samples_split = 2 结合通常会有不错的效果（即生成完全的树）。
+      请记住，这些（默认）值通常不是最佳的，同时还可能消耗大量的内存，最佳参数值应由交叉验证获得。
+      另外，请注意，在随机森林中，默认使用自助采样法（bootstrap = True）， 然而 extra-trees
+      的默认策略是使用整个数据集（bootstrap = False）。 当使用自助采样法方法抽样时，
+      泛化精度是可以通过剩余的或者袋外的样本来估算的，设置 oob_score = True 即可实现。
+    6.对于拥有大量类别的数据集我们强烈推荐使用RandomForestClassifier来代替GradientBoostingClassifier
+    7.max_leaf_nodes=k 可以给出与 max_depth=k-1 品质相当的结果，但是其训练速度明显更快，
+      同时也会以多一点的训练误差作为代价。
+    8.bagging方法可以减小过拟合，所以通常在强分类器和复杂模型上使用时表现的很好（例如，完全生长的决策树，
+      fully developed decision trees）;相比之下 boosting 方法则在弱模型上表现更好（例如，浅层决策树，
+      shallow decision trees）。
+
+#+END_EXAMPLE
 *** bagging/pasting（相同算法在不同训练集随机子集上的聚合）
 使用同一算法，在训练集的不同随机子集上进行训练，再聚合。
 
@@ -174,13 +197,6 @@ y_pred = rdf_clf.predict(X_test)
 *** 极端随机树的sklearn实现
 sklearn实现为 ~ExtraTreesClassifier~ 类，它的API与RandomForestClassifier相同。
 相应地 ~ExtraTreesRegressor~ 的API与 ~RandomForestRegressor~ 相同。
-
-#+BEGIN_EXAMPLE
-注意：
-    1.训练极端随机树集成要比随机森林快得多，因为找到最佳阀值是个耗时的任务。
-    2.通常很难预先知道RandomForestClassifier与ExtraTreesClassifier哪个好，
-      唯一的方法是两种都尝试一遍，再用交叉验证进行比较。
-#+END_EXAMPLE
 *** 特征重要性
 在训练好的决策树中，越重要的特征越可能出现在靠近根节点的位置，不重要的特征出现在靠近节点的位置，
 甚至根本不出现。因此可以用特征在森林中的平均深度来评估其重要性。随机森林是一个非常便利的了解
@@ -299,72 +315,60 @@ from sklearn.metrics import accuracy_score
 
 X, y = make_moons( # 生成卫星数据集
     n_samples=10000, # 10000个实例，中等大小
-    #shuffle=True,
+    shuffle=True,
     noise=0.4,
-    #random_state=42
+    random_state=42
 )
 X_train, X_test, y_train, y_test = train_test_split( # 分离测试集
     X,
     y,
-    test_size=0.25,
+    test_size=0.2,
     random_state=42,
-    shuffle=True
+    #shuffle=True
 )
 stdscaler = StandardScaler() # 调用特征缩放器
-X_train = stdscaler.fit_transform(X_train) # 缩放特征
+#X_train = stdscaler.fit_transform(X_train) # 缩放特征
 
 dt = DecisionTreeClassifier( # 创建决策树分类器
     criterion='gini' # 分裂标准为不纯度
 )
-bg1_clf = BaggingClassifier( # 创建自助法分类器（集成方法）
-    dt, # 基础预测器为决策树分类器
-    bootstrap=True, # 抽样放回，bagging
-    max_samples=0.5, # 每次抽样最大数比例
-    n_estimators=500, # 集成树的个数
-    oob_score=True, # 开启外包评估
-    n_jobs=-1 # 使用所有内核
-)
-rdf_clf = RandomForestClassifier( # 创建随机森林分类器
-    min_samples_leaf=5, # 最小节点实例数为5
-    max_leaf_nodes=20, # 最大
-    criterion='gini', # 分裂标准为不纯度
-    n_estimators=500, # 集成个数
-    n_jobs=-1 # 全内核并行
-    #max_samples=0.5, # 没有这一参数
-)
 grid_param = {
-    'max_leaf_nodes': range(100),
-    'max_depth': range(80),
-    'min_samples_leaf': range(50)
+    'max_leaf_nodes': range(2, 100),
+    #'max_depth': range(80),
+    #'min_samples_leaf': range(50)
 }
-#grid_search = GridSearchCV(
-grid_search = RandomizedSearchCV(
+grid_search = GridSearchCV(
+#grid_search = RandomizedSearchCV(
     dt,
     grid_param,
     cv=5,
     scoring='accuracy',
+    verbose=1,
     n_jobs=-1,
 )
 grid_search.fit(X_train, y_train)
 best_clf  = grid_search.best_estimator_
 print(best_clf)
+#best_clf.fit(X_train, y_train) # 不需要再训练，已经训练好了！
 y_pred = best_clf.predict(X_test)
 print(grid_search.best_params_, grid_search.best_score_, accuracy_score(y_pred, y_test))
 #+end_src
 
 #+RESULTS:
+: Fitting 5 folds for each of 98 candidates, totalling 490 fits
 : DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
-:                        max_depth=54, max_features=None, max_leaf_nodes=5,
+:                        max_depth=None, max_features=None, max_leaf_nodes=23,
 :                        min_impurity_decrease=0.0, min_impurity_split=None,
-:                        min_samples_leaf=40, min_samples_split=2,
+:                        min_samples_leaf=1, min_samples_split=2,
 :                        min_weight_fraction_leaf=0.0, presort='deprecated',
 :                        random_state=None, splitter='best')
-: {'min_samples_leaf': 40, 'max_leaf_nodes': 5, 'max_depth': 54} 0.8566666666666667 0.8104
+: {'max_leaf_nodes': 23} 0.85925 0.8735
 
 训练时交叉验证的精度为85.52%， 测试的精度为79.92%，显然存在过拟合的情况，需要正则化。
 可以设置参数的上下限或进行剪枝！
 
-用随机网格搜索后得到交叉验证精度0.8566666666666667，测试集精度0.8104。
+用随机网格搜索后得到交叉验证精度0.8566666666666667，测试集精度0.8104。以上两个模型中，对训练集先进行了
+缩放和集中，导致在测试集上的预测准确率下降，如果不进行特征缩放，结果为：{'max_leaf_nodes': 23} 0.85925 0.8735
 
 *** 2.对比本章学到的分类器性能
 #+BEGIN_SRC python :results output :export code
@@ -383,28 +387,36 @@ X, y = make_moons( # 生成卫星数据集
     n_samples=10000, # 10000个实例，中等大小
     #shuffle=True,
     noise=0.4,
-    #random_state=42
+    random_state=42
 )
 X_train, X_test, y_train, y_test = train_test_split( # 分离测试集
     X,
     y,
-    test_size=0.25,
+    test_size=0.2,
     random_state=42,
-    shuffle=True
+    #shuffle=True
 )
 stdscaler = StandardScaler() # 调用特征缩放器
-X_train = stdscaler.fit_transform(X_train) # 缩放特征
-
-log_clf = LogisticRegression(n_jobs=-1) # 创建逻辑回归
+#X_train = stdscaler.fit_transform(X_train) # 缩放特征
+#help(LogisticRegression);exit(0)
+log_clf = LogisticRegression(solver='sag', n_jobs=-1) # 创建逻辑回归
 svc = SVC(kernel='rbf') # 创建支持向量机分类器，高斯核
 dt = DecisionTreeClassifier( # 创建决策树分类器
     #min_samples_leaf=5, # 节点最小实例数为5
-    max_leaf_nodes=10, # 最大
+    max_leaf_nodes=23, # 最大
     criterion='gini' # 分裂标准为不纯度
 )
+rdf_clf = RandomForestClassifier( # 创建随机森林分类器
+    #min_samples_leaf=5, # 最小节点实例数为5
+    max_leaf_nodes=23, # 最大叶节点数量
+    criterion='gini', # 分裂标准为不纯度
+    n_estimators=500, # 集成个数
+    n_jobs=-1 # 全内核并行
+    #max_samples=0.5, # 没有这一参数
+)
 vt_clf = VotingClassifier( # 创建投票分类器（集成方法）
-    estimators=[('log', log_clf), ('svc', svc), ('dt', dt)],
-    voting='hard', # 硬投票
+    estimators=[('log', log_clf), ('dt', dt), ('rdf', rdf_clf)],
+    voting='soft', # 软投票
     n_jobs=-1 # 使用全部内核
 )
 bg1_clf = BaggingClassifier( # 创建自助法分类器（集成方法）
@@ -422,17 +434,10 @@ bg2_clf = BaggingClassifier(
     n_estimators=500,
     n_jobs=-1
 )
-rdf_clf = RandomForestClassifier( # 创建随机森林分类器
-    min_samples_leaf=5, # 最小节点实例数为5
-    max_leaf_nodes=20, # 最大
-    criterion='gini', # 分裂标准为不纯度
-    n_estimators=500, # 集成个数
-    n_jobs=-1 # 全内核并行
-    #max_samples=0.5, # 没有这一参数
-)
+#help(RandomForestClassifier)
 ex_clf = ExtraTreesClassifier( # 创建极端随机树集成
-    min_samples_leaf=5,
-    max_leaf_nodes=20, # 最大
+    #min_samples_leaf=5,
+    max_leaf_nodes=23, # 最大叶节点数量
     criterion='gini',
     n_estimators=500,
     n_jobs=-1
@@ -440,16 +445,17 @@ ex_clf = ExtraTreesClassifier( # 创建极端随机树集成
 )
 ada_clf = AdaBoostClassifier( # 创建自适应提升集成
     dt, # 被集成的基础预测器
+    #DecisionTreeClassifier(max_depth=2),
     n_estimators=500, # 基础预测器的数量
     algorithm='SAMME.R', # 使用概率聚合而不使用类别
-    learning_rate=0.5, # 学习率，用来对每个基础预测器的贡献进行缩放
+    learning_rate=0.2, # 学习率，用来对每个基础预测器的贡献进行缩放
     #n_jobs=-1 # 没有这一参数，依序学习，不能并行
 )
 gb_clf = GradientBoostingClassifier(
     n_estimators=500, # 基础预测器的数量
     #algorithm='SAMME.R', # 没有这一参数
-    learning_rate=0.5, # 学习率，用来对每个基础预测器的贡献进行缩放
-    subsample=0.5
+    learning_rate=0.2, # 学习率，用来对每个基础预测器的贡献进行缩放
+    subsample=0.5 # 随机梯度提升
 )
 
 clfs = (log_clf, svc, dt, vt_clf, bg1_clf, bg2_clf, rdf_clf, ex_clf, ada_clf, gb_clf)
@@ -476,16 +482,30 @@ scores = validation(clfs, X_train, y_train)
 [print(x) for x in scores]
 #+END_SRC
 
-#+BEGIN_EXAMPLE
 #+RESULTS:
-['LogisticRegression', 0.8256]
-['SVC', 0.8116]
-['DecisionTreeClassifier', 0.7992]
-['VotingClassifier', 0.8116]
-['BaggingClassifier', 0.8016]
-['BaggingClassifier', 0.8028]
-['RandomForestClassifier', 0.8016]
-['ExtraTreesClassifier', 0.814]
-['AdaBoostClassifier', 0.7496]
-['GradientBoostingClassifier', 0.7548]
+#+begin_example
+['LogisticRegression', 0.8415]
+['SVC', 0.874]
+['DecisionTreeClassifier', 0.8735]
+['VotingClassifier', 0.871]
+['BaggingClassifier', 0.8715]
+['BaggingClassifier', 0.8675]
+['RandomForestClassifier', 0.87]
+['ExtraTreesClassifier', 0.869]
+['AdaBoostClassifier', 0.841]
+['GradientBoostingClassifier', 0.851]
+#+end_example
+
+运行结果：
+#+BEGIN_EXAMPLE
+['LogisticRegression', 0.8415]
+['SVC', 0.874]
+['DecisionTreeClassifier', 0.8735]
+['VotingClassifier', 0.8715]
+['BaggingClassifier', 0.8715]
+['BaggingClassifier', 0.8705]
+['RandomForestClassifier', 0.8725]
+['ExtraTreesClassifier', 0.869]
+['AdaBoostClassifier', 0.8415]
+['GradientBoostingClassifier', 0.8615]
 #+END_EXAMPLE
