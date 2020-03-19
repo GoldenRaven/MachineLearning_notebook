@@ -316,7 +316,7 @@ from sklearn.metrics import accuracy_score
 X, y = make_moons( # 生成卫星数据集
     n_samples=10000, # 10000个实例，中等大小
     shuffle=True,
-    noise=0.4,
+    noise=0.2,
     random_state=42
 )
 X_train, X_test, y_train, y_test = train_test_split( # 分离测试集
@@ -386,7 +386,7 @@ from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier
 X, y = make_moons( # 生成卫星数据集
     n_samples=10000, # 10000个实例，中等大小
     #shuffle=True,
-    noise=0.4,
+    noise=0.2,
     random_state=42
 )
 X_train, X_test, y_train, y_test = train_test_split( # 分离测试集
@@ -509,3 +509,5 @@ scores = validation(clfs, X_train, y_train)
 ['AdaBoostClassifier', 0.8415]
 ['GradientBoostingClassifier', 0.8615]
 #+END_EXAMPLE
+*** 8.MNIST数据集上的投票集成
+[[file:chapt7_exercise.ipynb]]
