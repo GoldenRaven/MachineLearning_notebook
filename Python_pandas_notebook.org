@@ -49,6 +49,54 @@
 'tshift', 'tz_convert', 'tz_localize', 'unstack', 'update', 'values', 'var',
 'where', 'xs'
 #+END_SRC
+*** DataFrame的查、改、增、删操作
+#+BEGIN_SRC python :results output
+import pandas as pd
+data = [[1,2,3],
+        [4,5,6]]
+index = ['a','b']
+columns = ['A','B','C']
+df = pd.DataFrame(data=data, index=index, columns = columns)
+print(df)
+print()
+df1 = df.copy()
+print(df1['B']) # 按指标索引列
+print()
+print(df1.loc['b']) # 按指标索引行
+print()
+print(df1.iloc[0]) # 按位置索引列
+print()
+print(df1.iloc[[0,1]]) # 按指标索引行
+print()
+
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+   A  B  C
+a  1  2  3
+b  4  5  6
+
+a    2
+b    5
+Name: B, dtype: int64
+
+A    4
+B    5
+C    6
+Name: b, dtype: int64
+
+A    1
+B    2
+C    3
+Name: a, dtype: int64
+
+   A  B  C
+a  1  2  3
+b  4  5  6
+
+#+end_example
+
 * pandas-tutorial内容
 本节内容来自词条[[https://github.com/hangsz/pandas-tutorial][pandas-tutorial]]，更多内容请自行跳转。
 ** Series and DataFrame :Reading:
