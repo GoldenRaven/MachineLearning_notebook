@@ -51,4 +51,4 @@ ROC AUC有一个不依赖于数据的最低值，而accuracy有一个依赖于�
 范围被缩放到了0到1之间。0代表这个方法的baseline，1代表该方法所能达到的最高值，实际方法的
 某个度量指标可能为负。度量指标的绝对值见 www.cs.cornell.edu\~caruana .
 ** 算法对比
-[[file:images/metrics_algorithm.png][不同算法的性能指标结果]]
+[[file:images/metrics_algorithm.png]]
