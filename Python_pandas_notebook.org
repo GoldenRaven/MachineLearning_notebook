@@ -18,11 +18,11 @@ DataFrame类型的变量df内容如下：
 各种查看方式如下表：
 |                        | ~df[]~         | ~df.loc[]~     | ~df.iloc[]~    |
 |------------------------+----------------+----------------+----------------|
-| 索引 ~b~               | 第二列         | 第二行         | Error          |
+| 索引 'b'               | 第二列         | 第二行         | Error          |
 | 位置 ~1~               | Error          | Error          | 第二行         |
-| 范围索引 ~'a':'c'~     | 第一列到第二列 | 第一行到第二行 | Error          |
+| 范围索引 'a':'c'       | 第一列到第二列 | 第一行到第二行 | Error          |
 | 范围位置 ~0:2~         | 第一行到第二行 | Error          | 第一行到第二行 |
-| 逗号隔开的索引 ~'b','b'~ | Error          | 第二行第二列   | Error          |
+| 逗号隔开的索引 'b','b'   | Error          | 第二行第二列   | Error          |
 | 逗号隔开的位置 ~1,1~   | Error          | Error          | 第二行第二列   |
 * NoteBooks-Statistics-and-MachineLearning内容
 这一节内容的大部分是leonvanbokhorst的Github帐号下词条NoteBooks-Statistics-and-MachineLearning
