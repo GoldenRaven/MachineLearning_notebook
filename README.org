@@ -15,5 +15,6 @@
 - [[file:handson-ml-learning.org][《机器学习实战》学习笔记]]
 - [[file:sklearn_notes.org][sklearn学习笔记]]
 - [[file:ML_wikipedia.org][维基百科 机器学习笔记]]
-一些其他有用的东西
+一些其他有用的东西：
 - [[https://github.com/FavioVazquez/ds-cheatsheets][数据科学领域速查表]]
+- 文献阅读总结：[[file:Caruana_Niculescu-Mizil2006.org][有监督的二分类学习算法的经验比较]]

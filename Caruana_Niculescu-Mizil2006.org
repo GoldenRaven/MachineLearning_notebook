@@ -1,0 +1,54 @@
+* 文章题目：An Empirical Comparison of Supervised Learning Algorithms
+作者：Rich Caruana 和 Alexandru Niculescu-Mizil
+
+发表时间：2006年
+
+DOI: 10.1145/1143844.1143865
+** 背景介绍
+King等人1995年的工作STATLOG是当时最有名的算法比较。
+
+目前学习算法被用于不同领域，使用不同的度量指标，如信息恢复中使用 ~精度/召回率~ ,
+药品学使用 ~ROC area~ ,市场任务中使用 ~Lift~ 。所以使用不同标准来度量学习算法是必要的。
+
+本文针对11个二分类问题，经验性地比较了不同算法在不同度量指标上的表现。对比了十种算法，
+八个度量指标。这11个任务中，用了相同5000实例作为训练集，并使用5-fold验证来评估模型，
+调整参数。
+
+对比模型：SVM, neural nets, logistic regression, naive bayes, memory-based
+ learning, random forest, decision trees, bagged trees, boosted trees,
+boosted stump.
+
+性能指标：accuracy, F分数, Lift, ROC面积, average precision, precisoin/recall
+ break-even poin, squared error, cross-entropy.
+
+每个算法都细致地检查了超参空间。有些算法不能给出概率所以在用Platt Scaling和Isotonic
+Regression校准前后，都进行了对比。
+** 总体结论
+- 在校准之前，bagged trees, random forests, neural nets算法在11个任务、
+  8个指标上的平均性能最好。但是如果我们只关注不需要概率的六个指标的话，booted trees（提升树）
+  的表现最好。
+- 在用Platt的方法校准后，boosted trees预测的概率最准，所以成为最优的算法。
+- neural nets实际上在校准之后性能会下降。
+- SVMs在用两个方法校准后表现和neural nets相当，甚至和bagged trees, random forests,
+  boosted trees一样好。
+- 在大多数任务中，提升full decision trees要比提升weaker stump的表现好得多。
+- 平均来说，memory-based learning, boosted stumps, single decision trees,
+  logistic regression, 和naive bayes要明显不如以上这些好的算法。
+- 以上概括也有例外，如boosted stumps和logistic regression在其中2个问题上的某些指标
+  是最好的。
+- 不管有无校准，最差的模型是naive bayes, logistic regression和 decision trees
+- 基于内存的方法，如KNN，不受校准影响，但表现平庸
+** 方法
+对于不同的任务，不同的参数共计训练了约2000个模型。性能指标分为三类：阀值度量、排序度量、
+概率度量。
+
+- ~阀值度量~ 包括accuracy (ACC), F-score (FSC), lift (LFT)。这种度量不关心与阀值离得近不近，
+  只关心是否大于或小阀值。
+- ~排序度量~ 包括ROC AUC, average precision, precision/recall break even point (BEP)。
+- ~概率度量~ 包括squared error (RMS)和cross-entropy (MXE)。
+
+ROC AUC有一个不依赖于数据的最低值，而accuracy有一个依赖于数据集的最低值。所有度量指标的
+范围被缩放到了0到1之间。0代表这个方法的baseline，1代表该方法所能达到的最高值，实际方法的
+某个度量指标可能为负。度量指标的绝对值见 www.cs.cornell.edu\~caruana .
+** 算法对比
+[[file:images/metrics_algorithm.png][不同算法的性能指标结果]]
