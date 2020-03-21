@@ -168,3 +168,14 @@ correlation_heatmap(data1)
 - Support Vector Machines (SVM)
 - Decision Trees
 - Discriminant Analysis
+*** 训练模型
+怎么选择模型呢？首先我们要知道NFL定理，也就是，没有在任何任务上工作地最好的算法，
+要知道对于特定任务什么算法好，还是要多尝试。但是尝试哪些呢？
+[[file:Caruana_Niculescu-Mizil2006.org][这里有一些关于二分类算法对比的结果]]，文献表明工作地最好的是ANN, boosted decision
+ trees, bagged decision trees, random forest, SVM也不错。所以建议先尝试bagging,
+ random forest, boosting等。下表中的算法均为sklearn实现中的默认参数，没有超参
+调优。
+
+[[file:images/alg_compare.png][sklearn算法的默认参数训练结果]]
+
+** 评估不同模型的性能
