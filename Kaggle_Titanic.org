@@ -176,6 +176,13 @@ correlation_heatmap(data1)
  random forest, boosting等。下表中的算法均为sklearn实现中的默认参数，没有超参
 调优。
 
-[[file:images/alg_compare.png][sklearn算法的默认参数训练结果]]
+sklearn算法的默认参数训练结果如下所示：
+[[file:images/alg_compare.png]]
 
 ** 评估不同模型的性能
+*** 先确定模型的baseline
+baseline是有价值的模型的最低性能，不同性能指标的baseline可能不同。
+如[[file:Caruana_Niculescu-Mizil2006.org][Caruana]]等人所述，ROC AUC的baseline不依赖于数据集，但是accuray是依赖数据集的。
+比如二分类问题accuracy的baseline可以是50%，Titanic的accuracy为死亡比例67.5%。
+*** 用交叉验证来评估模型性能
+*** 调整模型的超参数

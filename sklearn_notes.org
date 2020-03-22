@@ -281,6 +281,21 @@ array([ 0.5])
 - 如果输入的矩阵X为稀疏矩阵，建议您在调用fit之前将矩阵X转换为稀疏的csc_matrix ,在调用predict之前将 csr_matrix 稀疏。当特征在大多数样本中具有零值时，与密集矩阵相比，稀疏矩阵输入的训练时间可以快几个数量级。
 * 无监督学习
 * 模型选择和求解
+** 有用的函数
+#+BEGIN_SRC python :results output
+from sklearn.tree import DecisionTreeClassifier
+dt = DecisionTreeClassifier()
+print(dt.get_params)
+#+END_SRC
+
+#+RESULTS:
+: <bound method BaseEstimator.get_params of DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
+:                        max_depth=None, max_features=None, max_leaf_nodes=None,
+:                        min_impurity_decrease=0.0, min_impurity_split=None,
+:                        min_samples_leaf=1, min_samples_split=2,
+:                        min_weight_fraction_leaf=0.0, presort='deprecated',
+:                        random_state=None, splitter='best')>
+
 * 检查
 * 可视化
 * 数据集转换
