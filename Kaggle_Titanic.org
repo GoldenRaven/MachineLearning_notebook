@@ -39,10 +39,34 @@ data_clearner = [data1, df2] #可以一起清理
 ** 预览数据
 #+NAME: preview
 #+BEGIN_src python
-df.info()
-df.head()
-df.tail()
-df.sample(10)
+df.columns # 返回数据的column
+df.index # 返回index
+df.info() # 查询DataFrame的概括信息
+df.head(4)
+df.tail(8)
+df.sample(6) # 抽样6个样本
+df.describe() # 返回对数据的统计
+df.isnull() # 返回DataFrame，判断每个值是不是为空
+df.isna() # 同上
+df.notna() # 与上相反
+df.isna().any() # 判断每列是否有空值
+df.isna().sum() # 统计每列空值的个数
+df['Sex'].value_counts() # 统计Sex列的值的个数，一般用于类别属性
+df.columns[train.isna().any()] # 返回有空值的列名
+df.values #取得DataFrame的内容，返回ndarray
+df.hist(bins=50,figsize=(20,10)) # 绘制数据的直方图
+# 绘制散点图
+df.scatter(data["Age"], data["Parch"], c=train_label, alpha=0.3)
+# 绘制散点图
+df.plot(kind='scatter',x='PassengerId',y='Fare')
+df[['Survived', 'Sex']].groupby('Sex').mean() # 查看不同Sex属性的属性Survival平均值
+# 不同属性Fare的死亡与生存人数
+plt.hist(x = [train[train['Survived']==1]['Fare'],
+              train[train['Survived']==0]['Fare']
+             ],
+         stacked=True, color = ['g','r'],
+         label = ['Survived','Dead']
+        )
 #+END_SRC
 ** 清理数据
 4个'C':

@@ -24,6 +24,40 @@ DataFrame类型的变量df内容如下：
 | 范围位置 ~0:2~         | 第一行到第二行 | Error          | 第一行到第二行 |
 | 逗号隔开的索引 'b','b'   | Error          | 第二行第二列   | Error          |
 | 逗号隔开的位置 ~1,1~   | Error          | Error          | 第二行第二列   |
+
+常用函数：
+#+BEGIN_SRC python
+import pandas as pd
+data = pd.read_csv("/path/to/file.csv") # 从文件加载数据到DataFrame
+data.columns # 返回数据的column
+data.index # 返回index
+data.info() # 查询DataFrame的概括信息
+data.head(4)
+data.tail(8)
+data.sample(6) # 抽样6个样本
+data.describe() # 返回对数据的统计
+data.isnull() # 返回DataFrame，判断每个值是不是为空
+data.isna() # 同上
+data.notna() # 与上相反
+data.isna().any() # 判断每列是否有空值
+data.isna().sum() # 统计每列空值的个数
+data['Sex'].value_counts() # 统计Sex列的值的个数，一般用于类别属性
+data.columns[train.isna().any()] # 返回有空值的列名
+data.values #取得DataFrame的内容，返回ndarray
+data.hist(bins=50,figsize=(20,10)) # 绘制数据的直方图
+# 绘制散点图
+plt.scatter(data["Age"], data["Parch"], c=train_label, alpha=0.3)
+# 绘制散点图
+data.plot(kind='scatter',x='PassengerId',y='Fare')
+data[['Survived', 'Sex']].groupby('Sex').mean()  # 查看不同Sex属性的属性Survival平均值
+# 不同属性Fare的死亡与生存人数
+plt.hist(x = [train[train['Survived']==1]['Fare'],
+              train[train['Survived']==0]['Fare']
+             ],
+         stacked=True, color = ['g','r'],
+         label = ['Survived','Dead']
+        )
+#+END_SRC
 * NoteBooks-Statistics-and-MachineLearning内容
 这一节内容的大部分是leonvanbokhorst的Github帐号下词条NoteBooks-Statistics-and-MachineLearning
 的内容，其余部分是自己的总结。原词条下的内容在我学习后会陆续加进来，更多关于统计学和机器学习的内容
