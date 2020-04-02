@@ -1,0 +1,149 @@
+#+AUTHOR: GoldenRaven
+#+DATE: <2020-04-02 Thu>
+#+EMAIL: li.gaoyang@foxmail.com
+#+OPTIONS: num:t
+
+* Pytorch学习笔记
+Torch是一个有大量机器学习算法支持的科学计算框架，是一个与Numpy类似的张量（Tensor）
+ 操作库，其特点是特别灵活，但因其采用了小众的编程语言Lua，所以流行度不高，也就有了PyTorch.
+
+TensorFlow和Caffe都是命令式的编程语言，而且是静态的，首先必须构建一个神经网络，
+然后一次又一次使用相同的结构，如果想要改 变网络的结构，就必须从头开始。但是对于PyTorch，
+通过反向求导技术，可以让你零延迟地任意改变神经网络的行为，而且其实现速度 快。
+正是这一灵活性是PyTorch对比TensorFlow的最大优势。
+
+PyTorch的优点：
+- 支持GPU
+- 灵活，支持动态神经网络
+- 底层代码易于理解
+- 命令式体验
+- 自定义扩展
+缺点:
+- 全面性不如tensorflow
+- 还不支持快速傅里叶、沿维翻转张量和检查无穷与非数值张量
+- 针对移动端、嵌入式部署以及高性能服务器端的部署其性能表现有待提升
+- 因为这个框架较新，使得他的社区没有那么强大，在文档方面,其C库大多数没有文档。
+** 张量tensor
+一维数组（数组）、二维数组（矩阵）都是tensor，tensor可以用来描述更高维度的数组，
+如一阶张量（数组）、二阶张量（矩阵）、三阶张量等等。
+#+BEGIN_SRC python :results output
+import torch
+a = torch.Tensor(5, 3) # 构造一个未初始化的5×3tensor
+print(a.size()) # a.size()是个tuple，支持tuple相关操作
+x = torch.rand(5,3) # 构造一个随机初始化的tensor
+print(x)
+a = torch.Tensor([5.5, 3]) # 直接使用数据构造tensor
+print(a)
+#b = a.new_ones(5, 3, dtype=torch.double)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+torch.Size([5, 3])
+
+ 0.7213  0.8376  0.0462
+ 0.8078  0.2452  0.7672
+ 0.7835  0.2241  0.0643
+ 0.7190  0.7034  0.0926
+ 0.6375  0.4842  0.3852
+[torch.FloatTensor of size 5x3]
+
+
+ 5.5000
+ 3.0000
+[torch.FloatTensor of size 2]
+
+#+end_example
+两个同形张量的加法：
+#+BEGIN_SRC python :results output
+import torch
+x = torch.rand(5, 3)
+y = torch.ones(x.size())
+z1 = x + y # 方法一
+z2 = torch.add(x, y) # 方法二
+z3 = torch.Tensor(x.size()) # 方法三，必须先定义用以存放结果的tensor
+torch.add(x, y, out=z3)
+y.add_(x) # 方法四，inplace的惊悉y值
+print(z1 == z2)
+print(z2 == z3)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+ 1  1  1
+ 1  1  1
+ 1  1  1
+ 1  1  1
+ 1  1  1
+[torch.ByteTensor of size 5x3]
+
+
+ 1  1  1
+ 1  1  1
+ 1  1  1
+ 1  1  1
+ 1  1  1
+[torch.ByteTensor of size 5x3]
+
+#+end_example
+#+BEGIN_EXAMPLE
+1.任何可以改变tensor内容的操作都会在方法名后加一个下划线'_'，例如：x.copy_(y), x.t_(), 这俩都会改变x的值。
+2.你可以使用标准的 NumPy 类似的索引操作
+#+END_EXAMPLE
+改变一个 tensor 的大小或者形状，你可以使用 torch.view
+#+BEGIN_SRC python :results output
+import torch
+a = torch.Tensor(5, 4) # 构造一个未初始化的5×4tensor
+b = a.view(2, 10)
+print(a.size(), b.size())
+#+END_SRC
+
+#+RESULTS:
+: torch.Size([5, 4]) torch.Size([2, 10])
+
+Torch的tensor与Numpy的array间可以相互转换：
+#+BEGIN_SRC python :results output
+import torch
+a = torch.zeros(3) # 构造一个未初始化的tensor
+b = a.numpy() # 将tensor转化为numpy array
+#a.add_(1)
+b += 1
+#注意：这种转换是共享内存的，修改一处，另一个也会变！
+import numpy as np
+c = np.ones(4)
+d = torch.from_numpy(c)
+c += 1
+print(a, d)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+ 1
+ 1
+ 1
+[torch.FloatTensor of size 3]
+
+ 2
+ 2
+ 2
+ 2
+[torch.DoubleTensor of size 4]
+
+#+end_example
+
+除了CharTensor之外，所有的tensor都可以在CPU运算和GPU预算之间相互转换，
+使用CUDA函数来将Tensor移动到GPU上，当CUDA可用时会进行GPU的运算。
+#+BEGIN_SRC python :results output
+import torch
+if torch.cuda.is_available():
+    device = torch.device("cuda")          # a CUDA device object
+    y = torch.ones_like(x, device=device)  # 直接在GPU上创建tensor
+    x = x.to(device)                       # 或者使用`.to("cuda")`方法
+    z = x + y
+    print(z)
+    print(z.to("cpu", torch.double))       # `.to`也能在移动时改变dtype
+#+END_SRC
+
+#+RESULTS:
