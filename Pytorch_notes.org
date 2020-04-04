@@ -160,3 +160,67 @@ if torch.cuda.is_available():
 
 #+RESULTS:
 ** 自动求导Autograd
+#+BEGIN_EXAMPLE
+根据PyTorch的设计，梯度只能计算浮点张量
+#+END_EXAMPLE
+
+#+BEGIN_SRC python :results output
+import torch
+x = torch.ones(2, 2, requires_grad=True)
+print(x)
+y = x + 2 # grad_fn=<AddBackward0>
+print(y)
+z = 3 * y ** 2 # grad_fn=<MulBackward0>
+zz = z * 1 + z # grad_fn=<AddBackward0>
+out = zz.mean() # grad_fn=<MeanBackward0>
+print()
+print(z)
+print(zz)
+print(out)
+print()
+out.backward() # 对标题out反向传播
+print(x.grad) # 输出out对x的层数
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+tensor([[1., 1.],
+        [1., 1.]], requires_grad=True)
+tensor([[3., 3.],
+        [3., 3.]], grad_fn=<AddBackward0>)
+
+tensor([[27., 27.],
+        [27., 27.]], grad_fn=<MulBackward0>)
+tensor([[54., 54.],
+        [54., 54.]], grad_fn=<AddBackward0>)
+tensor(54., grad_fn=<MeanBackward0>)
+
+tensor([[9., 9.],
+        [9., 9.]])
+#+end_example
+
+#+BEGIN_SRC python :results output
+import torch
+a = torch.randn(2, 2)
+a = ((a * 3) / (a - 1))
+print(a.requires_grad)
+a.requires_grad_(True)
+print(a.requires_grad)
+b = torch.ones(2,2, requires_grad=True)
+c = ((a+b)**2)
+#c = ((a+b)**2).mean()
+#d = c ** 3
+print(c.grad_fn, c.size())
+v = torch.ones(a.size(), dtype=torch.float)
+#print(a.grad)
+#c.backward()
+c.backward(v)
+print(b.grad)
+#+END_SRC
+
+#+RESULTS:
+: False
+: True
+: <PowBackward0 object at 0x7fb7502d75f8> torch.Size([2, 2])
+: tensor([[ 0.0443,  4.9378],
+:         [ 5.5173, -5.6608]])
