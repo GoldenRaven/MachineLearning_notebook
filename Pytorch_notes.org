@@ -28,31 +28,43 @@ PyTorch的优点：
 如一阶张量（数组）、二阶张量（矩阵）、三阶张量等等。
 #+BEGIN_SRC python :results output
 import torch
-a = torch.Tensor(5, 3) # 构造一个未初始化的5×3tensor
+a = torch.empty(5, 3) # 构造一个未初始化的5×3tensor
 print(a.size()) # a.size()是个tuple，支持tuple相关操作
+print(a)
 x = torch.rand(5,3) # 构造一个随机初始化的tensor
 print(x)
-a = torch.Tensor([5.5, 3]) # 直接使用数据构造tensor
-print(a)
-#b = a.new_ones(5, 3, dtype=torch.double)
+b = torch.tensor([5.5, 3]) # 直接使用数据构造tensor
+print(b)
+c = torch.zeros(5, 3, dtype=torch.long) # 指定数据类型
+print(c)
+d = c.new_ones(5, 2, dtype=torch.double) # 用已有的tensor构造新的tensor，并指定新的属性
+print(d)
 #+END_SRC
 
 #+RESULTS:
 #+begin_example
 torch.Size([5, 3])
-
- 0.7213  0.8376  0.0462
- 0.8078  0.2452  0.7672
- 0.7835  0.2241  0.0643
- 0.7190  0.7034  0.0926
- 0.6375  0.4842  0.3852
-[torch.FloatTensor of size 5x3]
-
-
- 5.5000
- 3.0000
-[torch.FloatTensor of size 2]
-
+tensor([[-1.8352e-26,  4.5814e-41, -9.8835e+29],
+        [ 4.5814e-41, -8.3949e+29,  4.5814e-41],
+        [-8.5596e+29,  4.5814e-41, -3.6354e+30],
+        [ 3.0663e-41, -8.8770e+29,  4.5814e-41],
+        [-1.8352e-26,  4.5814e-41, -7.3048e+29]])
+tensor([[0.3305, 0.1497, 0.6497],
+        [0.6391, 0.6987, 0.4628],
+        [0.6509, 0.9441, 0.1818],
+        [0.6673, 0.0340, 0.3465],
+        [0.4073, 0.1722, 0.8649]])
+tensor([5.5000, 3.0000])
+tensor([[0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]])
+tensor([[1., 1.],
+        [1., 1.],
+        [1., 1.],
+        [1., 1.],
+        [1., 1.]], dtype=torch.float64)
 #+end_example
 两个同形张量的加法：
 #+BEGIN_SRC python :results output
@@ -147,3 +159,4 @@ if torch.cuda.is_available():
 #+END_SRC
 
 #+RESULTS:
+** 自动求导Autograd
