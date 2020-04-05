@@ -76,3 +76,20 @@ Tablib是无格式的表格数据集库，使用Python编写。
 map(func_obj, iter1, iter2) # 但是请尽量用生成器
 map(lambda x:x+1, iter1, iter2) # lambda表达式
 #+END_SRC
+* 给自己定个目标
+四天之内，Python使用水平达到数据科学家的水平。检查标准：给一个较大的、复杂的数据集，进行数据集处理。
+
+[[file:learning_Pytorch.py]]
+
+代码风格：PEP8
+- 使用空格而不是tab
+- 缩进使用4个空格
+- 第行最多79个字符
+- 进行显示插入import,  ~from time import time~ , 而不是 ~from time import *~
+- 非public变量以 ~_~ 开头
+- 类名用首字母大写
+- 模块和脚本用短的、全小写的名称
+- 函数和方法名用小写和 ~_~
+可以用linter来检查语法和风格错误，比如插件flake8。
+
+[[file:learning_Python.py]]
