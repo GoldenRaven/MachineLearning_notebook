@@ -213,3 +213,34 @@ print(matchs)
 
 #+RESULTS:
 : ca.lled piiiigREPLACED.,sssj载我不是，霜期REPLACED,REPLACED魂牵梦萦 魂牵梦萦是；REPLACED3..4;REPLACED.fasf:fsaf_fsdREPLACED
+*** 小数和整数的匹配
+#+BEGIN_SRC python :results output
+#!/usr/bin/python
+import re
+test_str = '''type logfile
+[  8] local 81.33 port 12345 connected with 82.33.44.250 port 55611
+'''
+ret1 = re.findall(r'([\d+\.]+)', test_str)  #会匹配到IP地址
+ret2 = re.findall(r'[^\.\d](\d+\.?\d+)[^\.\d]', test_str)
+ret3 = re.findall(r'[^\.\d](\d+\.\d+|\d+)[^\.\d]', test_str)
+print(ret1)
+print(ret2)
+print(ret3)
+#+END_SRC
+
+#+RESULTS:
+: ['8', '81.33', '12345', '82.33.44.250', '55611']
+: ['81.33', '12345', '55611']
+: ['8', '81.33', '12345', '55611']
+
+*** str.split
+#+BEGIN_SRC python :results output
+s = '王思聪支付给李白30.10元33..0_fdsa, 2222,.0002'
+ss = s.split('王思聪支付给李白')
+import re
+sss = re.findall(r'[\d+\.]+', s)
+print(ss, sss)
+#+END_SRC
+
+#+RESULTS:
+: ['', '30.10元33..0_fdsa, 2222,.0002'] ['30.10', '33..0', '2222', '.0002']
