@@ -160,3 +160,56 @@ def test():
 if __name__ == "__main__":
     test()
 #+END_SRC
+** 正则表达式
+*** 元字符
+| 代码 | 匹配内容               |
+|------+------------------------|
+| \d   | 任意一个数字               |
+| \w   | 任意一个字母、数字或下划线 |
+| \s   | 空白（空格、tab）      |
+| \b   | word的首尾             |
+| ^    | 字符串首               |
+| &    | 字符串尾               |
+| .      | 除换行符的任意单个字符 |
+*** 限定符
+| 代码   | 匹配内容       |
+|--------+----------------|
+| *      | 重复零次或多次 |
+| +      | 重复一次或多次 |
+| ？     | 重复零次或一次 |
+| {n}    |                |
+| {n,}   |                |
+| {n, m} |                |
+|        |                |
+
+*** 分枝条件
+满足其中任意一种规则就当成匹配成功，需要使用分枝条件：使用管道|把不同的规则分开，
+这时候会从左到右地测试每个条件，如果满足了其中一个分枝，后面的规则就被忽略掉。
+
+*** 分组
+使用()来指定子表达式，可以指定这个子表达式的重复次数或者进行其它操作。
+
+*** 反义
+| 代码     | 匹配内容                  |
+|----------+---------------------------|
+| [^a]     | 除a以外的任意一个字符     |
+| [^abdgr] | 除abdgr以外的任意一个字符 |
+*** 贪心和非贪心
+?在正则表达式中可能有两种含义，声明非贪心匹配或表示可选的分组
+*** re 模块
+#+BEGIN_SRC python :results output
+import re
+s = 'ca.lled piiiig23.,sssj载我不是，霜期34,98魂牵梦萦 魂牵梦萦是；2.23..4;34.fasf:fsaf_fsd223'
+pat = r'\d+\.?\d+?'
+pat1 = re.compile(pat)
+#matchs = re.match(pat, s)
+#matchs = re.search(pat, s)
+matchs = pat1.findall(s) #matchs = re.findall(pat, s)
+#matchs = re.split(pat, s)
+matchs = pat1.sub('REPLACED', s)
+#print(matchs.group())
+print(matchs)
+#+END_SRC
+
+#+RESULTS:
+: ca.lled piiiigREPLACED.,sssj载我不是，霜期REPLACED,REPLACED魂牵梦萦 魂牵梦萦是；REPLACED3..4;REPLACED.fasf:fsaf_fsdREPLACED
