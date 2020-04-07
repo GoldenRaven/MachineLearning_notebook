@@ -1,3 +1,7 @@
+#+author: ligy
+#+email: li.gaoyang@foxmail.com
+#+date: <2020-04-07 Tue>
+
 udacity的核心课程：数据挖掘工程师直通班，纳米学位。目标：在3到7天的时间里，完成所有数据挖掘课程，
 同时还要进行项目练习。
 
@@ -79,7 +83,7 @@ print(np.mean(l))
 #+RESULTS:
 : 4.0
 * project2:数据清理
-** 课程1：数据整理简介
+** lesson1：数据整理简介
 最好用程序下载数据（API），而不是在网页直接下载。
 *** 用python解压缩文件
 zipfile是个上下文管理器，支持with语句。
@@ -124,7 +128,7 @@ df_calen = df_clean.rename(columns={'oldname1': 'newname1', 'oldname2': 'newname
 *** 重新评估与迭代
 整个整理数据的流程通常是要反复迭代的，即使在完成分析之后。
 *** 整理、EDA与ETL
-** 课程2：收集数据
+** lesson2：收集数据
 #+BEGIN_SRC python :results output
 import pandas as pd
 pd.read_csv('file.csv', sep='\t')
@@ -181,5 +185,6 @@ with open('rt_html/et.html') as file:
 soup.find('title').content[0][:-len('tomato')]
 #+END_SRC
 # 10.python中的HTML文件
+
 * project3: EDA
 * project4: 求职-模拟面试
