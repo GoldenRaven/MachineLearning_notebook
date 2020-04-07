@@ -1,0 +1,185 @@
+udacity的核心课程：数据挖掘工程师直通班，纳米学位。目标：在3到7天的时间里，完成所有数据挖掘课程，
+同时还要进行项目练习。
+
+总结：project1和project2的许多内容有所重复，project1以概括为主。project2更加深入，
+但也不是很深入。虽然project2的许多函数我都用过，并且也可能使用地更细致，但这种课程形式
+的讲解正是我所欠缺的。课程的学习可以将之前学会的零碎知识串联起来，对big picture有更好地
+理解。可以消除只见树木不见森林的迷惘，与不踏实感，是很有必要的。主体结构有了之后，再自学就
+更高效了。
+* project1: 用python进行基础数据分析
+** 数据分析的五个步骤
+*** 提问
+*** 整理数据wrangling
+收集，评估，清理
+**** 收集数据、评估数据
+csv为comma separated values
+
+#+BEGIN_SRC python :results output
+import pandas as pd
+df = pd.read_csv('file', header=1) # 使用第二行为标题，删除上面行的内容
+df = pd.read_csv('student_scores.csv', header=None) # 没标题
+labels = ['id', 'name', 'attendance', 'hw', 'test1',
+'project1', 'test2', 'project2', 'final'] # 自定义标题
+df = kkpd.read_csv('student_scores.csv', names=labels)
+# 替换数据的标题行
+df = pd.read_csv('student_scores.csv', header=0, names=labels)
+#将一个或多个列指定为数据框的索引
+df = pd.read_csv('student_scores.csv', index_col='Name')
+#+END_SRC
+
+#+RESULTS:
+**** 清理数据
+常见问题：类型错误、数据缺失、数据冗余（重复）、结构问题等。
+#+BEGIN_SRC python :results output
+# 用平均值填充
+df['col_miss'].fillna(df['col_miss'].mean(), inplace=True)
+# 查找数据重复情况
+df.duplicated()
+# 大数据集用
+sum(df.duplicated())
+# 去重复，查看更多参数
+df.drop_duplicated(inplace=True)
+# 将日期转成datatime类型。每次载入数据都需要转换！
+df['dates'] = pd.to_datetime(df['dates'])
+# 字符串是否被包含?
+print('ac' in 'acbs')
+# 为数据框中的列分配新标签
+df.columns = new_labels
+# 保存以后用
+df.to_csv('new_file.csv', index=False)
+#+END_SRC
+
+*** 执行EDA（探索性数据分析）
+DataFrame和Series对matplotlib有封装的绘图函数，但比较简单，复杂的还要用matplotlib.
+#+BEGIN_SRC python :results output
+# 在notebook中查看绘图
+% matplotlib inline
+# 用分号来隐藏不需要的输出
+# hist绘直方图
+df.hist(figsize=(10, 8));
+# 也可以用在Series上
+df['age'].hist();
+# 统计值的出现次数，并绘图
+df['age'].value_counts().plot(kind='bar') # 直方图
+df['age'].value_counts().plot(kind='pie') # 饼状图
+df.plot(x='age', y='height', kind='scatter')
+df['age'].plot(kind='box'); #箱图
+#+END_SRC
+
+*** 得出结论
+*** 传达结果
+** Python包概述
+包是函数和类等的集合，数据分析最常用的有Numpy, pandas, matplotlib
+#+BEGIN_SRC python :results output
+import numpy as np
+l = list(range(9))
+print(np.mean(l))
+#+END_SRC
+
+#+RESULTS:
+: 4.0
+* project2:数据清理
+** 课程1：数据整理简介
+最好用程序下载数据（API），而不是在网页直接下载。
+*** 用python解压缩文件
+zipfile是个上下文管理器，支持with语句。
+#+BEGIN_SRC python :results output
+import zipfile
+with zipfile.ZipFile('file.zip', 'r') as myzip:
+    myzip.extractall()
+#import tarzip
+#with tarzip.
+#+END_SRC
+已经掌握了数据整理的第一步：收集数据。在这个数据集中，这意味着：
+- 从互联网下载文件，在这种情况下文件是来自 Kaggle 的 zip 文件，
+- 打开 Jupyter Notebook，
+- 使用 Python 解压压缩文件，
+- 然后将解压的 CSV 文件导入 Jupyter Notebook 的 pandas DataFrame。
+*** 评估数据assess（用pandas查看info,等）
+低质量数据通常被称为脏数据，脏数据存在内容问题。不整洁数据通常被称为 "杂乱" 数据，
+杂乱数据存在结构问题。
+
+最好将所有评估记录在数据整理模板评估部分的底部，即清洗标题的正上方。定义清洗操作时，
+参考这些记录可使数据清洗更简单，还可以避免使你手忙脚乱。
+- +修正+ 意义不明的非描述性header(记录问题时应只用名词，问题修改后再用动诩表示已经完成)
+- ~df.info()~ ~df.head()~ ~df.tail()~ ~df.value_counts()~
+
+编程数据清洗过程：
+- 定义
+- 编码
+- 测试
+
+定义指以书面形式定义数据清洗计划，其中我们需将评估转变为定义的清洗任务。
+这个计划也可作为一个指导清单，所以其他人（或我们自己将来）也可以回顾和重现自己的工作。
+
+编码指将这些定义转换为代码并执行该代码。
+
+测试指测试我们的数据集，通常使用代码，以确保有效完成我们的清洗工作。
+*** 清洗
+- header中不要有点号 ~.~ ，不然就不能用 ~df.age~ 来索引。
+#+BEGIN_SRC python :results output
+df_calen = df_clean.rename(columns={'oldname1': 'newname1', 'oldname2': 'newname2'})
+(assert 'ASAP' not in x for x in df_clean.columns) # 可以这样写吗？
+#+END_SRC
+*** 重新评估与迭代
+整个整理数据的流程通常是要反复迭代的，即使在完成分析之后。
+*** 整理、EDA与ETL
+** 课程2：收集数据
+#+BEGIN_SRC python :results output
+import pandas as pd
+pd.read_csv('file.csv', sep='\t')
+#+END_SRC
+*** 从网页(HTML文件)中抓取数据
+- 将HTML文件保存在本地（如用Request库），并将文件读入 ~BeautifulSoup~ 构造函数中
+- 将HTML响应内容直接读入 ~BeautifulSoup~ 构造函数（如用Request库）
+#+BEGIN_SRC python :results output
+import requests
+url = 'https://www.rottentomatoes.com/m/et_the_extraterrestrial'
+response = requests.get(url)
+# save html to file
+# work with html memory
+#+END_SRC
+[[https://www.udacity.com/course/intro-to-html-and-css--ud001][关于HTML和CSS的介绍课程]]
+*** html简介
+在两个 ~<body>~ 标签之间的内容需要重点关注。如：
+#+BEGIN_SRC html
+<body>
+<p>This is a paragraph</p>
+<h1>this is heading1</h1>
+<span>this is a span</span>
+<h2>this is heading1</h2>
+<h3>this is heading1</h3>
+<body>
+#+END_SRC
+都被前后标签包含，后标签有slash。
+*** 树结构
+被包含就是子结构，如 ~h1~ ~p~ 是 ~div~ 的子结构。
+#+BEGIN_SRC html
+<body>
+<div>
+<h1>this is heading1</h1>
+<p>This is a paragraph</p>
+<h2>this is heading1</h2>
+</div>
+<body>
+#+END_SRC
+一个有用的小技巧：
+#+BEGIN_SRC python :results output
+s = 'this is a random string to test a little trick.'
+print(s[:-len('trick.')]) # 去掉末尾的字符串
+#+END_SRC
+
+#+RESULTS:
+: this is a random string to test a little
+*** BeautifulSoup（HTML解析器）
+BeautifulSoup是用Python语言写的HTML解析器（不用再自己动手解析了，
+如写正则表达式寻找字符串）。
+#+BEGIN_SRC python :results output
+from bs4 import BeautifulSoup
+with open('rt_html/et.html') as file:
+    soup = BeautifulSoup(file, "lxml")
+soup.find('title').content[0][:-len('tomato')]
+#+END_SRC
+# 10.python中的HTML文件
+* project3: EDA
+* project4: 求职-模拟面试

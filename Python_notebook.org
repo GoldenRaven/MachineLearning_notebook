@@ -220,18 +220,22 @@ import re
 test_str = '''type logfile
 [  8] local 81.33 port 12345 connected with 82.33.44.250 port 55611
 '''
+s = '2020年1月30日王思聪支付给李白30.10元'
 ret1 = re.findall(r'([\d+\.]+)', test_str)  #会匹配到IP地址
 ret2 = re.findall(r'[^\.\d](\d+\.?\d+)[^\.\d]', test_str)
 ret3 = re.findall(r'[^\.\d](\d+\.\d+|\d+)[^\.\d]', test_str)
+ret33 = re.findall(r'[^\.\d](\d+\.\d+|\d+)[^\.\d]', s)
 print(ret1)
 print(ret2)
 print(ret3)
+print(ret33)
 #+END_SRC
 
 #+RESULTS:
 : ['8', '81.33', '12345', '82.33.44.250', '55611']
 : ['81.33', '12345', '55611']
 : ['8', '81.33', '12345', '55611']
+: ['1', '30.10']
 
 *** str.split
 #+BEGIN_SRC python :results output
@@ -244,3 +248,25 @@ print(ss, sss)
 
 #+RESULTS:
 : ['', '30.10元33..0_fdsa, 2222,.0002'] ['30.10', '33..0', '2222', '.0002']
+** 去除某些字符的方法
+*** 替换
+#+BEGIN_SRC python :results output
+import re
+s = 'fdsak23,l；f是dsa;j：fda:fd，sa'
+ss1 = s.replace('，', '')
+reg = re.compile(r'[:：，；;]')
+ss2 = reg.sub('', s)
+import string
+table = str.maketrans('', '', string.punctuation)
+ss3 = s.translate(table)
+print(ss1)
+print(ss2)
+print(string.punctuation)
+print(ss3)
+#+END_SRC
+
+#+RESULTS:
+: fdsak23,l；f是dsa;j：fda:fdsa
+: fdsak23,lf是dsajfdafdsa
+: !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+: fdsak23l；f是dsaj：fdafd，sa

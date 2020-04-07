@@ -9,6 +9,7 @@
 摘抄，而是我在学习中选择性地参考了不同资料的不同部分，自己学习的理解与总结。原词条都有相关链接，
 请自行跳转。
 
+- [[file:udacity_data-mining-course.org][udacity数据挖掘工程师直通班]]
 - [[file:Python_notebook.org][Python学习笔记]]
 - [[file:Python_pandas_notebook.org][Python Pandas库笔记]]
 - [[file:Python_Numpy_notebook.org][Python Numpy库笔记]]
@@ -17,13 +18,13 @@
 - [[file:sklearn_notes.org][sklearn学习笔记]]
 - [[file:ML_wikipedia.org][维基百科 机器学习笔记]]
 一些其他有用的东西：
-- [[https://github.com/FavioVazquez/ds-cheatsheets][数据科学领域速查表]]
-- 文献阅读总结：[[file:Caruana_Niculescu-Mizil2006.org][有监督的二分类学习算法的经验比较]]
-- 文献阅读总结：Fern´andez-Delgado2014.
-  对比了17种分类算法的197种实现，最优秀的是随机森林。
-- [[https://martin-thoma.com/comparing-classifiers][这里比较了sklearn的不同分类器]]
-  代码如下：
-  #+BEGIN_SRC python :results output
+  - [[https://github.com/FavioVazquez/ds-cheatsheets][数据科学领域速查表]]
+  - 文献阅读总结：[[file:Caruana_Niculescu-Mizil2006.org][有监督的二分类学习算法的经验比较]]
+  - 文献阅读总结：Fern´andez-Delgado2014.
+    对比了17种分类算法的197种实现，最优秀的是随机森林。
+  - [[https://martin-thoma.com/comparing-classifiers][这里比较了sklearn的不同分类器]]
+    代码如下：
+    #+BEGIN_SRC python :results output
     print(__doc__)
 
 
@@ -149,6 +150,6 @@
 
     plt.tight_layout()
     plt.show()
-  #+END_SRC
+    #+END_SRC
 
-  #+RESULTS:
+    #+RESULTS:
