@@ -42,7 +42,7 @@ df.duplicated()
 # 大数据集用
 sum(df.duplicated())
 # 去重复，查看更多参数
-df.drop_duplicated(inplace=True)
+df.drop_duplicates(inplace=True)
 # 将日期转成datatime类型。每次载入数据都需要转换！
 df['dates'] = pd.to_datetime(df['dates'])
 # 字符串是否被包含?
@@ -82,6 +82,10 @@ print(np.mean(l))
 
 #+RESULTS:
 : 4.0
+* project1的项目: Google Play Store Analysis
+[[https://www.jianshu.com/p/04d180d90a3f][pandas入门]]
+
+[[https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html][图表呈现风格]]
 * project2:数据清理
 ** lesson1：数据整理简介
 最好用程序下载数据（API），而不是在网页直接下载。
@@ -248,6 +252,77 @@ with open(file_name, 'r', encoding='utf-8') as f:
     df_list.append(d)
 df = pd.DataFrame(df_list) # 将网页内容存在DataFrame中
 #+END_SRC
+*** 用API（应用程序编程接口）或访问库来下载网页
+有的API可以下载图片，但有的不可以。特定网站的API由网站自己提供，如烂蕃茄的rtsimple,
+维基百科的MediaWiki.[[https://www.mediawiki.org/wiki/API:Main_page#A_simple_example][这是MeidaWiki的使用tutorial]]。
 
-* project3: EDA
+[[https://www.mediawiki.org/wiki/API:Client_code#Python][这是MediaWiki的python访问库列表]]
+*** JSON文件结构
+大多数API文件板式都是JSON，它被用来贮存相对复杂的文件内容。JSON代表javascript object notation
+
+JSON文件结构是字典的形式，而且key必须是字符串，值可以是字符串、list、数字等。它也可以嵌套。
+JSON 有六种有效的数据类型，其中两种可使层次数据在采用大部分格式时具有灵活性：
+- JSON 数组（被Python解释为list）
+- JSON 对象（被Python解释为dictionary）
+这些在 Python 中有类似的数据结构，所以可以使用相同的方法访问。
+*** 18.混搭：API、以编程方式下载文件和 JSON
+至此
+*** 收集：总结
+收集数据是数据整理过程的第一步：
+- 收集
+- 评估
+- 清理
+根据数据来源及其格式，收集数据的步骤也不同。
+
+高级收集过程：
+- 获取数据(从互联网下载文件、抓取网页、查询 API 等)
+- 将数据导入编程环境(例如 Jupyter Notebook)
+** lesson3: 维基百科爬虫
+** lesson4: 抓取豆瓣电影信息（案例演练）
+** lesson5: 评估数据 assess
+*** intro
+在清理之前要评估，不评估就不知道数据的问题在哪，怎么去清理。
+数据问题：
+- 数据质量问题（缺失、重复、错误等）（脏）
+- 数据整洁度问题（结构问题）（乱）
+解决方法：
+- 目测寻找
+- 编程寻找（info()等, 可视化EDA）
+检测问题、记录问题，以便再现。建议在数据整理过程中，将评估和清理步骤分开进行。所以，第一步仅填写观察值是个不错的做法。
+
+但是如果你在评估之后，马上就对数据进行处理/清理/解决，这也是中很好的方法。
+如果是这样的话，你就可以略过观察的步骤，直接进行清理（这是 Define-Code-Test
+ 清理框架的一部分，我们将在第 4 课介绍）。
+
+目测也是了解数据集的一个步骤，要评估，你要先理解这个行列代表的意思及这个数据集的目标及背景知识。
+*** ~数据质量问题~ 的几个度量指标
+- 完整性（有无NAN？）
+- 有效性（如负的身高等）
+- 准确性（如身高1cm）
+- 一致性（格式相同）
+*** 编程式的评估 ~数据质量问题~
+#+BEGIN_SRC python :results output
+df['age'].duplicated() # 某列重复的数据，返回boolen数组
+df['age'].value_counts() # 与上有类似的功能，返回值出现的次数
+df['age'].sort_values(ascending=False) # 数值型值的排序
+#+END_SRC
+- 要留意同一客体的不同称谓产生多条记录的问题，可以用某些（不太可能重复但）重复的属性来检查。
+- 要留意object类型的列，是不是有数据类型不一致问题？（比如有空值 ~-~ ，但没有被pandas识别）
+*** 总结
+按以上大纲助逐排查是的重要的！而且收集、评估、清理、分析过程在任何时候都是可迭代的，即你可以随机
+收集、评估、清理、分析。
+** lesson6: 清理数据
+** 项目：清洗与分析数据
+* Python数据可视化
+* project3: 探索性数据分析EDA
+* 用数据来呈述你的结论
 * project4: 求职-模拟面试
+* 机器学习机器
+* 监督学习
+* 非监督学习
+* project6: 深度学习
+* 软件工程
+* 数据工程
+* project7: 推荐系统与试验设计
+* project8: Spark与大数据
+* github个人资料实战
