@@ -182,9 +182,72 @@ BeautifulSoup是用Python语言写的HTML解析器（不用再自己动手解析
 from bs4 import BeautifulSoup
 with open('rt_html/et.html') as file:
     soup = BeautifulSoup(file, "lxml")
-soup.find('title').content[0][:-len('tomato')]
+soup.find('title').contents[0][:-len('tomato')]
 #+END_SRC
-# 10.python中的HTML文件
+
+练习:
+
+根据对 HTML 文件结构的了解，你将使用 Beautiful Soup 来提取对于每个 HTML 文件，
+我们所需的观众评分指标和观众评分得数，以及上面视频中的电影标题（所以我们稍后将合并数据集），
+然后将它们保存在 pandas DataFrame 中。你的任务是提取每个 HTML 文件的标题（电影名）、
+观众评分和参与评分观众人数，并三个一组作为字典附加到 df_list 。
+
+#+BEGIN_SRC python :results output
+from bs4 import BeautifulSoup
+import os
+folder = 'rt_html'
+df_list = []
+for html_file in os.listdir(folder):
+    with open(os.path.join(folder, html_file), 'r') as f:
+        soup = BeautifulSoup(f, 'lxml')
+        title = soup.find('title').contents[0][:-len('tomato')]
+        score = soup.find('div', class_='audience-score meter').find('span').contents[0][:-1]
+        rating_counts = soup.find('div', class_='audience-info')# 方法类似，可以逐层打印，寻找标签位置
+        rating_counts = rating_counts.find_all('div')[1].contents[1].strip().replace(',', '')
+        d = {'title': title,
+             'audience_score': int(score),
+             'number_audience_ratings': int(rating_counts)}
+        df_list.append(d)
+df = pd.DataFrame(df_list, columns=['title', 'audience_score', 'number_audience_ratings'])
+#+END_SRC
+还需要合并两个DataFrame
+*** 用编程的方式下载网络上的文件（http协议+Python Requests）
+HTTP全称为超文本传输协议，是web浏览器和Web服务器之间的沟通语言。
+#+BEGIN_SRC python :results output
+import requests
+import os
+folder_name = 'ebert_reviews'
+if not os.path.exists(folder_name):
+    os.makedirs(folder_name)
+url = 'https://classroom.udacity.com/nanodegrees/nd002-cn-advanced-vip/parts/4ec06ac9-9e53-42c2-a53d-3b4ec9d7e25e/modules/fea8de18-62f3-4b23-9f19-4293ee51871f/lessons/96402d84-c99d-4982-9edf-2430ef30d222/concepts/ed908f34-ce67-44c0-acb1-d81abd5d9e37'
+response = requests.get(url)
+with open(os.path.join(folder_name, 'down_html.txt'), 'wb') as f:
+    f.write(response.content)
+print(response) # 200代表请求成功
+
+#+END_SRC
+
+#+RESULTS:
+: <Response [200]>
+*** 关于编码和字符集
+[[https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/][请查看这两篇文章]]
+*** Python中的文本文件
+打开目录下的文件可以这样：
+- ~import os;for file in os.listdir(folder_name):~ ，
+  这样会打开所有目录下的文件。
+- 如果想打开此目录下的特定文件可以用通配符，
+  ~import glob;for file in glob.glob('/ebert-reviews/*.tst')~ 。
+
+去掉末尾的换行符可以用 ~line[:-1]~
+#+BEGIN_SRC python :results output
+with open(file_name, 'r', encoding='utf-8') as f:
+    title = f.readline()[:-1] # 去掉末尾的换行符
+    txt = f.read() # 将剩余内容读入
+    d = {'title': title,
+         'txt': txt}
+    df_list.append(d)
+df = pd.DataFrame(df_list) # 将网页内容存在DataFrame中
+#+END_SRC
 
 * project3: EDA
 * project4: 求职-模拟面试
