@@ -41,7 +41,7 @@ df = pd.read_csv('file', header=1) # 使用第二行为标题，删除上面行�
 df = pd.read_csv('student_scores.csv', header=None) # 没标题
 labels = ['id', 'name', 'attendance', 'hw', 'test1',
 'project1', 'test2', 'project2', 'final'] # 自定义标题
-df = kkpd.read_csv('student_scores.csv', names=labels)
+df = pd.read_csv('student_scores.csv', names=labels)
 # 替换数据的标题行
 df = pd.read_csv('student_scores.csv', header=0, names=labels)
 #将一个或多个列指定为数据框的索引
