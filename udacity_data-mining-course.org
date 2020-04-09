@@ -359,17 +359,108 @@ df = pd.merge(df, df2, on=['given_name', 'surname'], how='left')
 呈现给观众，为了用图或表来回答之前提出的问题。
 
 收集数据、清理数据、探索数据、分析数据（建立模型）、呈现分析结果
-** 可视化的重要性
+** lesson1: 数据分析中的数据可视化
+*** 可视化的重要性
 有时数据集的一些度量指标完全相同，但实际上却完全不同，如它斯库姆四重奏。
-** 可视化库
+*** 可视化库
 Matplotlib（复杂而灵活）, Seaborn（简单而高效）, pandas（简单而高效）.
 应该在灵活性与高效性之间权衡。可以先用pandas和Seaborn，来探索，最后用Matplotlib来
 呈现。
-** 本课程大纲
+*** 本课程大纲
 - 可视化设计
 - 数据探索
 - 解释性可视化
 - 可视化案例分析
+** lesson2: 可视化的设计
+*** 数据类型
+数据的四个测量级别：
+- 分类类型（非数值类型、定性类型） ~柱状图~ ~饼状图~
+  - 无序分类变量（Nominal data）
+  - 有序分类变量 （Ordinal data）
+- 数值类型（Numeric、定量类型） ~直方图~ ~图~
+  - 定距变量（Interval data）：绝对差有意义，可以进行加减运算
+  - 定比变量（Ratio data）：相对差有意义，可以进行乘除运算
+  或者也可以分为：
+  - 离散变量
+  - 连续变量
+在探索数据的时候，首先要考虑的事情就是判断数据是分类的还是数值的。
+
+图表垃圾指的是图表中对理解要展示的信息并无帮助，或者使读者无法关注到重要信息的所有视觉元素。
+
+提高数据墨水比ink-data-ratio
+*** 使用颜色
+- 首选黑白（黑，白，灰）
+- 如果要用颜色，尽量不要用鲜艳的颜色（如天然色或淡色）
+- 颜色的选择要有助于信息的表达，凸显你的信息并区分兴趣组，避免因为要有颜色而添加颜色
+- 针对色盲人群：不要用红绿区分数据，用蓝橙代替
+*** 额外的视觉编码
+颜色与形状是分类变量最好的展现方式，而标志大小有助于数值型数据的表达。只有在绝对必要时才使用这些额外的编码。
+如果一个图表中有太多的信息，建议将这些信息分解为多个单独的信息，这样听众反而可以更好地理解信息的各个方面。
+** lesson3: 单变量数据探索
+数据探索应该从单变量探索开始，这有助于理解数据集。
+*** 条形图（柱状图）
+- 研究分类类型变量的分布，首选用bar chart, 基线应设为0。
+- 对于无序的分类类型，可以按出现频次从大到小排序
+- 但不要对有序的分类类型排序，因为它的本身的顺序更重要
+- 可以选择，要不要使用横向的bar chart
+- 可以选择是用绝对次数还是出现的相对频率来绘图
+#+BEGIN_SRC python :results output
+import seaborn as sb
+import pandas
+import matplotlib.pyplot as plt
+%matplotlib inline
+type_order = df.type1.value_counts().index
+sb.countplot(data=df, x='type1', color=sb.color_palette()[0], order=type_order)
+# 横向的bar chart 只需要将改成y
+sb.countplot(data=df, y='type1', color=sb.color_palette()[0], order=type_order)
+# 可以使用 matplotlib 的 xticks 函数及其 "rotation" 参数更改绘制刻度标记的方向
+plt.xtics(rotation=90)
+#+END_SRC
+*** 缺失值统计
+用 ~sb.barplot~ 来绘图。
+#+BEGIN_SRC python :results output
+na_counts = df.isna().sum()
+base_color = sb.color_palette()[0]
+sb.barplot(na_counts.index.values, na_counts, color = base_color)
+#+END_SRC
+*** 饼状图
+饼图是一种应用场合很有限的图表类型，图表创建者很容易将饼图绘制得难以看懂。如果你要使用饼图，请尝试遵守下面的规则：
+
+- 确保你关心的是相对频率。每个扇区应该表示整体的一部分，而不是单独的数值（除非变量能够求和成某个整体）。
+- 将扇区限制在一定数量内。饼图最好只包含两到三个扇区，如果扇区足以明确区分，也可以包含四到五个。如果你有很多个类别，
+  并且某些类别所占的比例很小，那可以将它们组合到一起，或者将这些比例很小的类别放到 "其他" 类别中。
+- 系统地绘制数据。绘制饼图的一种常见方法是从圆圈的顶部开始，然后沿着顺时针方向绘制每个分类级别，从最常见的到最不常见的排列。
+  如果有三个类别，并且想要对比其中两个，一种常见绘制方法是将这两个类别放在 12 点钟方向的两侧，第三个类别填充在底部剩余部分。
+
+如果无法满足这些规则，则建议使用条形图。通常选择条形图更保险。长条高度比面积或角度更精确，并且条形图比饼图更紧凑。
+对于值很多的变量来说，条形图更灵活。
+
+参考：[[https://classroom.udacity.com/nanodegrees/nd002-cn-advanced-vip/parts/3114eb46-e9e5-422f-938f-288b78fa4ccd/modules/1dc09d28-5703-493c-aab5-a418b8bfa3e1/lessons/b86503df-e416-4f0e-9e2d-a7a3c08d0bc3/concepts/e7d15a6d-4d4b-418e-b85e-3cf0ed6f6740][udacity的饼图]]
+*** 直方图
+不会为每个单独的数值绘制一个长条，而是定义几个连续的分组（bin），为每个分组绘制长条以代表相应的数字。
+x表示特征值，y表示数量统计（与柱状图相同），绘图时应尝试不同的组距。 ~plt.hist(data=df, x='age', bins=30)~
+** lesson4: 双变量可视化探索（研究相关性）
+- 数值变量vs数值变量 用 scatterplots（散点图）
+- 数值变量vs分类变量 用 violin plots（小提琴图）
+- 分类变量vs分类变量 用 clustered bar charts（分组柱状图）
+*** 重叠、透明度和抖动
+如果要绘制大量数据点，或者数值变量是离散型的，那么直接使用散点图可能无法呈现足够的信息。图形可能会出现重叠，由于大量数据重叠到一起，
+导致很难看清变量之间的关系。在这种情形下，我们需要应用透明度和抖动，使散点图能呈现更多的信息。
+
+除了设置透明度，我们还可以通过抖动使每个点稍微偏离真实值所对应的位置。这并不是 scatter 函数中的直接选项，但是 seaborn 的regplot
+函数有这个内置选项。可以单独添加 x 轴和 y 轴抖动，不会影响到回归方程的拟合情况
+#+BEGIN_SRC python :results output
+sb.regplot(data = df, x = 'disc_var1', y = 'disc_var2', fit_reg = False,
+           x_jitter = 0.2, y_jitter = 0.2, scatter_kws = {'alpha' : 1/3})
+#+END_SRC
+*** 热图
+*** violinplot
+Seaborn 的 violinplot 函数可以创建将小提琴图和箱线图相结合的图表
+#+BEGIN_SRC python :results output
+sb.violinplot(data = df, x = 'cat_var', y = 'num_var')
+#+END_SRC
+
+
 * project3: 探索性数据分析EDA
 ** 什么是EDA
 EDA可以增加你对数据的了解，对提出假设和建立模型有帮助。进行EDA时要时刻对数据保持好奇与怀疑。
