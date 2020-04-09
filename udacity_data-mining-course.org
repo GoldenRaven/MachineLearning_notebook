@@ -82,11 +82,12 @@ print(np.mean(l))
 
 #+RESULTS:
 : 4.0
-* project1的项目: Google Play Store Analysis
+* TODO project1的项目: Google Play Store Analysis
+  - State "TODO"       from              [2020-04-09 Thu 12:23]
 [[https://www.jianshu.com/p/04d180d90a3f][pandas入门]]
 
 [[https://tonysyu.github.io/raw_content/matplotlib-style-gallery/gallery.html][图表呈现风格]]
-* project2:数据清理
+* project2:数据整理
 ** lesson1：数据整理简介
 最好用程序下载数据（API），而不是在网页直接下载。
 *** 用python解压缩文件
@@ -277,8 +278,10 @@ JSON 有六种有效的数据类型，其中两种可使层次数据在采用大
 高级收集过程：
 - 获取数据(从互联网下载文件、抓取网页、查询 API 等)
 - 将数据导入编程环境(例如 Jupyter Notebook)
-** lesson3: 维基百科爬虫
-** lesson4: 抓取豆瓣电影信息（案例演练）
+** TODO lesson3: 维基百科爬虫
+   - State "TODO"       from              [2020-04-09 Thu 12:23]
+** TODO lesson4: 抓取豆瓣电影信息（案例演练）
+   - State "TODO"       from              [2020-04-09 Thu 12:23]
 ** lesson5: 评估数据 assess
 *** intro
 在清理之前要评估，不评估就不知道数据的问题在哪，怎么去清理。
@@ -312,9 +315,71 @@ df['age'].sort_values(ascending=False) # 数值型值的排序
 按以上大纲助逐排查是的重要的！而且收集、评估、清理、分析过程在任何时候都是可迭代的，即你可以随机
 收集、评估、清理、分析。
 ** lesson6: 清理数据
-** 项目：清洗与分析数据
+*** 大纲
+数据清理流程：确定方案，编写代码，检验效果
+- 先解决数据缺失问题（一般要先解决完整性问题，为什么？）
+- 再解决整洁度问题
+- 最后解决质量问题
+
+人工vs程序清理？除非只需要一次，否则不要人工清理，应该用程序清理。
+先备份数据，不要在原始的脏乱数据上操作！备份用 ~df.copy()~
+#+BEGIN_SRC python :results output
+import pandas as pd
+df = pd.read_csv('file.csv')
+df_clean = df.copy()
+df_clean['animal'] = df_clean['animal'].str[2:]
+df_clean['animal'] = df_clean['animal'].str.replace('!', '')
+#+END_SRC
+*** 先处理缺失值
+[[https://goo.gl/3bgcc8][Imputation教程]]
+#+BEGIN_SRC python :results output
+import pandas as pd
+# 用正则表达式提取字符串
+df['email'] = df.contact.str.extract('([a-zA-Z][a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[a-zA-Z])', expand=True)
+df['phone'] = df.contact.str.extract('((?:\+?\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})', expand=True)
+# 拼接DataFrame
+df_new = df1.append(df_2) # 列对齐
+# 行对齐
+# melt融合DataFrame
+# split劈裂DataFrame
+# merge合并DataFrame，按照名和姓进行
+df = pd.merge(df, df2, on=['given_name', 'surname'], how='left')
+#+END_SRC
+[[https://regexone.com/][正则表达式教程]]
+[[https://pandas.pydata.org/pandas-docs/stable/generated/pandas.melt.html][融合函数]]
+[[https://blog.csdn.net/maymay_/article/details/80039677][融合函数2]]
+这一节课需要更多的学习和练习，对pandas清理的常用函数还不熟悉，经验也不多！
+** TODO 项目：清洗与分析数据
+   - State "TODO"       from              [2020-04-09 Thu 12:23]
 * Python数据可视化
+主要有两个方面：
+- 探索性数据可视化
+用来寻找变量间的关系或隐藏的见解，不必完美，只为自己看。
+- 解释性数据可视化
+呈现给观众，为了用图或表来回答之前提出的问题。
+
+收集数据、清理数据、探索数据、分析数据（建立模型）、呈现分析结果
+** 可视化的重要性
+有时数据集的一些度量指标完全相同，但实际上却完全不同，如它斯库姆四重奏。
+** 可视化库
+Matplotlib（复杂而灵活）, Seaborn（简单而高效）, pandas（简单而高效）.
+应该在灵活性与高效性之间权衡。可以先用pandas和Seaborn，来探索，最后用Matplotlib来
+呈现。
+** 本课程大纲
+- 可视化设计
+- 数据探索
+- 解释性可视化
+- 可视化案例分析
 * project3: 探索性数据分析EDA
+** 什么是EDA
+EDA可以增加你对数据的了解，对提出假设和建立模型有帮助。进行EDA时要时刻对数据保持好奇与怀疑。
+在EDA时应该让数据直接说话，并测试自己对数据集的直觉，培养新的直觉。
+
+协调迁移
+
+交互式可视化用d3.js
+** TODO R基础
+   - State "TODO"       from              [2020-04-09 Thu 13:24]
 * 用数据来呈述你的结论
 * project4: 求职-模拟面试
 * 机器学习机器
