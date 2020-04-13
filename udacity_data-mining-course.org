@@ -101,6 +101,8 @@ df_clean.drop('age', axis=1)
 ### 合并merge
 ### 融合melt
 ### 拼接concat, append
+#https://pandas.pydata.org/pandas-docs/stable/getting_started/10min.html
+#https://pandas.pydata.org/pandas-docs/stable/getting_started/basics.html
 ### 字符串操作
 df_clean.contact.str.extract(pat, expand=True)
 ### 邮件地址
@@ -746,12 +748,136 @@ EDA可以增加你对数据的了解，对提出假设和建立模型有帮助�
    - State "TODO"       from              [2020-04-09 Thu 13:24]
 * 用数据来呈述你的结论
 * project4: 求职-模拟面试
-* 机器学习机器
+* 机器学习基础
+* 数学基础
+** lesson6: 神经网络中的微积分
 * 监督学习
 * 非监督学习
+** 聚类
+*** K-means
+*** 层次聚类（hierarchical clustering）
+1. 单连接层次聚类法（自下而上）
+DENDROGRAM 系统树，sklearn中没有单连接层次聚类实现。
+
+LINKAGE DENDROGRAM可以帮助分析高维聚类的类别数！
+2. sklearn中的凝聚聚类法（自下而上）
+2.1 全连接聚类法：关注两个类中两点的最远距离，将其定义为两个类的距离，再按层次将所有的类别连接起来
+（同单连接一样）。聚类结果比单连接更紧凑，更好。
+#+BEGIN_SRC python
+sklearn.cluster.AgglomerativeClustering(n_clusters=3, linkage='complete')
+#+END_SRC
+2.2 WARD's methods
+#+BEGIN_SRC python
+sklearn.cluster.AgglomerativeClustering(n_clusters=3, linkage='ward')
+#+END_SRC
+AB类的距离定义为：找一个AB类的中心点C，计算\Delta_{AB},
+\Delta_{AB} = \sum_{i} C_{i}^{2} - \sum_{i} A_{i}^{2} - \sum_{i} B_{i}^{2}
+其中A_{i}(B_{i})为A(B)类的中心到A(B)类各点的距离，C_{i}为C中心点到AB两类中各点的距离。
+然后哪两个类最近，再将它们按层次连接起来。
+2.3 平均连接法
+#+BEGIN_SRC python
+sklearn.cluster.AgglomerativeClustering(n_clusters=3, linkage='average')
+#+END_SRC
+3. 系统树构建用 ~scipy~
+#+BEGIN_SRC python
+from scipy.cluster.hierarchy import dendrogram, ward, single
+linkage_matrix = ward(X) # 聚类
+dendrogram(linkage_matrix) # 绘制系统树
+#+END_SRC
+4. 优缺点
+优点：结果信息量丰富（在生物进化学领域应用）
+缺点：对噪声和异常值敏感，计算量大 O(N^{2})。
+*** 密度聚类（DBSCAN, 具有噪声的基于密度的聚类）
+参数：epsilon每个点的领域半径，识别为非噪声的最小点个数（半径内）。噪声点，核心点，边界点。
+- 优点：不用输入类别个数，不限定类别的图形状，可以用来检测异常值和噪声。
+- 缺点：边界点有时会被归为其他类，不太擅长区分密度相关很大的类别（可用HDBSCAN）。
+[[https://scikit-learn.org/stable/modules/outlier_detection.html][异常值检测方法]]
+#+BEGIN_SRC python
+from sklearn.cluster import DBSCAN
+dbscan = DBSCAN()
+#+END_SRC
+*** 高斯混合模型聚类（GMM）（最超前的聚类方法）
+认为每个数据点都属于每个类，只是有权重。每个类别都服从特定的统计分布。
+
+一维高斯分布性质：[\mu-\sigma, \mu+\sigma] 之间有68%的数据点，
+[\mu-2\sigma, \mu+2\sigma] 之间有95%的数据点，
+[\mu-3\sigma, \mu+3\sigma] 之间有99%的数据点。
+预测时用多个高斯分布去拟合数据点，并选择更有可能的高斯分布作为同一个类。
+
+*高维高斯分布与多个高斯分布混合的区别：* 多个混合可能有多个聚类中心，高维高斯分布只有一个中心。
+
+GMM的工作原理：1.为数据初始化n个类别的高斯分布，如果不收敛，则2.为每个点计算属于所有分布的隶属度（软聚类），
+3.用隶属度和原数据计算\mu_{new},用隶属度、原数据和\mu_{new}计算\sigma^{2}_{new}。4.期望最大化
+#+BEGIN_SRC python
+from sklearn.mixture import GaussianMixture
+gmm = GaussianMixture(n_components=3)
+y = gmm.fit_predict(X)
+#+END_SRC
+
+第一步，初始值的设置会影响结果！优点：在机器视觉方面很有用。
+
+聚类分析流程：
+- 数据
+- 特征选择（挑选一些重要特征）、特征提取（对数据转换以生成更有用的新特征如PCA）
+- 选择聚类算法、调优（‘NoFreeLanch定理’，邻近度量（计算两点距离的方法））
+- 对聚类算法进行评估（可视化和评分）
+- 解释结果（转化为知识）
+*** 聚类模型的评估
+外部评估指标(原数据集带有标签)：Adjusted Rand Index(调整兰德系数) [-1, 1]
+内部评估指标(原数据集没有标签)：silhouette coeffient(轮廓系数), [-1, 1], 别用在DBSCAN算法上，用DBCV
+** 特征缩放
+x_{new} = (x_{old} - x_{min})/(x_{max} - x_{min})
+以上公式会将最小值变成0，最大值变成1，sklearn的实现：
+#+BEGIN_SRC python
+from sklearn.preprocessing import MinMaxScaler
+min_max = MinMaxScaler()
+X_scaled = min_max.fit_transform(X) # 输入X应该是浮点数，不能是整数
+#+END_SRC
+** 缩放算法的影响
+受影响的算法：
+- SVM with rbf kernal
+- K-means
+不受影响的算法：
+- linear regression
+- decision tree
+** 主成分分析PCA
+- 在数据方差最大的方向设为x轴
+- 与其正交的方向设为y轴
+作用：
+- 找到潜在的特征间关系（发现隐藏模式）
+- 降维：对成份（新的合成特征）的重要性排序并筛选，用于降维
+- 可视化高维数据（只画主要成份）
+- 去噪声（去掉不重要的成份）
+- 让其他算法工作更好（如SVM），即减少拟合的方差（不是偏差）
+#+BEGIN_SRC python
+from sklearn.decomposition import PCA
+from sklearn.decomposition import RandomizedPCA
+pca = PCA(n_components=2).fit(X)
+pca.components_[0]
+pca.components_[1]
+#+END_SRC
+最大主成分数量是训练点数量和特征数量这两者中的最小值。
+*** 随机投影
+比PCA更高效，适于处理十分高维的数据
+#+BEGIN_SRC python
+from sklearn.random_projection import SparseRandomProjection
+rp = SparseRandomProjection()
+new_X = rp.fit(X)
+#+END_SRC
+*** independent component analysis 独立成份分析ICA
+假设特征之间独立，没有依赖关系，可以用于分离各部分，比如鸡尾酒会问题
+#+BEGIN_SRC python
+from sklearn.decomposition import FastICA
+ica = FastICA(n_components=2)
+components = ica.fit_transform(X)
+#+END_SRC
 * project6: 深度学习
 * 软件工程
 * 数据工程
+数据工程师：为各种职业和场景准备数据
+** ETL管道
+ETL: extract, transform, load. ETL是数据管道的一种。
+
 * project7: 推荐系统与试验设计
 * project8: Spark与大数据
 * github个人资料实战
