@@ -133,20 +133,25 @@ df_clean.dt.year
 pd.to_numeric(df_clean.age) # 轮换为数字格式
 ### Tukey 规则可以找到一维数据中的离群值。其步骤是：
 ### 找到上四分位数  (ie .25 分位数)
+Q1 = df_clean.age.quantile(0.25)
 ### 找到下四分位数  (ie .75分位数)
+Q3 = df_clean.age.quantile(0.75)
 ### 计算分位数区间 (Q3 - Q1)
+IQR = Q3 - Q1
 ### 任何比Q3 + 1.5 * IQR 大的数是离群值
+max_value = Q3 + 1.5 * IQR
 ### 任何比 Q1 - 1.5 * IQR 小的数是离群值
+min_value = Q1 - 1.5 * IQR
 outliers = population[(population['population'] > max_value) | (population['population'] < min_value)]
 df_clean.drop_duplicates()
 df_clean['name'] = df.name.str[2:]
 df_clean.zipcode = df_clean.zipcode.astype(str)
 ### 缩放只能对训练集使用，不能对测试集用！
+### scikit-learn 可以实现这个功能，但是在数据工程中，你并不总能找到可用的工具包
 ### 标准化(standardization)
 from sklearn.preprocessing import StandardScaler
 ### 归一化/正则化 (normalization)
 from sklearn.preprocessing import MinMaxScaler
-### scikit-learn 可以实现这个功能，但是在数据工程中，你并不总能找到可用的工具包
 
 # 3.EDA 探索性数据分析
 ## 绘图包seaborn, matplotlib,以及pandas自带的绘图功能
@@ -208,7 +213,7 @@ df_clean['ratio'] = df_clean.criminals / df_clean.population
 df_clean.age.cut() # 怎么用？
 
 # 4. 得出结论（描述性统计或机器学习建模）
-# 对于不同的问题选择适用的机器学模型，学习并进行预测，并将学习的知识可视化（怎样从结论发掘出知识？）
+# 对于不同的问题选择适用的机器学习模型，学习并进行预测，并将学习的知识可视化（怎样从结论发掘出知识？）
 ## 4.1 监督学习
 ### 4.1.1 回归
 ### 4.1.2 分类
@@ -250,9 +255,9 @@ from sklearn.ensembel import GradientBoostingClassifier
 ## 4.2 非监督学习
 ### 4.2.1 聚类clustering
 from sklearn.cluster import KMeans
-from skelarn.cluster import AgglomerativeClustering
+from skelarn.cluster import AgglomerativeClustering # 凝聚聚类
 agglomerativeClustering(linkage='complete') # ‘ward’, ‘complete’, ‘average’,‘single’
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import DBSCAN # 可基于密度降噪
 from sklearn.cluster import GaussianMixture
 ### 4.2.2 PCA主成份分析
 from sklearn.decomposition import PCA
@@ -272,14 +277,15 @@ np.sqrt(mean_squared_error(y_pred, y_test)) # 均方根
 ### 一个负的𝑅2表示模型不能够拟合数据决定系数（coefficient of determination），
 ### 𝑅2结果在0到1之间，1表示完美拟合，一个负的  𝑅2  表示模型不能够拟合数据
 dt.score(X_test, y_test) # 决策树回归的计分方式，R2系数
-### 回归
+### 分类
 from sklearn.metrics import classification_report, confusion_matrix
-classification_report(y_test, y_pred, target_names=target_names)
+classification_report(y_test, y_pred, target_names=target_names) # 返回多种指标
 confusion_matrix(y_test, y_pred, labels=range(n_classes))
-# adjusted Rand index
+### 聚类
+# 外部评估指数 adjusted Rand index
 from sklearn.metrics import adjusted_rand_score
 adjusted_rand_score(y_test, y_pred)
-### 内部评估指数 silhouette index 轮廓系数
+### 内部评估指数 silhouette coeffient 轮廓系数
 form sklearn.metrics import silhouette_score
 model.fit(X)
 labels = model.labels_
