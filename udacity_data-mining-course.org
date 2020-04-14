@@ -54,15 +54,17 @@ df = pd.DataFrame(l)
 ## 2.1 收集数据（从csv文件加载到pandas）
 new_columns = list('abcdef')
 df = pd.read_csv(os.path.join(path, filename),
-                 header=0, # 默认，文件中有列名
+                 header=0, # {0, None, int}默认0，从文件第int列开始读取，以第int列作为列名
+                 skiprows=4, # 跳过前4行
                  name=new_columns， # 以新的列名替换旧列名
                  index_col='Name') # 以name作为列指标
+
 ## 2.1 收集数据（从zip文件载入文件）
 import zipfile
 with zipfile.ZipFile('file.zip', 'r') as f_zip:
     f_zip.extractall() # 解压zip文件
 pd.read_csv('file.csv')
-#pd.read_csv('file.csv.gz.tar')
+#pd.read_csv('file.csv.gz.tar') # 直接读取压缩文件？
 
 ## 2.2 评估数据（目测、编程）
 ### 质量问题（脏数据）：完整性（缺失值）、有效性（冗余、异常值、类型错误）、准确性、一致性
@@ -86,6 +88,9 @@ df.height.plot(kind='box')             # （针对离散数值型变量）绘制
 df.age.hist(bins=30)                   # （针对连续数值型变量）绘制直方图
 
 ## 2.3 清理数据
+### pandas快速入门
+#https://pandas.pydata.org/pandas-docs/stable/getting_started/10min.html
+#https://pandas.pydata.org/pandas-docs/stable/getting_started/basics.html
 ### 清理方案
 ### 清理记录
 ### 检验效果
@@ -94,15 +99,26 @@ df.age.hist(bins=30)                   # （针对连续数值型变量）绘制
 df_clean = df.copy()
 ### 先清理缺失值
 df_clean.fillna(0, inplace=True)
-df_clean.dropna(subset=['age'], inplace=True)
-df_clean.dropna(axis=0, subset=['age'], inplace=True)
-df_clean.drop('age', axis=1)
+df_clean.dropna(axis=0, # 0或index, 1或columns，丢弃有空值的行或列
+                subset=['age'], # 不是要丢弃维度的另一维度的数组，如为columns时丢弃这一列的空行
+                thresh=10, # 超过阀值时丢弃
+                how='any', # any指只要有空值就丢弃;all指当行或列全为空时丢弃
+                inplace=True) # 是否inplace改变
+df_clean.drop('age', axis=1) # 0或index, 1或columns，丢弃行或列
+df_clean.drop(columns=['age', 'height'], index=150, inplace=True)
+# 用每个国家的GDP平均值填充缺失值
+df_clean.groupby('Country Name')['GDP'].transform(lambda x: x.fillna(x.mean()))
+# 向前向后填充（要先排序！）
+df_clean.sort_values('year').groupby('Country Name')['GDP'].fillna(method='ffill')
+df_clean.sort_values('year').groupby('Country Name')['GDP'].fillna(method='bfill')
+
 ### 再解决整洁度问题
-### 合并merge
-### 融合melt
+### 合并merge，共用列为['Country Name', 'year']
+df_clean = gdp.merge(population, on=('Country Name', 'year'))
+### 融合melt，以下操作后变成三列，相当于short form变long form
+df_clean = pd.melt(df_clean, id_vars=['Country Name', 'Country Code'], var_name='year', value_name='GDP')
 ### 拼接concat, append
-#https://pandas.pydata.org/pandas-docs/stable/getting_started/10min.html
-#https://pandas.pydata.org/pandas-docs/stable/getting_started/basics.html
+df_clean = pd.concat([df, dummies], axis=1)
 ### 字符串操作
 df_clean.contact.str.extract(pat, expand=True)
 ### 邮件地址
@@ -110,10 +126,27 @@ pat_email = '([a-zA-Z][a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[a-zA-Z])'
 pat_phone = '((?:\+?\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})'
 df_clean['phone'] = df.contact.str.extract(pat_phone, expand=True)
 df_clean['email'] = df.contact.str.extract(pat_email, expand=True)
+
 ### 最后解决质量问题
+df_clean = pd.to_datetime(df_clean['year']) # 转换时间序列格式
+df_clean.dt.year
+pd.to_numeric(df_clean.age) # 轮换为数字格式
+### Tukey 规则可以找到一维数据中的离群值。其步骤是：
+### 找到上四分位数  (ie .25 分位数)
+### 找到下四分位数  (ie .75分位数)
+### 计算分位数区间 (Q3 - Q1)
+### 任何比Q3 + 1.5 * IQR 大的数是离群值
+### 任何比 Q1 - 1.5 * IQR 小的数是离群值
+outliers = population[(population['population'] > max_value) | (population['population'] < min_value)]
 df_clean.drop_duplicates()
 df_clean['name'] = df.name.str[2:]
 df_clean.zipcode = df_clean.zipcode.astype(str)
+### 缩放只能对训练集使用，不能对测试集用！
+### 标准化(standardization)
+from sklearn.preprocessing import StandardScaler
+### 归一化/正则化 (normalization)
+from sklearn.preprocessing import MinMaxScaler
+### scikit-learn 可以实现这个功能，但是在数据工程中，你并不总能找到可用的工具包
 
 # 3.EDA 探索性数据分析
 ## 绘图包seaborn, matplotlib,以及pandas自带的绘图功能
@@ -174,7 +207,85 @@ df_clean['ratio'] = df_clean.criminals / df_clean.population
 # 将连续数值离散化，可以消除数据噪声
 df_clean.age.cut() # 怎么用？
 
-# 4. 得出结论
+# 4. 得出结论（描述性统计或机器学习建模）
+# 对于不同的问题选择适用的机器学模型，学习并进行预测，并将学习的知识可视化（怎样从结论发掘出知识？）
+## 4.1 监督学习
+### 4.1.1 回归
+### 4.1.2 分类
+## 4.2 非监督学习
+### 4.2.1 聚类
+### 4.2.1 降维
+## 4.3 评估模型
+### 外部评估指数
+### 内部评估指数
+
+## 4.1 监督学习
+### 线性模型
+from sklearn.linear_model import LinearRegression ## 线性回归
+from sklearn.linear_model import SGDRegressor ## 随机梯度下降回归
+from sklearn.linear_model import Ridge ## 岭回归，l_{1}正则化
+from sklearn.linear_model import Lasso ## Lasso回归，l_{2}正则化
+from sklearn.linear_model import ElasticsNet ## 弹性网络，l_{1}与，l_{2}的插值正则化
+from sklearn.linear_model import LogisticRegression ## 逻辑回归
+### 支持向量机(kernel技巧)
+from sklearn.svm import LinearSVR
+from sklearn.svm import SVR
+from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
+### 决策树
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.tree import DecisoinTreeClassifier
+### 集成方法
+from sklearn.ensemble import VotingClassifier
+from sklearn.ensemble import VotingRegressor
+from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import BaggingRegressor
+from sklearn.ensemble import RandomForestClassifier
+from skelarn.ensemble import RandomForestRegressor
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.ensemble import ExtraTreesRegressor
+from sklearn.ensemble import AdaBoostClassfier
+from sklearn.ensembel import GradientBoostingClassifier
+
+## 4.2 非监督学习
+### 4.2.1 聚类clustering
+from sklearn.cluster import KMeans
+from skelarn.cluster import AgglomerativeClustering
+agglomerativeClustering(linkage='complete') # ‘ward’, ‘complete’, ‘average’,‘single’
+from sklearn.cluster import DBSCAN
+from sklearn.cluster import GaussianMixture
+### 4.2.2 PCA主成份分析
+from sklearn.decomposition import PCA
+### pca的结果要怎么解释呢？
+from sklearn.decomposition import RandomizedPCA
+### 4.2.3 随机投影（用于特征提取和降维）
+from sklearn.random_projection import SparseRandomProjection
+### 4.2.4 ICA独立成份分析（用于特征提取和降维）
+from sklearn.decomposition import FastICA
+
+## 4.3 评估模型
+### 外部评估指数
+### 回归
+from sklearn.metrics import mean_squared_error
+np.sqrt(mean_squared_error(y_pred, y_test)) # 均方根
+### 决定系数（coefficient of determination）， 𝑅2  结果在0到1之间，1表示完美拟合，
+### 一个负的𝑅2表示模型不能够拟合数据决定系数（coefficient of determination），
+### 𝑅2结果在0到1之间，1表示完美拟合，一个负的  𝑅2  表示模型不能够拟合数据
+dt.score(X_test, y_test) # 决策树回归的计分方式，R2系数
+### 回归
+from sklearn.metrics import classification_report, confusion_matrix
+classification_report(y_test, y_pred, target_names=target_names)
+confusion_matrix(y_test, y_pred, labels=range(n_classes))
+# adjusted Rand index
+from sklearn.metrics import adjusted_rand_score
+adjusted_rand_score(y_test, y_pred)
+### 内部评估指数 silhouette index 轮廓系数
+form sklearn.metrics import silhouette_score
+model.fit(X)
+labels = model.labels_
+silhouette_score(X, labels)
+### 相对评估指数
+
 # 5. 传达结果
 # 5.1 解释性数据可视化
 #+END_SRC
@@ -760,12 +871,14 @@ EDA可以增加你对数据的了解，对提出假设和建立模型有帮助�
 DENDROGRAM 系统树，sklearn中没有单连接层次聚类实现。
 
 LINKAGE DENDROGRAM可以帮助分析高维聚类的类别数！
+
 2. sklearn中的凝聚聚类法（自下而上）
 2.1 全连接聚类法：关注两个类中两点的最远距离，将其定义为两个类的距离，再按层次将所有的类别连接起来
 （同单连接一样）。聚类结果比单连接更紧凑，更好。
 #+BEGIN_SRC python
 sklearn.cluster.AgglomerativeClustering(n_clusters=3, linkage='complete')
 #+END_SRC
+
 2.2 WARD's methods
 #+BEGIN_SRC python
 sklearn.cluster.AgglomerativeClustering(n_clusters=3, linkage='ward')
@@ -774,10 +887,12 @@ AB类的距离定义为：找一个AB类的中心点C，计算\Delta_{AB},
 \Delta_{AB} = \sum_{i} C_{i}^{2} - \sum_{i} A_{i}^{2} - \sum_{i} B_{i}^{2}
 其中A_{i}(B_{i})为A(B)类的中心到A(B)类各点的距离，C_{i}为C中心点到AB两类中各点的距离。
 然后哪两个类最近，再将它们按层次连接起来。
+
 2.3 平均连接法
 #+BEGIN_SRC python
 sklearn.cluster.AgglomerativeClustering(n_clusters=3, linkage='average')
 #+END_SRC
+
 3. 系统树构建用 ~scipy~
 #+BEGIN_SRC python
 from scipy.cluster.hierarchy import dendrogram, ward, single
