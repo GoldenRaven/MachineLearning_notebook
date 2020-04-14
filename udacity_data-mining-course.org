@@ -128,7 +128,7 @@ df_clean['phone'] = df.contact.str.extract(pat_phone, expand=True)
 df_clean['email'] = df.contact.str.extract(pat_email, expand=True)
 
 ### 最后解决质量问题
-df_clean = pd.to_datetime(df_clean['year']) # 转换时间序列格式
+df_clean = pd.to_datetime(df_clean['year'], format='%d-%m-%Y') # 转换时间序列格式
 df_clean.dt.year
 pd.to_numeric(df_clean.age) # 轮换为数字格式
 ### Tukey 规则可以找到一维数据中的离群值。其步骤是：
@@ -152,7 +152,9 @@ df_clean.zipcode = df_clean.zipcode.astype(str)
 from sklearn.preprocessing import StandardScaler
 ### 归一化/正则化 (normalization)
 from sklearn.preprocessing import MinMaxScaler
-
+### 每列减去最小值，然后除以范围
+from sklearn.preprcessing import normalize
+normalize(X_train)
 # 3.EDA 探索性数据分析
 ## 绘图包seaborn, matplotlib,以及pandas自带的绘图功能
 ## 探索性可视化：用来寻找变量间的关系或隐藏的模式，不必完美
@@ -348,8 +350,6 @@ sum(df.duplicated())
 df.drop_duplicates(inplace=True)
 # 将日期转成datatime类型。每次载入数据都需要转换！
 df['dates'] = pd.to_datetime(df['dates'])
-# 字符串是否被包含?
-print('ac' in 'acbs')
 # 为数据框中的列分配新标签
 df.columns = new_labels
 # 保存以后用
@@ -640,6 +640,9 @@ import pandas as pd
 # 用正则表达式提取字符串
 df['email'] = df.contact.str.extract('([a-zA-Z][a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[a-zA-Z])', expand=True)
 df['phone'] = df.contact.str.extract('((?:\+?\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})', expand=True)
+# 字符串是否被包含?
+print('ac' in 'acbs')
+action_movies = df_m[df_m.genres.str.contains('Action')] # 筛选包含特定字符串的行
 # 拼接DataFrame
 df_new = df1.append(df_2) # 列对齐
 # 行对齐
@@ -872,6 +875,12 @@ EDA可以增加你对数据的了解，对提出假设和建立模型有帮助�
 * 非监督学习
 ** 聚类
 *** K-means
+可视化：
+#+BEGIN_SRC python
+import matplotlib.pyplot as plt
+plt.scatter(Xy['x1'], Xy['x2'], c=Xy['y_pred'])
+#+END_SRC
+
 *** 层次聚类（hierarchical clustering）
 1. 单连接层次聚类法（自下而上）
 DENDROGRAM 系统树，sklearn中没有单连接层次聚类实现。
@@ -899,7 +908,7 @@ AB类的距离定义为：找一个AB类的中心点C，计算\Delta_{AB},
 sklearn.cluster.AgglomerativeClustering(n_clusters=3, linkage='average')
 #+END_SRC
 
-3. 系统树构建用 ~scipy~
+3. 可视化系统树构建用 ~scipy~
 #+BEGIN_SRC python
 from scipy.cluster.hierarchy import dendrogram, ward, single
 linkage_matrix = ward(X) # 聚类
@@ -915,7 +924,8 @@ dendrogram(linkage_matrix) # 绘制系统树
 [[https://scikit-learn.org/stable/modules/outlier_detection.html][异常值检测方法]]
 #+BEGIN_SRC python
 from sklearn.cluster import DBSCAN
-dbscan = DBSCAN()
+plt.scatter(dataset[0], dataset[1]) # 数据可视化
+dbscan = DBSCAN(eps=1.3, min_samples=50) # 这是两个主要参数
 #+END_SRC
 *** 高斯混合模型聚类（GMM）（最超前的聚类方法）
 认为每个数据点都属于每个类，只是有权重。每个类别都服从特定的统计分布。
@@ -976,6 +986,7 @@ from sklearn.decomposition import RandomizedPCA
 pca = PCA(n_components=2).fit(X)
 pca.components_[0]
 pca.components_[1]
+pca.explained_variance_ratio_
 #+END_SRC
 最大主成分数量是训练点数量和特征数量这两者中的最小值。
 *** 随机投影
