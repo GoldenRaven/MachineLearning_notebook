@@ -279,6 +279,9 @@ np.sqrt(mean_squared_error(y_pred, y_test)) # 均方根
 ### 一个负的𝑅2表示模型不能够拟合数据决定系数（coefficient of determination），
 ### 𝑅2结果在0到1之间，1表示完美拟合，一个负的  𝑅2  表示模型不能够拟合数据
 dt.score(X_test, y_test) # 决策树回归的计分方式，R2系数
+### 或者
+from sklearn.metrics import r2_score
+r2_score(y_test, y_pred)
 ### 分类
 from sklearn.metrics import classification_report, confusion_matrix
 classification_report(y_test, y_pred, target_names=target_names) # 返回多种指标
