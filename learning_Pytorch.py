@@ -157,7 +157,7 @@ print(x/2)
 
 from torch import optim
 optimizer = optim.SGD(model.parameters(), lr=0.003)
-epochs = 30
+epochs = 5
 f_out = open('loss.csv', 'w')
 for e in range(epochs):
     train_loss, test_loss = [], []

@@ -1007,6 +1007,260 @@ ica = FastICA(n_components=2)
 components = ica.fit_transform(X)
 #+END_SRC
 * project6: 深度学习
+** 神经网络简介
+*** 感知器算法
+感知器： step_function(w_{i}x_{i} + b) > or < 0 ?
+感知器算法：
+- 先随机初始化权重w_{i}和偏置b，以给定决策边界的超平面
+- 对于每个错误分类的实例X=[x_{i}]更新权重,\alpha 是learning_rate：
+  + if prediction=0:
+    change w_{i} to w_{i} + \alpha x_{i}
+    change b to b + \alpha
+  + if prediction=1:
+    change w_{i} to w_{i} - \alpha x_{i}
+    change b to b - \alpha
+*** 离散型和连续型激活函数
+step_function和sigmoid_function. sigmoid函数通常用于将离散的结果
+转变成概率，它的输出在0到1之间，而且是连续的。它就是量子统计物理中的费米
+分布函数，1/(1+e^{x}), x为电子的能量
+
+多分类时怎么办呢？要找一个归一函数，能将正负值都安全地转换成0到1之间的概率，
+那就是softmax函数, S_{i} = (e^{i})/(\sum_{j}e^{j})，它又和物理中
+的费曼图求和形式相同。
+
+处理多分类时，One-Hot编码是经常的做法。
+*** 最大似然概率
+** 用Numpy的矩阵乘法实现梯度下降
+- [[https://medium.com/@karpathy/yes-you-should-understand-backprop-e2f06eab496b#.vt3ax2kg9][理解反向传播]]
+- [[https://www.youtube.com/watch?v=59Hbtz7XgjM][Youtube斯坦福的 CS231n 课程的一个反向传播视频]]
+
+** 深度学习工具Pytorch
+PyTorch 于 2017 年初推出，给深度学习社区带来了深远的影响。它是由 Facebook AI
+研发团队开发的，已经被各行各业和各个学术领域采用。根据我个人的经验，它是训练神经网络的最佳框架，
+并且使用起来很方便。
+
+张量，它是 PyTorch 的主要数据结构。我将演示如何创建张量、如何完成简单的运算，以及张量如何与
+Numpy 交互。
+
+然后，你将学习模块 Autograd，PyTorch 会使用该模块计算在训练神经网络过程中用到的梯度。
+Autograd 非常强大。你可以用它完成整个反向传播工作：计算网络中每个运算的梯度，
+然后使用这些梯度更新网络权重。
+
+接着，你将使用 PyTorch 构建网络并使数据前向经过网络。然后，你将定义损失和优化方法，
+并用手写数字数据集训练神经网络。你还将学习通过验证步骤测试网络的泛化能力。
+
+然而，一个潜在问题是网络在处理复杂图像方面的效果不太好。
+所以我们会接着学习如何使用预训练的网络改善分类器的效果，这种技巧称为迁移学习。
+
+-
+#+BEGIN_SRC python :results output
+import torch
+torch.manual_seed(7)
+x = torch.randn((1, 5))
+w = torch.randn_like(x)
+b = torch.randn(1,1)
+#b = 3
+print('x: ', x)
+print('x: ', x.view(5,1))
+print('w: ', w)
+print('torch.exp(x): ', torch.exp(-x))
+print('torch.mm(w, x.view(5, 1)): ', torch.mm(w, x.view(5, 1)) + b)
+#+END_SRC
+
+#+RESULTS:
+: x:  tensor([[-0.1468,  0.7861,  0.9468, -1.1143,  1.6908]])
+: x:  tensor([[-0.1468],
+:         [ 0.7861],
+:         [ 0.9468],
+:         [-1.1143],
+:         [ 1.6908]])
+: w:  tensor([[-0.8948, -0.3556,  1.2324,  0.1382, -1.6822]])
+: torch.exp(x):  tensor([[1.1581, 0.4556, 0.3880, 3.0476, 0.1844]])
+: torch.mm(w, x.view(5, 1)):  tensor([[1.0204]])
+
+*** 用Pytorch搭建神经网络
+#+BEGIN_SRC python :results output
+import torch
+import numpy as np
+a = torch.randn(1, 3, 1, 1, 3)
+print(a.shape)
+# 压缩掉长度为1的维度，axis指定维度，从0开始。非1的维度，不产生任何效果
+b = np.squeeze(a, axis = 0)
+print(b.shape)
+c = np.squeeze(a, axis = 3)
+print(c.shape)
+#+END_SRC
+
+#+RESULTS:
+: torch.Size([1, 3, 1, 1, 3])
+: torch.Size([3, 1, 1, 3])
+: torch.Size([1, 3, 1, 3])
+
+注意 ~torch.nn.ReLU~ 和 ~torch.nn.funcional.relu~ 的区别：
+- 前者是模块Module，可以放在 ~torch.nn.Sequential()~ 中
+- 后者是函数，不能放入Sequential, 必须有参数传入
+
+*小结：*
+- 可以用 ~np.dot(features, weights) + b1~ 来构建网络
+- 可以用pytorch的class，定义forward函数
+- 可以用pytorch.nn.Sequential
+- dim=0将每列求和，dim=1将每行求和
+- 图像维度变化 (W-F+2P)/S + 1
+*** 输出层激励函数、loss、autograd、优化器
+- nn.CrossEntropyLoss，以此为Loss时，不要将输出进行Softmax操作
+- nn.NLLLoss，以此为Loss时，输出层激励函数用LogSoftmax(dim=1)
+#+BEGIN_SRC python :results output
+import torch.nn as nn
+from torch import optim
+# 定义损失函数
+criterion = nn.NLLLoss()
+# 前馈计算目标值
+y = model(images)
+# 计算损失函数值
+loss = criterion(y, labels)
+# 定义优化器
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+optimizer.zero_grad()
+output = model(images)
+loss = criterion(output, labels)
+loss.backward()
+optimizer.step()
+#+END_SRC
+*** 循环训练整个训练集
+#+BEGIN_SRC python :results output
+model = nn.Sequential(# ...
+                     )
+criterion = 
+optimizer = optim.SGD(model.parameters(), lr=0.003)
+for e in range(epochs):
+    for images, labels in trainloader:
+        output = model(images)
+        loss = criterion(output, labels)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        ps = torch.exp(output)
+#+END_SRC
+*** 在测试集上预测
+得到在训练集上的预测概率、预测类别、精度：
+#+BEGIN_SRC python :results output
+ps = torch.exp(output)
+top_p, top_class = ps.topk(1, dim=1)
+equals = top_class == labels.view(*top_class.shape)
+accuracy = torch.mean(equals.type(torch.FloatTensor))
+#+END_SRC
+在测试集上预测时，只向前传播进行预测，不反向传播，所以应该关掉梯度跟踪：
+#+BEGIN_SRC python :results output
+with torch.no_grad():
+log_out = model(images)
+ps = torch.exp(log_out)
+# ...
+accuracy = # ...
+#+END_SRC
+对比训练精度与测试精度可以看出过拟合了！
+*** dropout正则化
+在训练时dropout：
+#+BEGIN_SRC python :results output
+nn.Dropout(p=0.2) # 写入nn.Sequential
+self.dropout = nn.Dropout(p=0.2) # 写入class init()
+x = self.dropout(F.relu(self.fc1(x))) # 写入class方法forward()
+for images, labels in trainloader:
+    # 写法和之前相同，dropout默认进行（在model中定义）
+    pass
+#+END_SRC
+预测时不能dropout!
+#+BEGIN_SRC python :results output
+else:
+    with torch.no_grad():
+        model.eval() # 关闭dropout
+        for images,  labels in testloader:
+            pass # 开始预测以验证
+model.train() # 验证完成后回到训练，开始dropout
+#+END_SRC
+*** BatchNorm
+- 在批归一化的层不要使用bias项
+- 批归一化在激活之前
+- BatchNorm1d, BatchNorm2d
+*** 保存训练得到的模型
+*** 迁移学习
+** 练习记录
+*** 分类问题（监督学习）
+- fully-connected neural network
+- CNN on MNIST
+- ResNet18 on MNIST
+- transfor learningp
+- LSTM for movie reivews sentiment analysis
+- AE(自动编码器)
+** deep learning历史介绍
+[[https://s3.cn-north-1.amazonaws.com.cn/static-documents/nd101/AI%2C+Deep+Learning%2C+and+Machine+Learning_+A+Primer.mp4][deeplearning视频]]
+
+[[https://www.simplilearn.com/deep-learning-algorithms-article][你应该知道的深度学习算法]]
+
+[[https://machinelearningmastery.com/a-tour-of-machine-learning-algorithms/][A Tour of Machine Learning Algorithms]]
+
+- FNN架构
+  即前馈神经网络。
+- CNN架构
+  CNN被广泛用于有监督的图像识别，文本分析(NLP)，图数据分析(graph CNN)。包括了从LeNet到ResNet, DenseNet。
+  - LeNet CNN 1990s, ICPCPFO, 存在问题：容易过拟合，图像分析数度低
+  - AlexNet CNN, 2012,  ICPCPCCCPFFO
+  - VGG CNN, 2014, ICCPCCPCCCPCCCPCCCPFFFO, 通过简单标准保存了图像大小不变
+  - GoogleNet, 2015, ICPCCPIIPIIIIIPIIPFO, 中间的I表示新引入的联结：Inception层
+  - ResNet, 与VGG同样使用相同大小的图像进行卷积操作。全连接层（通常在同等规模内包含最多参数）
+    对良好的网络性能并不必要。移除全连接层导致 CNN 参数数量大幅下降。此外，池化操作也越来越不常用，
+    有可能会被卷积操作取代。这为ResNet基本构建块，残差模块提供了基础部分。
+    尝试拟合输入的一个微小改善而不是输入，因此称之为残差。
+    ResNet 在一些常见的训练集中都达到了业内最佳的结果（如 CIFAR、MNIST 等）。
+- RNN架构
+  同时向空间和时间方向延伸。包括最初的RNN到目前最热的LSTM。通过学习前序数据来预测后序事件，
+  如（声音，时间序列，书面语言等）。一般使用随机梯度下降和向后传播算法。用于情绪分析，
+  语言识别，NLP，机器翻译，搜索预测，视频分类，图像标注等。
+- LSTM（长短期记忆）
+  可以用于：图形和视频标注，语言翻译，情绪分析，股票预测
+- GAN（生成对抗网络）
+- 受限Boltzmann机
+- AE自动编码器
+  可以用来给图片降噪，要记得始终加非线性激活，否则会得到全部像8的数字输出（MNIST）。关键在于
+  计算损失函数 loss = nn.MSEloss(outputs, images). 用回归的损失函数，并将sigmoid
+  之后的输出与归化的输入相比。要注意维度匹配！先relu后pool效果更好？
+  
+  降噪时可以先在无噪音的图片上引入高斯噪声，将有噪声的图片作为AE的输入，将无噪声的图片作为
+  输出，并以回归损失函数来训练网络。
+  - Encoder: fully-connected layers OR convolutional layers
+  - Deconder: fully-connected layers OR transpose convolutional layers,
+    no pooling layers, use ~ nn.ConvTranspose2d()~ 在解码时引入的人为因素可以用upsampling,
+    或stride=kernel_size来避免。用 ~F.upsample(x, scale_factor=2, mode='nearest')~
+#+BEGIN_SRC python
+# upsample
+    def forward(self, x):
+        # add layer, with relu activation function
+        # and maxpooling after
+        x = F.relu(self.conv1(x))
+        x = self.pool(x)
+        # add hidden layer, with relu activation function
+        x = F.relu(self.conv2(x))
+        x = self.pool(x)  # compressed representation
+        
+        ## decoder 
+        # upsample, followed by a conv layer, with relu activation function  
+        # this function is called `interpolate` in some PyTorch versions
+        x = F.upsample(x, scale_factor=2, mode='nearest')
+        x = F.relu(self.conv4(x))
+        # upsample again, output should have a sigmoid applied
+        x = F.upsample(x, scale_factor=2, mode='nearest')
+        x = F.sigmoid(self.conv5(x))
+        
+        return x
+# 在图片中加入高斯噪声
+    for images, labels in train_loader:
+        ## add random noise to the input images
+        noisy_imgs = images + noise_factor * torch.randn(*images.shape)
+        # Clip the images to be between 0 and 1
+        noisy_imgs = np.clip(noisy_imgs, 0., 1.)
+#+END_SRC
+- 对抗生成网络GAN(2014),范例：[[https://affinelayer.com/pixsrv/][Pix2Pix]] , [[https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix][cycle GAN and Pix2Pix in Pytorch]],
+  [[https://github.com/wiseodd/generative-models][生成模型列表]]. 两个相对抗的网络：生成网络和判别网络。
+** wisdom实时可视化
 * 软件工程
 * 数据工程
 数据工程师：为各种职业和场景准备数据

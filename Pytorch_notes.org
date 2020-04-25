@@ -3,7 +3,7 @@
 #+EMAIL: li.gaoyang@foxmail.com
 #+OPTIONS: num:t
 
-* Pytorch学习笔记
+* Pytorch官方文档笔记
 Torch是一个有大量机器学习算法支持的科学计算框架，是一个与Numpy类似的张量（Tensor）
  操作库，其特点是特别灵活，但因其采用了小众的编程语言Lua，所以流行度不高，也就有了PyTorch.
 
