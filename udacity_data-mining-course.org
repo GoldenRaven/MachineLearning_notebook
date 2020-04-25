@@ -1190,8 +1190,8 @@ model.train() # 验证完成后回到训练，开始dropout
 - ResNet18 on MNIST(多分类问题)
 - transfer learning
 - LSTM for movie reivews sentiment analysis(二分类问题)
-- AE(自动编码器) on MNIST
-- GAN on MNIST
+- AE(自动编码器) on MNIST(无监督学习)
+- GAN on MNIST(半监督学习)
 ** deep learning历史介绍
 [[https://s3.cn-north-1.amazonaws.com.cn/static-documents/nd101/AI%2C+Deep+Learning%2C+and+Machine+Learning_+A+Primer.mp4][deeplearning视频]]
 
@@ -1258,7 +1258,6 @@ model.train() # 验证完成后回到训练，开始dropout
         # Clip the images to be between 0 and 1
         noisy_imgs = np.clip(noisy_imgs, 0., 1.)
 #+END_SRC
-- 
 - 受限Boltzmann机
 - GAN生成对抗网络(2014),范例：[[https://affinelayer.com/pixsrv/][Pix2Pix]] , [[https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix][cycle GAN and Pix2Pix in Pytorch]],
   [[https://github.com/wiseodd/generative-models][生成模型列表]]. 两个相对抗的网络：生成网络和判别网络。
