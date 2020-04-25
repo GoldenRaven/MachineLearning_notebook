@@ -1186,11 +1186,12 @@ model.train() # 验证完成后回到训练，开始dropout
 ** 练习记录
 *** 分类问题（监督学习）
 - fully-connected neural network
-- CNN on MNIST
-- ResNet18 on MNIST
-- transfor learningp
-- LSTM for movie reivews sentiment analysis
-- AE(自动编码器)
+- CNN on MNIST(多分类问题)
+- ResNet18 on MNIST(多分类问题)
+- transfer learning
+- LSTM for movie reivews sentiment analysis(二分类问题)
+- AE(自动编码器) on MNIST
+- GAN on MNIST
 ** deep learning历史介绍
 [[https://s3.cn-north-1.amazonaws.com.cn/static-documents/nd101/AI%2C+Deep+Learning%2C+and+Machine+Learning_+A+Primer.mp4][deeplearning视频]]
 
@@ -1214,11 +1215,10 @@ model.train() # 验证完成后回到训练，开始dropout
 - RNN架构
   同时向空间和时间方向延伸。包括最初的RNN到目前最热的LSTM。通过学习前序数据来预测后序事件，
   如（声音，时间序列，书面语言等）。一般使用随机梯度下降和向后传播算法。用于情绪分析，
-  语言识别，NLP，机器翻译，搜索预测，视频分类，图像标注等。
-- LSTM（长短期记忆）
-  可以用于：图形和视频标注，语言翻译，情绪分析，股票预测
-- GAN（生成对抗网络）
-- 受限Boltzmann机
+  语言识别，NLP，机器翻译，搜索预测，视频分类，图像标注等。激活函数常用tanh(x), 因为它
+  的输出是-1到1,而不是0，到1
+  - LSTM（长短期记忆）
+    可以用于：图形和视频标注，语言翻译，情绪分析，股票预测
 - AE自动编码器
   可以用来给图片降噪，要记得始终加非线性激活，否则会得到全部像8的数字输出（MNIST）。关键在于
   计算损失函数 loss = nn.MSEloss(outputs, images). 用回归的损失函数，并将sigmoid
@@ -1258,8 +1258,20 @@ model.train() # 验证完成后回到训练，开始dropout
         # Clip the images to be between 0 and 1
         noisy_imgs = np.clip(noisy_imgs, 0., 1.)
 #+END_SRC
-- 对抗生成网络GAN(2014),范例：[[https://affinelayer.com/pixsrv/][Pix2Pix]] , [[https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix][cycle GAN and Pix2Pix in Pytorch]],
+- 
+- 受限Boltzmann机
+- GAN生成对抗网络(2014),范例：[[https://affinelayer.com/pixsrv/][Pix2Pix]] , [[https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix][cycle GAN and Pix2Pix in Pytorch]],
   [[https://github.com/wiseodd/generative-models][生成模型列表]]. 两个相对抗的网络：生成网络和判别网络。
+
+  判别网络是个典型的线性分类器，应该
+  至少有一个隐层，并每个隐层后都要有一个LeakyRelu激活，输出为图片是真是假的二分类，
+  用BCEWithLogitsLoss()来将sigmoid函数与二元交叉熵结合成一个函数（所以不再加sigmoid）。
+  *定义隐层时，不要复用隐层的nn.Linear，它们应该有不同的参数，而不是共享！定义隐层的*
+  *线性变换时最好有维度变化？先骤升后缓降？*
+
+  生成网络与判别网络的结构一定要相反吗？还是两个可以不一样？
+
+  生成网络与判别网络类似，区别在于：判别网络的输出要用 ~tanh()~ 函数来激活。
 ** wisdom实时可视化
 * 软件工程
 * 数据工程
