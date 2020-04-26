@@ -1194,6 +1194,7 @@ model.train() # 验证完成后回到训练，开始dropout
 - GAN on MNIST(半监督学习)
 - Cycle GAN on Yosemite National Park image dataset(NOT finished!),
   图到图的翻译。
+- DCGAN on SVHN(与gan相似，只是将全连接换成了卷积网络)
 ** deep learning历史介绍
 [[https://s3.cn-north-1.amazonaws.com.cn/static-documents/nd101/AI%2C+Deep+Learning%2C+and+Machine+Learning_+A+Primer.mp4][deeplearning视频]]
 
@@ -1276,14 +1277,23 @@ model.train() # 验证完成后回到训练，开始dropout
   用非监督学习的方式将将图片从一个空间映射X到另一个空间Y, 它分别有两个判别网络和两个生成
   网络。判别网络结构如下：
   [[file:images/discriminator_layers.png]]
+
   两个判别网络结构相同，由五个卷积层构成，前四个有ReLu激活，最后一个没有激活，也不加sigmoid,
   因为要用平方差损失来训练。
 
   生成网络由一个编码器和一个解码器构成，结构如下：
   [[file:images/cyclegan_generator_ex.png]]
+
   经过三个卷积层，六个或更多的残差层，再接三个解卷积层。最后一个解卷积层后用Tanh激活。
 - DCGAN深度卷积生成对抗网络(2016)
-  参见[[https://arxiv.org/pdf/1511.06434.pdf]]。
+  参见[[https://arxiv.org/pdf/1511.06434.pdf]]。判别网络是个没有maxpooling的卷积
+  分类器：
+  [[file:images/conv_discriminator.png]]
+
+  建议使用4×4大小的核，stride=2来作为卷积层。生成网络使用Tanh()作为输出：
+  [[file:conv_generator.png]]
+
+  GANs对超参数十分敏感，参见：[[https://arxiv.org/pdf/1511.06434.pdf]]
 - 受限Boltzmann机
 ** wisdom实时可视化
 * 软件工程
