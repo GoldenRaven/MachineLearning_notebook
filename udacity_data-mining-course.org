@@ -1190,11 +1190,12 @@ model.train() # 验证完成后回到训练，开始dropout
 - ResNet18 on MNIST(多分类问题)
 - transfer learning
 - LSTM for movie reivews sentiment analysis(二分类问题)
-- AE(自动编码器) on MNIST(无监督学习)
-- GAN on MNIST(半监督学习)
+- AE(自动编码器) on MNIST(无监督学习，生成模型)
+- GAN on MNIST(无监督学习，无外部标签，属于生成模型)
 - Cycle GAN on Yosemite National Park image dataset(NOT finished!),
   图到图的翻译。
-- DCGAN on SVHN(与gan相似，只是将全连接换成了卷积网络)
+- DCGAN on SVHN(与gan相似，只是将全连接换成了卷积网络，GAN的一种)
+- PixelRNN, PixelCNN（生成模型）
 ** deep learning历史介绍
 [[https://s3.cn-north-1.amazonaws.com.cn/static-documents/nd101/AI%2C+Deep+Learning%2C+and+Machine+Learning_+A+Primer.mp4][deeplearning视频]]
 
@@ -1225,7 +1226,8 @@ model.train() # 验证完成后回到训练，开始dropout
 - AE自动编码器
   可以用来给图片降噪，要记得始终加非线性激活，否则会得到全部像8的数字输出（MNIST）。关键在于
   计算损失函数 loss = nn.MSEloss(outputs, images). 用回归的损失函数，并将sigmoid
-  之后的输出与归化的输入相比。要注意维度匹配！先relu后pool效果更好？
+  之后的输出与归化的输入相比。要注意维度匹配！先relu后pool效果更好？decoder一般为encoder
+  的逆操作！
   
   降噪时可以先在无噪音的图片上引入高斯噪声，将有噪声的图片作为AE的输入，将无噪声的图片作为
   输出，并以回归损失函数来训练网络。
@@ -1262,7 +1264,8 @@ model.train() # 验证完成后回到训练，开始dropout
         noisy_imgs = np.clip(noisy_imgs, 0., 1.)
 #+END_SRC
 - GAN生成对抗网络(2014),范例：[[https://affinelayer.com/pixsrv/][Pix2Pix]] , [[https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix][cycle GAN and Pix2Pix in Pytorch]],
-  [[https://github.com/wiseodd/generative-models][生成模型列表]]. 两个相对抗的网络：生成网络和判别网络。
+  [[https://github.com/wiseodd/generative-models][生成模型列表]]. 两个相对抗的网络：生成网络和判别网络。缺点对超参敏感，难以训练，
+  参考c231n！
 
   判别网络是个典型的线性分类器，应该
   至少有一个隐层，并每个隐层后都要有一个LeakyRelu激活，输出为图片是真是假的二分类，
