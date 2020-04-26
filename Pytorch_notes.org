@@ -3,7 +3,7 @@
 #+EMAIL: li.gaoyang@foxmail.com
 #+OPTIONS: num:t
 
-* Pytorch官方文档笔记
+** Pytorch官方文档笔记
 Torch是一个有大量机器学习算法支持的科学计算框架，是一个与Numpy类似的张量（Tensor）
  操作库，其特点是特别灵活，但因其采用了小众的编程语言Lua，所以流行度不高，也就有了PyTorch.
 
@@ -23,7 +23,7 @@ PyTorch的优点：
 - 还不支持快速傅里叶、沿维翻转张量和检查无穷与非数值张量
 - 针对移动端、嵌入式部署以及高性能服务器端的部署其性能表现有待提升
 - 因为这个框架较新，使得他的社区没有那么强大，在文档方面,其C库大多数没有文档。
-** 张量tensor
+*** 张量tensor
 一维数组（数组）、二维数组（矩阵）都是tensor，tensor可以用来描述更高维度的数组，
 如一阶张量（数组）、二阶张量（矩阵）、三阶张量等等。
 #+BEGIN_SRC python :results output
@@ -159,7 +159,7 @@ if torch.cuda.is_available():
 #+END_SRC
 
 #+RESULTS:
-** 自动求导Autograd
+*** 自动求导Autograd
 #+BEGIN_EXAMPLE
 根据PyTorch的设计，梯度只能计算浮点张量
 #+END_EXAMPLE
@@ -225,4 +225,4 @@ print(b.grad)
 : tensor([[ 0.0443,  4.9378],
 :         [ 5.5173, -5.6608]])
 
-* [[file:Torch_保存模型和从文件中加载模型.org][如何保存你的模型，并从文件中恢复断点训练？]]
+** [[file:Torch_保存模型和从文件中加载模型.org][如何保存你的模型，并从文件中恢复断点训练？]]
