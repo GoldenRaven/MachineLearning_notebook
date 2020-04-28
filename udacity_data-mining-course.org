@@ -1052,7 +1052,7 @@ Autograd 非常强大。你可以用它完成整个反向传播工作：计算�
 然而，一个潜在问题是网络在处理复杂图像方面的效果不太好。
 所以我们会接着学习如何使用预训练的网络改善分类器的效果，这种技巧称为迁移学习。
 
--
+- ~transforms.RandomHorizontalFlip()~ 要放在totenosr之前！
 #+BEGIN_SRC python :results output
 import torch
 torch.manual_seed(7)
@@ -1244,7 +1244,7 @@ model.train() # 验证完成后回到训练，开始dropout
         x = self.pool(x)
         # add hidden layer, with relu activation function
         x = F.relu(self.conv2(x))
-        x = self.pool(x)  # compressed representation
+        x = self.pool(x)  # compcompressed representation
         
         ## decoder 
         # upsample, followed by a conv layer, with relu activation function  
@@ -1265,7 +1265,7 @@ model.train() # 验证完成后回到训练，开始dropout
 #+END_SRC
 - GAN生成对抗网络(2014),范例：[[https://affinelayer.com/pixsrv/][Pix2Pix]] , [[https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix][cycle GAN and Pix2Pix in Pytorch]],
   [[https://github.com/wiseodd/generative-models][生成模型列表]]. 两个相对抗的网络：生成网络和判别网络。缺点对超参敏感，难以训练，
-  参考c231n！
+  参考c231n！GANs对超参数十分敏感，参见：[[https://arxiv.org/pdf/1511.06434.pdf]]
 
   判别网络是个典型的线性分类器，应该
   至少有一个隐层，并每个隐层后都要有一个LeakyRelu激活，输出为图片是真是假的二分类，
@@ -1289,14 +1289,26 @@ model.train() # 验证完成后回到训练，开始dropout
 
   经过三个卷积层，六个或更多的残差层，再接三个解卷积层。最后一个解卷积层后用Tanh激活。
 - DCGAN深度卷积生成对抗网络(2016)
-  参见[[https://arxiv.org/pdf/1511.06434.pdf]]。判别网络是个没有maxpooling的卷积
-  分类器：
+  参见[[https://arxiv.org/pdf/1511.06434.pdf]]。
+  + 判别网络是个没有maxpooling的卷积分类器：
   [[file:images/conv_discriminator.png]]
+  
+  + 卷积层建议以32个filter开始，以2倍增。原始文献中用步长为2的卷积代替了下采样。
+    卷积层建议使用4×4大小的核，stride=2。
 
-  建议使用4×4大小的核，stride=2来作为卷积层。生成网络使用Tanh()作为输出：
-  [[file:conv_generator.png]]
+  + 生成网络用解卷积层来生成图像，使用Tanh()作为输出：
+    [[file:conv_generator.png]]
 
-  GANs对超参数十分敏感，参见：[[https://arxiv.org/pdf/1511.06434.pdf]]
+  + 先用全连接，将噪声变成深度很深的窄长形状，再通过解卷积来使深度减半，图像宽高增倍，
+    直到和原图大小相同，以方便交给判别网络判别。
+
+  + 除了最后一个解卷积层外，所有解卷积层都要接BatchNorm2d()和leaky_relu(x,0.2)。
+    原数据要用Tanh()归一到判别网络的输出范围[-1, 1].
+
+  + 同样，解卷积层建议使用4×4大小的核，stride=2。
+
+  + 数据的结构越复杂，提取图像模式需要的网络深度越深
+
 - 受限Boltzmann机
 ** wisdom实时可视化
 * 软件工程
