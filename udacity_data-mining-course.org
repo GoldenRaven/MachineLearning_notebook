@@ -1036,8 +1036,7 @@ step_function和sigmoid_function. sigmoid函数通常用于将离散的结果
 
 ** 深度学习工具Pytorch
 PyTorch 于 2017 年初推出，给深度学习社区带来了深远的影响。它是由 Facebook AI
-研发团队开发的，已经被各行各业和各个学术领域采用。根据我个人的经验，它是训练神经网络的最佳框架，
-并且使用起来很方便。
+研发团队开发的，已经被各行各业和各个学术领域采用。
 
 张量，它是 PyTorch 的主要数据结构。我将演示如何创建张量、如何完成简单的运算，以及张量如何与
 Numpy 交互。
@@ -1052,7 +1051,6 @@ Autograd 非常强大。你可以用它完成整个反向传播工作：计算�
 然而，一个潜在问题是网络在处理复杂图像方面的效果不太好。
 所以我们会接着学习如何使用预训练的网络改善分类器的效果，这种技巧称为迁移学习。
 
-- ~transforms.RandomHorizontalFlip()~ 要放在totenosr之前！
 #+BEGIN_SRC python :results output
 import torch
 torch.manual_seed(7)
@@ -1105,7 +1103,8 @@ print(c.shape)
 - 可以用pytorch的class，定义forward函数
 - 可以用pytorch.nn.Sequential
 - dim=0将每列求和，dim=1将每行求和
-- 图像维度变化 (W-F+2P)/S + 1
+- 卷积操作时，图像维度变化 (W-F+2P)/S + 1
+- ~transforms.RandomHorizontalFlip()~ 要放在totenosr之前！
 *** 输出层激励函数、loss、autograd、优化器
 - nn.CrossEntropyLoss，以此为Loss时，不要将输出进行Softmax操作
 - nn.NLLLoss，以此为Loss时，输出层激励函数用LogSoftmax(dim=1)
@@ -1152,10 +1151,10 @@ accuracy = torch.mean(equals.type(torch.FloatTensor))
 在测试集上预测时，只向前传播进行预测，不反向传播，所以应该关掉梯度跟踪：
 #+BEGIN_SRC python :results output
 with torch.no_grad():
-log_out = model(images)
-ps = torch.exp(log_out)
-# ...
-accuracy = # ...
+    log_out = model(images)
+    ps = torch.exp(log_out)
+    # ...
+    accuracy = # ...
 #+END_SRC
 对比训练精度与测试精度可以看出过拟合了！
 *** dropout正则化
@@ -1184,7 +1183,6 @@ model.train() # 验证完成后回到训练，开始dropout
 *** 保存训练得到的模型
 *** 迁移学习
 ** 练习记录
-*** 分类问题（监督学习）
 - fully-connected neural network
 - CNN on MNIST(多分类问题)
 - ResNet18 on MNIST(多分类问题)
@@ -1204,8 +1202,10 @@ model.train() # 验证完成后回到训练，开始dropout
 [[https://machinelearningmastery.com/a-tour-of-machine-learning-algorithms/][A Tour of Machine Learning Algorithms]]
 
 - FNN架构
+
   即前馈神经网络。
 - CNN架构
+
   CNN被广泛用于有监督的图像识别，文本分析(NLP)，图数据分析(graph CNN)。包括了从LeNet到ResNet, DenseNet。
   - LeNet CNN 1990s, ICPCPFO, 存在问题：容易过拟合，图像分析数度低
   - AlexNet CNN, 2012,  ICPCPCCCPFFO
@@ -1217,6 +1217,7 @@ model.train() # 验证完成后回到训练，开始dropout
     尝试拟合输入的一个微小改善而不是输入，因此称之为残差。
     ResNet 在一些常见的训练集中都达到了业内最佳的结果（如 CIFAR、MNIST 等）。
 - RNN架构
+
   同时向空间和时间方向延伸。包括最初的RNN到目前最热的LSTM。通过学习前序数据来预测后序事件，
   如（声音，时间序列，书面语言等）。一般使用随机梯度下降和向后传播算法。用于情绪分析，
   语言识别，NLP，机器翻译，搜索预测，视频分类，图像标注等。激活函数常用tanh(x), 因为它
@@ -1224,6 +1225,7 @@ model.train() # 验证完成后回到训练，开始dropout
   - LSTM（长短期记忆）
     可以用于：图形和视频标注，语言翻译，情绪分析，股票预测
 - AE自动编码器
+
   可以用来给图片降噪，要记得始终加非线性激活，否则会得到全部像8的数字输出（MNIST）。关键在于
   计算损失函数 loss = nn.MSEloss(outputs, images). 用回归的损失函数，并将sigmoid
   之后的输出与归化的输入相比。要注意维度匹配！先relu后pool效果更好？decoder一般为encoder
@@ -1263,7 +1265,9 @@ model.train() # 验证完成后回到训练，开始dropout
         # Clip the images to be between 0 and 1
         noisy_imgs = np.clip(noisy_imgs, 0., 1.)
 #+END_SRC
-- GAN生成对抗网络(2014),范例：[[https://affinelayer.com/pixsrv/][Pix2Pix]] , [[https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix][cycle GAN and Pix2Pix in Pytorch]],
+- GAN生成对抗网络(2014)
+
+  范例：[[https://affinelayer.com/pixsrv/][Pix2Pix]] , [[https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix][cycle GAN and Pix2Pix in Pytorch]],
   [[https://github.com/wiseodd/generative-models][生成模型列表]]. 两个相对抗的网络：生成网络和判别网络。缺点对超参敏感，难以训练，
   参考c231n！GANs对超参数十分敏感，参见：[[https://arxiv.org/pdf/1511.06434.pdf]]
 
@@ -1289,6 +1293,7 @@ model.train() # 验证完成后回到训练，开始dropout
 
   经过三个卷积层，六个或更多的残差层，再接三个解卷积层。最后一个解卷积层后用Tanh激活。
 - DCGAN深度卷积生成对抗网络(2016)
+
   参见[[https://arxiv.org/pdf/1511.06434.pdf]]。
   + 判别网络是个没有maxpooling的卷积分类器：
   [[file:images/conv_discriminator.png]]
@@ -1297,7 +1302,7 @@ model.train() # 验证完成后回到训练，开始dropout
     卷积层建议使用4×4大小的核，stride=2。
 
   + 生成网络用解卷积层来生成图像，使用Tanh()作为输出：
-    [[file:conv_generator.png]]
+    [[file:images/conv_generator.png]]
 
   + 先用全连接，将噪声变成深度很深的窄长形状，再通过解卷积来使深度减半，图像宽高增倍，
     直到和原图大小相同，以方便交给判别网络判别。
