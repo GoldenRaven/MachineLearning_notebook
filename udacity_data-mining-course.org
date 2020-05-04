@@ -1208,13 +1208,13 @@ model.train() # 验证完成后回到训练，开始dropout
 
   CNN被广泛用于有监督的图像识别，文本分析(NLP)，图数据分析(graph CNN)。包括了从LeNet到ResNet, DenseNet。
   - LeNet CNN 1990s, ICPCPFO, 存在问题：容易过拟合，图像分析数度低
-  - AlexNet CNN, 2012,  ICPCPCCCPFFO
-  - VGG CNN, 2014, ICCPCCPCCCPCCCPCCCPFFFO, 通过简单标准保存了图像大小不变
+  - AlexNet CNN, 2012,  ICPCPCCCPFFO。第一深度神经网络，利益于硬件的发展，使用了大的卷积核
+  - VGG CNN, 2014, ICCPCCPCCCPCCCPCCCPFFFO, 使用小卷积核，计算量和参数更少
   - GoogleNet, 2015, ICPCCPIIPIIIIIPIIPFO, 中间的I表示新引入的联结：Inception层
   - ResNet, 与VGG同样使用相同大小的图像进行卷积操作。全连接层（通常在同等规模内包含最多参数）
     对良好的网络性能并不必要。移除全连接层导致 CNN 参数数量大幅下降。此外，池化操作也越来越不常用，
     有可能会被卷积操作取代。这为ResNet基本构建块，残差模块提供了基础部分。
-    尝试拟合输入的一个微小改善而不是输入，因此称之为残差。
+    尝试拟合输入的一个微小改善而不是输入，因此称之为残差，是里程碑式的工作。
     ResNet 在一些常见的训练集中都达到了业内最佳的结果（如 CIFAR、MNIST 等）。
 - RNN架构
 
@@ -1314,8 +1314,15 @@ model.train() # 验证完成后回到训练，开始dropout
 
   + 数据的结构越复杂，提取图像模式需要的网络深度越深
 
+  + 以下是构造稳定的DCGAN结构的建议：（参考Stanford cs231n）
+    - 使用带步长（分数步长）的卷积层代替生成网络（判别网络）中的池化层
+    - 在生成网络和判别网络中都使用批归一化
+    - 如果深度较深则去掉所有的全连接层
+    - 生成网络除了输出用Tanh来激活外，其余所有层用ReLU来激活
+    - 判别网络的所有层用LeakyReLU来激活
 - 受限Boltzmann机
 ** wisdom实时可视化
+
 * 软件工程
 * 数据工程
 数据工程师：为各种职业和场景准备数据
