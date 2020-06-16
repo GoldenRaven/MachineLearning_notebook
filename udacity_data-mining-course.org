@@ -75,9 +75,9 @@ df.head()
 df.tail()
 df.sample(10)
 df.sex.value_counts()
-df.isna().sum()
-df[df.isna().T.any()] # 显示有空值的行
-df[df.age.isna()]
+df.isnull().sum()
+df[df.isnull().T.any()] # 显示有空值的行
+df[df.age.isnull()]
 df.age.notna()
 df.describe()
 df.loc[df.age > 50, :]
@@ -105,7 +105,7 @@ df_clean.dropna(axis=0, # 0或index, 1或columns，丢弃有空值的行或列
                 how='any', # any指只要有空值就丢弃;all指当行或列全为空时丢弃
                 inplace=True) # 是否inplace改变
 df_clean.drop('age', axis=1) # 0或index, 1或columns，丢弃行或列
-df_clean.drop(columns=['age', 'height'], index=150, inplace=True)
+df_clean.drop(labels=['age', 'height'], index=150, inplace=True)
 # 用每个国家的GDP平均值填充缺失值
 df_clean.groupby('Country Name')['GDP'].transform(lambda x: x.fillna(x.mean()))
 # 向前向后填充（要先排序！）
@@ -160,6 +160,8 @@ normalize(X_train)
 ## 探索性可视化：用来寻找变量间的关系或隐藏的模式，不必完美
 ## 解释性可视化：呈现给观众，为了用图或表来回答之前提出的问题
 ## 特征工程
+## 可以用pandas_profiling包方便地一次性完成，但数据时会很慢。
+
 ## 3.1 单变量可视化
 import seaborn as sns
 plt.xtics(rotation=90) # 横坐标刻度旋转90度
@@ -310,10 +312,13 @@ silhouette_score(X, labels)
 - 传达结果
 
 第 1 步：提问
-你要么获取一批数据，然后根据它提问，要么先提问，然后根据问题收集数据。在这两种情况下，好的问题可以帮助你将精力集中在数据的相关部分，并帮助你得出有洞察力的分析。
+你要么获取一批数据，然后根据它提问，要么先提问，然后根据问题收集数据。在这两种情况下，
+好的问题可以帮助你将精力集中在数据的相关部分，并帮助你得出有洞察力的分析。
 
 第 2 步：整理数据
-你通过三步来获得所需的数据：收集，评估，清理。你收集所需的数据来回答你的问题，评估你的数据来识别数据质量或结构中的任何问题，并通过修改、替换或删除数据来清理数据，以确保你的数据集具有最高质量和尽可能结构化。
+你通过三步来获得所需的数据：收集，评估，清理。你收集所需的数据来回答你的问题，
+评估你的数据来识别数据质量或结构中的任何问题，并通过修改、替换或删除数据来清理数据，
+以确保你的数据集具有最高质量和尽可能结构化。
 
 第 3 步：执行 EDA（探索性数据分析）
 你可以探索并扩充数据，以最大限度地发挥你的数据分析、可视化和模型构建的潜力。探索数据涉及在数据中查找模式，可视化数据中的关系，并对你正在使用的数据建立直觉。经过探索后，你可以删除异常值，并从数据中创建更好的特征，这称为特征工程。
@@ -727,7 +732,7 @@ plt.xtics(rotation=90)
 *** 缺失值统计
 用 ~sns.barplot~ 来绘图。
 #+BEGIN_SRC python :results output
-na_counts = df.isna().sum()
+na_counts = df.isnull().sum()
 base_color = sns.color_palette()[0]
 sns.barplot(na_counts.index.values, na_counts, color = base_color)
 #+END_SRC
@@ -1221,7 +1226,7 @@ model.train() # 验证完成后回到训练，开始dropout
   同时向空间和时间方向延伸。包括最初的RNN到目前最热的LSTM。通过学习前序数据来预测后序事件，
   如（声音，时间序列，书面语言等）。一般使用随机梯度下降和向后传播算法。用于情绪分析，
   语言识别，NLP，机器翻译，搜索预测，视频分类，图像标注等。激活函数常用tanh(x), 因为它
-  的输出是-1到1,而不是0，到1
+  的输出是-1到1,而不是0，到1. RNN的典型优化器是Adam.
   - LSTM（长短期记忆）
     可以用于：图形和视频标注，语言翻译，情绪分析，股票预测
 - AE自动编码器

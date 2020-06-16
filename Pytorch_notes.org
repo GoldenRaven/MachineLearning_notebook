@@ -225,4 +225,53 @@ print(b.grad)
 : tensor([[ 0.0443,  4.9378],
 :         [ 5.5173, -5.6608]])
 
-** [[file:Torch_保存模型和从文件中加载模型.org][如何保存你的模型，并从文件中恢复断点训练？]]
+*** Pytorch Loss functions损失函数
+**** ~L1Loss~ 平均绝对值误差MAE
+计算input ~x~ 和 ~y~ 的每个元素间MAE，返回值为标量（reduction = 'mean'|'sum'）
+或矢量（reduction = 'none'），reduction的默认值为'mean'：
+
+L = \{l_{1}, l_{2}, ..., l_{N}\}^{T},     l_{n} = x_{n} - y_{n},
+
+其中N是batch_size, 损失loss为l(x, y) = ：
+- L, if reduction = 'none'
+- mean(L), if reduction = 'mean'
+- sum(L), if reduction = 'sum'
+
+#+BEGIN_SRC python 
+import torch
+ctorch.nn.L1Loss(size_average=True, # 默认值
+                reduce=True, # 默认值
+                reduction='mean') # 默认值
+#+END_SRC
+**** ~MSELoss~ 均方根损失
+L(x, y)形式不变，L = \{l_{1}, l_{2}, ..., l_{N}\}^{T}
+,     l_{n} = (x_{n} - y_{n})^{2},
+
+其中N是batch_size, 损失loss为l(x, y) = ：
+- L, if reduction = 'none'
+- mean(L), if reduction = 'mean'
+- sum(L), if reduction = 'sum'
+
+#+BEGIN_SRC python 
+import torch
+torch.nn.MSELoss(size_average=True, # 默认值
+                reduce=True, # 默认值
+                reduction='mean') # 默认值
+#+END_SRC
+**** ~CrossEntropyLoss~ 交叉熵损失
+结合了~nn.LogSoftmax()~ 和 ~nn.NLLLoss~ ，训练多分类时有用
+**** ~CTCLoss~
+**** ~NLLLoss~ negative log likelihood loss
+训练多分类时有用，输入input应该为每个类别的log概率，可以通过在最后一层加 ~LogSoftmax~
+得到。如果不想加，就要使用 ~CrossEntropyLoss()~
+**** ~PoissonNLLLoss~
+**** ~KLDivLoss~
+**** ~BCELoss~
+用于测量二分类的误差
+**** ~BCEWithLogitsLoss~
+它是 ~Sigmoid()~ 层和 ~BCELoss~ 损失函数的组合，比分开计算时数值上更稳定。
+**** ~MarginRankingLoss~
+**** ~HingeEmbeddingLoss~
+**** 其他损失函数
+** [[FILE:Torch_保存模型和从文件中加载模型.org][如何保存你的模型，并从文件中恢复断点训练？]]
+
